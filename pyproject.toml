@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "hyperioncs"
+version = "0.1.0"
+description = ""
+authors = ["Riley Flynn <riley@rileyflynn.me>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+black = "^21.4b2"
+flake8 = "^3.9.1"
+flake8-isort = "^4.0.0"
+isort = "^5.8.0"
+mypy = "^0.812"
+nox = "^2020.12.31"
+nox-poetry = "^0.8.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,7 @@
+{
+    "python.linting.flake8Enabled": true,
+    "python.linting.mypyEnabled": true,
+    "python.formatting.provider": "black",
+    "editor.formatOnSave": true,
+    "python.pythonPath": "~/.pyenv/versions/3.9.0/envs/hyperioncs/bin/python"
+}
