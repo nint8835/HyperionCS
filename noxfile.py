@@ -20,7 +20,7 @@ def lint(session: nox.sessions.Session) -> None:
 
 @nox_session(python="3.9")
 def typecheck(session: nox.sessions.Session) -> None:
-    session.install("mypy", ".")
+    session.install("mypy", "sqlalchemy-stubs", ".")
     session.run("mypy", PACKAGE_NAME)
 
 

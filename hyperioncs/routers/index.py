@@ -1,5 +1,9 @@
-from fastapi import APIRouter, Request
+from typing import Any, Dict
+
+from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
+
+from ..dependencies import get_current_user
 
 index_router = APIRouter()
 
@@ -19,5 +23,7 @@ class UserResponse(BaseModel):
 
 
 @index_router.get("/users/me", response_model=UserResponse)
-def index_route(request: Request) -> UserResponse:
-    return UserResponse(**request.session["user"])
+def current_user(
+    request: Request, user: Dict[Any, Any] = Depends(get_current_user)
+) -> UserResponse:
+    return UserResponse(**user)
