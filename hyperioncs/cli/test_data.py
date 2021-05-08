@@ -1,9 +1,11 @@
+import jwt
 import typer
 from alembic import command
 from alembic.config import Config
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session
 
+from ..config import config
 from ..database import SessionLocal
 from ..models.currencies import Account, Currency
 from ..models.integrations import Integration, IntegrationConnection
@@ -85,3 +87,14 @@ def dev_data() -> None:
             typer.style(f"{resource_name}: ", fg="green")
             + typer.style(", ".join(map(str, inspect(resource).identity)), fg="yellow")
         )
+        if isinstance(resource, IntegrationConnection):
+            typer.echo(
+                typer.style("  JWT: ", fg="green")
+                + typer.style(
+                    jwt.encode(
+                        {"integration_connection_id": str(resource.id)},
+                        config.jwt_secret_key,
+                        config.jwt_algorithm,
+                    )
+                )
+            )
