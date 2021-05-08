@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, Optional, cast
+from typing import Optional
 
 import jwt
 from authlib.integrations.starlette_client import OAuth
@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from ..config import config
 from ..models.integrations import IntegrationConnection
+from ..schemas import DiscordUser
 from .database import get_db
 
 oauth = OAuth()
@@ -27,11 +28,11 @@ oauth.register(
 )
 
 
-def get_current_user(request: Request) -> Dict[Any, Any]:
+def get_discord_user(request: Request) -> DiscordUser:
     if "user" not in request.session:
         raise HTTPException(401, "User not logged in")
 
-    return cast(Dict[Any, Any], request.session["user"])
+    return DiscordUser(**request.session["user"])
 
 
 class JWTBearer(HTTPBearer):
@@ -65,7 +66,9 @@ class JWTBearer(HTTPBearer):
 def get_integration(
     request: Request,
     db: Session = Depends(get_db),
-    jwt_creds: HTTPAuthorizationCredentials = Depends(JWTBearer()),
+    jwt_creds: HTTPAuthorizationCredentials = Depends(
+        JWTBearer(scheme_name="Integration Token")
+    ),
 ) -> IntegrationConnection:
     decoded_token = jwt.decode(
         jwt_creds.credentials, config.jwt_secret_key, algorithms=[config.jwt_algorithm]
