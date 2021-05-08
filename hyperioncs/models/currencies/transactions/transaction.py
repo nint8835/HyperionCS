@@ -5,7 +5,7 @@ from sqlalchemy import Column, Enum, ForeignKey, ForeignKeyConstraint, Integer, 
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from ...base import Base, GenericModel
+from ...base import Base, BaseDBModel
 from .enums import TransactionState
 
 if TYPE_CHECKING:
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from ..currency import Currency
 
 
-class Transaction(Base, GenericModel):
+class Transaction(Base, BaseDBModel):
     __tablename__ = "transaction"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

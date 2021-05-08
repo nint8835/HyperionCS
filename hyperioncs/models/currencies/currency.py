@@ -3,10 +3,10 @@ import uuid
 from sqlalchemy import Column, String
 from sqlalchemy.dialects.postgresql import UUID
 
-from ..base import Base, GenericModel
+from ..base import Base, BaseDBModel
 
 
-class Currency(Base, GenericModel):
+class Currency(Base, BaseDBModel):
     __tablename__ = "currency"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

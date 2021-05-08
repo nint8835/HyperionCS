@@ -5,7 +5,7 @@ from sqlalchemy import Column, DateTime
 from ..database import Base
 
 
-class GenericModel:
+class BaseDBModel:
     """Generic model providing base functionality used by all models.
 
     Must be inherited from in addition to Base.
@@ -15,4 +15,4 @@ class GenericModel:
     date_modified = Column(DateTime, nullable=False, default=datetime.utcnow)
 
 
-__all__ = ["Base", "GenericModel"]
+__all__ = ["Base", "BaseDBModel"]
