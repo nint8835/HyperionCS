@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Dict, Optional, cast
 
 import jwt
@@ -77,4 +78,7 @@ def get_integration(
 
     if not integration_connection:
         raise HTTPException(status_code=403, detail="Invalid token.")
+
+    integration_connection.last_used = datetime.utcnow()
+    db.commit()
     return integration_connection
