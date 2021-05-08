@@ -2,6 +2,7 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
 
+import hyperioncs.models._all_models
 from hyperioncs.database import Base
 
 from alembic import context  # isort:skip
