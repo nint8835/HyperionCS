@@ -16,6 +16,7 @@ Authlib = "^0.15.3"
 httpx = "^0.18.1"
 itsdangerous = "^1.1.0"
 python-dotenv = "^0.17.1"
+PyJWT = {version = "^2.1.0", extras = ["crypto"]}
 
 [tool.poetry.dev-dependencies]
 black = "^21.4b2"

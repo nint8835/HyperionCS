@@ -1,10 +1,15 @@
-from typing import Any, Dict, cast
+from typing import Any, Dict, Optional, cast
 
+import jwt
 from authlib.integrations.starlette_client import OAuth
-from fastapi import Request
+from fastapi import Depends, Request
 from fastapi.exceptions import HTTPException
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.orm import Session
 
 from ..config import config
+from ..models.integrations import IntegrationConnection
+from .database import get_db
 
 oauth = OAuth()
 oauth.register(
@@ -26,3 +31,50 @@ def get_current_user(request: Request) -> Dict[Any, Any]:
         raise HTTPException(401, "User not logged in")
 
     return cast(Dict[Any, Any], request.session["user"])
+
+
+class JWTBearer(HTTPBearer):
+    async def __call__(
+        self, request: Request
+    ) -> Optional[HTTPAuthorizationCredentials]:
+        credentials = await super(JWTBearer, self).__call__(request)
+        if credentials:
+            if not credentials.scheme == "Bearer":
+                raise HTTPException(
+                    status_code=403, detail="Invalid authentication scheme."
+                )
+            if not self.verify_jwt(credentials.credentials):
+                raise HTTPException(status_code=403, detail="Invalid token.")
+            return credentials
+        else:
+            raise HTTPException(status_code=401, detail="No credentials provided.")
+
+    def verify_jwt(self, given_jwt: str) -> bool:
+        try:
+            decoded_token = jwt.decode(
+                given_jwt, config.jwt_secret_key, algorithms=[config.jwt_algorithm]
+            )
+            if "integration_connection_id" in decoded_token:
+                return True
+            return False
+        except jwt.DecodeError:
+            return False
+
+
+def get_integration(
+    request: Request,
+    db: Session = Depends(get_db),
+    jwt_creds: HTTPAuthorizationCredentials = Depends(JWTBearer()),
+) -> IntegrationConnection:
+    decoded_token = jwt.decode(
+        jwt_creds.credentials, config.jwt_secret_key, algorithms=[config.jwt_algorithm]
+    )
+    integration_connection_id: str = decoded_token["integration_connection_id"]
+
+    integration_connection = IntegrationConnection.get_by_id(
+        db, integration_connection_id
+    )
+
+    if not integration_connection:
+        raise HTTPException(status_code=403, detail="Invalid token.")
+    return integration_connection
