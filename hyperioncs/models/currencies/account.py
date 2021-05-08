@@ -4,13 +4,13 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from ...database import Base
+from ..base import Base, GenericModel
 
 if TYPE_CHECKING:
     from .currency import Currency
 
 
-class Account(Base):
+class Account(Base, GenericModel):
     __tablename__ = "account"
 
     currency_id = Column(

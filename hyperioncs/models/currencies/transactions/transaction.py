@@ -1,20 +1,11 @@
 import uuid
-from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import (
-    Column,
-    DateTime,
-    Enum,
-    ForeignKey,
-    ForeignKeyConstraint,
-    Integer,
-    String,
-)
+from sqlalchemy import Column, Enum, ForeignKey, ForeignKeyConstraint, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from ....database import Base
+from ...base import Base, GenericModel
 from .enums import TransactionState
 
 if TYPE_CHECKING:
@@ -23,7 +14,7 @@ if TYPE_CHECKING:
     from ..currency import Currency
 
 
-class Transaction(Base):
+class Transaction(Base, GenericModel):
     __tablename__ = "transaction"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -31,8 +22,6 @@ class Transaction(Base):
     state = Column(
         Enum(TransactionState), nullable=False, default=TransactionState.PENDING
     )
-    date_created = Column(DateTime, nullable=False, default=datetime.utcnow)
-    date_modified = Column(DateTime, nullable=False, default=datetime.utcnow)
     description = Column(String)
     source_currency_id = Column(
         UUID(as_uuid=True), ForeignKey("currency.id"), index=True

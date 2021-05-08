@@ -5,14 +5,14 @@ from sqlalchemy import Column, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from ...database import Base
+from ..base import Base, GenericModel
 
 if TYPE_CHECKING:
     from ..currencies import Currency
     from .integration import Integration
 
 
-class IntegrationConnection(Base):
+class IntegrationConnection(Base, GenericModel):
     __tablename__ = "integration_connection"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
