@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 
 from ...dependencies import get_integration
+from ...models.currencies import Currency
 from ...models.integrations import Integration, IntegrationConnection
+from ...schemas.currencies import CurrencySchema
 from ...schemas.integrations import IntegrationConnectionSchema, IntegrationSchema
 
 integration_router = APIRouter(tags=["Integrations"])
@@ -21,3 +23,11 @@ def get_integration_connection(
 ) -> IntegrationConnection:
     """Retrieve details on the integration connection that owns the provided integration token."""
     return integration
+
+
+@integration_router.get("/currency", response_model=CurrencySchema)
+def get_integration_currency(
+    integration: IntegrationConnection = Depends(get_integration),
+) -> Currency:
+    """Retrieve details on the currency this integration is connected to."""
+    return integration.currency

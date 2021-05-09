@@ -1,3 +1,4 @@
 from .account import AccountSchema, CreateAccountSchema
+from .currency import CurrencySchema
 
-__all__ = ["AccountSchema", "CreateAccountSchema"]
+__all__ = ["AccountSchema", "CreateAccountSchema", "CurrencySchema"]
