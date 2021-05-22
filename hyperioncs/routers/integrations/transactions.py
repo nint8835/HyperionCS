@@ -32,13 +32,13 @@ def create_transaction(
         Account.get_account(db, integration.currency_id, transaction.source_account_id)
         is None
     ):
-        raise HTTPException(409, "Specified source account does not exist.")
+        raise HTTPException(404, "Specified source account does not exist.")
 
     if (
         Account.get_account(db, integration.currency_id, transaction.dest_account_id)
         is None
     ):
-        raise HTTPException(409, "Specified destination account does not exist.")
+        raise HTTPException(404, "Specified destination account does not exist.")
 
     new_transaction = Transaction(
         source_currency_id=integration.currency_id,
@@ -67,8 +67,8 @@ def execute_transaction(
 
     if transaction is None:
         raise HTTPException(
-            403,
-            "Specified transaction does not exist or you do not have permission to access it.",
+            404,
+            "Specified transaction does not exist.",
         )
 
     if transaction.state != TransactionState.PENDING:
