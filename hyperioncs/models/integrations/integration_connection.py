@@ -15,14 +15,14 @@ if TYPE_CHECKING:
 class IntegrationConnection(Base, BaseDBModel):
     __tablename__ = "integration_connection"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    integration_id = Column(
+    id: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    integration_id: uuid.UUID = Column(
         UUID(as_uuid=True), ForeignKey("integration.id"), nullable=False, index=True
     )
-    currency_id = Column(
+    currency_id: uuid.UUID = Column(
         UUID(as_uuid=True), ForeignKey("currency.id"), nullable=False, index=True
     )
     last_used = Column(DateTime)
 
-    integration = relationship("Integration")
-    currency = relationship("Currency")
+    integration: "Integration" = relationship("Integration")
+    currency: "Currency" = relationship("Currency")

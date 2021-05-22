@@ -1,3 +1,4 @@
+import uuid
 from typing import TYPE_CHECKING, List, Optional, Type, Union
 
 from sqlalchemy import Column, ForeignKey, Integer, String
@@ -13,17 +14,17 @@ if TYPE_CHECKING:
 class Account(Base, BaseDBModel):
     __tablename__ = "account"
 
-    currency_id = Column(
+    currency_id: uuid.UUID = Column(
         UUID(as_uuid=True), ForeignKey("currency.id"), primary_key=True
     )
     id = Column(String, primary_key=True)
     balance = Column(Integer, nullable=False, default=0)
 
-    currency = relationship("Currency")
+    currency: "Currency" = relationship("Currency")
 
     @classmethod
     def get_accounts_for_currency(
-        cls: Type["Account"], db: Session, currency_id: Union[UUID, str]
+        cls: Type["Account"], db: Session, currency_id: Union[uuid.UUID, str]
     ) -> List["Account"]:
         return db.query(Account).filter_by(currency_id=currency_id).all()
 
@@ -31,7 +32,7 @@ class Account(Base, BaseDBModel):
     def get_account(
         cls: Type["Account"],
         db: Session,
-        currency_id: Union[UUID, str],
+        currency_id: Union[uuid.UUID, str],
         account_id: str,
     ) -> Optional["Account"]:
         return (

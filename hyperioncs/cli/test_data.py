@@ -2,6 +2,7 @@ import jwt
 import typer
 from alembic import command
 from alembic.config import Config
+from sqlalchemy import text
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session
 
@@ -25,8 +26,8 @@ def wipe_db(
     typer.secho("Wiping DB...", fg="yellow")
 
     session: Session = SessionLocal()
-    session.execute("DROP SCHEMA public CASCADE")
-    session.execute("CREATE SCHEMA public")
+    session.execute(text("DROP SCHEMA public CASCADE"))
+    session.execute(text("CREATE SCHEMA public"))
     session.commit()
 
     if migrate:
@@ -67,11 +68,15 @@ def dev_data() -> None:
     test_integration_connection = IntegrationConnection(
         integration_id=test_integration.id, currency_id=test_currency.id
     )
-    test_account = Account(
+    test_account_1 = Account(
         currency_id=test_currency.id, id=TESTING_DISCORD_ID, balance=100
     )
+    test_account_2 = Account(
+        currency_id=test_currency.id, id="178958252820791296", balance=0
+    )
     session.add(test_integration_connection)
-    session.add(test_account)
+    session.add(test_account_1)
+    session.add(test_account_2)
 
     session.commit()
 
@@ -81,7 +86,8 @@ def dev_data() -> None:
         ("Currency", test_currency),
         ("Integration", test_integration),
         ("IntegrationConnection", test_integration_connection),
-        ("Account", test_account),
+        ("Account", test_account_1),
+        ("Account", test_account_2),
     ]:
         typer.echo(
             typer.style(f"{resource_name}: ", fg="green")

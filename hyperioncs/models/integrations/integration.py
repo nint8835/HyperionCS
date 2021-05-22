@@ -9,7 +9,7 @@ from ..base import Base, BaseDBModel
 class Integration(Base, BaseDBModel):
     __tablename__ = "integration"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
     description = Column(String)
     official = Column(Boolean, nullable=False, default=False)
