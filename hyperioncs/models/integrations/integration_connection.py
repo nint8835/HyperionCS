@@ -1,5 +1,6 @@
 import uuid
-from typing import TYPE_CHECKING
+from datetime import datetime
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import Column, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
@@ -22,7 +23,7 @@ class IntegrationConnection(Base, BaseDBModel):
     currency_id: uuid.UUID = Column(
         UUID(as_uuid=True), ForeignKey("currency.id"), nullable=False, index=True
     )
-    last_used = Column(DateTime)
+    last_used: Optional[datetime] = Column(DateTime)
 
     integration: "Integration" = relationship("Integration")
     currency: "Currency" = relationship("Currency")

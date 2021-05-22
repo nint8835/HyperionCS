@@ -1,7 +1,7 @@
 import uuid
 from typing import TYPE_CHECKING, List, Optional, Type, Union
 
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session, relationship
 
@@ -17,8 +17,9 @@ class Account(Base, BaseDBModel):
     currency_id: uuid.UUID = Column(
         UUID(as_uuid=True), ForeignKey("currency.id"), primary_key=True
     )
-    id = Column(String, primary_key=True)
-    balance = Column(Integer, nullable=False, default=0)
+    id: str = Column(String, primary_key=True)
+    balance: int = Column(Integer, nullable=False, default=0)
+    # system_account: bool = Column(Boolean, default=False, nullable=False)
 
     currency: "Currency" = relationship("Currency")
 

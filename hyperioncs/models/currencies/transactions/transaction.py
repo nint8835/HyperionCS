@@ -1,16 +1,16 @@
 import uuid
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional, cast
 
 from sqlalchemy import Column, Enum, ForeignKey, ForeignKeyConstraint, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session, relationship
 
 from ...base import Base, BaseDBModel
-from ..account import Account
 from .enums import TransactionState
 
 if TYPE_CHECKING:
     from ...integrations import Integration
+    from ..account import Account
     from ..currency import Currency
 
 
@@ -18,20 +18,20 @@ class Transaction(Base, BaseDBModel):
     __tablename__ = "transaction"
 
     id: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    amount = Column(Integer, nullable=False)
-    state = Column(
+    amount: int = Column(Integer, nullable=False)
+    state: TransactionState = Column(
         Enum(TransactionState), nullable=False, default=TransactionState.PENDING
     )
-    state_reason = Column(String)
-    description = Column(String)
+    state_reason: Optional[str] = Column(String)
+    description: Optional[str] = Column(String)
     source_currency_id: uuid.UUID = Column(
         UUID(as_uuid=True), ForeignKey("currency.id"), index=True
     )
-    source_account_id = Column(String, index=True)
+    source_account_id: str = Column(String, index=True)
     dest_currency_id: uuid.UUID = Column(
         UUID(as_uuid=True), ForeignKey("currency.id"), index=True
     )
-    dest_account_id = Column(String, index=True)
+    dest_account_id: str = Column(String, index=True)
     integration_id: uuid.UUID = Column(UUID(as_uuid=True), ForeignKey("integration.id"))
 
     source_currency: "Currency" = relationship(
@@ -65,7 +65,7 @@ class Transaction(Base, BaseDBModel):
     )
 
     def execute(self, db: Session) -> None:
-        src_account = (
+        src_account: Optional["Account"] = (
             db.query(Account)
             .with_for_update()
             .filter_by(id=self.source_account_id, currency_id=self.source_currency_id)
@@ -89,7 +89,7 @@ class Transaction(Base, BaseDBModel):
             self.state_reason = "Destination account could not be found."
             return
 
-        if src_account.balance < self.amount:
+        if src_account.balance < self.amount and not src_account.system_account:
             self.state = TransactionState.FAILED
             self.state_reason = "Source account does not have sufficient balance to cover this transaction."
             return
