@@ -35,5 +35,8 @@ class BaseDBModel:
         except DataError:
             return None
 
+    def set_modified(self) -> None:
+        self.date_modified = datetime.utcnow()
+
 
 __all__ = ["Base", "BaseDBModel"]

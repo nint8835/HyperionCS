@@ -1,16 +1,24 @@
 import uuid
-from typing import TYPE_CHECKING, Any, Optional, cast
+from typing import TYPE_CHECKING, Any, List, Optional, Union
 
-from sqlalchemy import Column, Enum, ForeignKey, ForeignKeyConstraint, Integer, String
+from sqlalchemy import (
+    Column,
+    Enum,
+    ForeignKey,
+    ForeignKeyConstraint,
+    Integer,
+    String,
+    or_,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session, relationship
 
 from ...base import Base, BaseDBModel
+from ..account import Account
 from .enums import TransactionState
 
 if TYPE_CHECKING:
     from ...integrations import Integration
-    from ..account import Account
     from ..currency import Currency
 
 
@@ -65,6 +73,8 @@ class Transaction(Base, BaseDBModel):
     )
 
     def execute(self, db: Session) -> None:
+        # TODO: Maybe add a check to ensure the transaction is pending here?
+
         src_account: Optional["Account"] = (
             db.query(Account)
             .with_for_update()
@@ -82,21 +92,62 @@ class Transaction(Base, BaseDBModel):
         if src_account is None:
             self.state = TransactionState.FAILED
             self.state_reason = "Source account could not be found."
+            self.set_modified()
+            db.commit()
             return
 
         if dest_account is None:
             self.state = TransactionState.FAILED
             self.state_reason = "Destination account could not be found."
+            self.set_modified()
+            db.commit()
             return
 
         if src_account.balance < self.amount and not src_account.system_account:
             self.state = TransactionState.FAILED
             self.state_reason = "Source account does not have sufficient balance to cover this transaction."
+            self.set_modified()
+            db.commit()
             return
 
         src_account.balance -= self.amount
         dest_account.balance += self.amount
 
         self.state = TransactionState.COMPLETE
+        self.set_modified()
 
         db.commit()
+
+    @classmethod
+    def get_transaction(
+        cls,
+        db: Session,
+        currency_id: Union[uuid.UUID, str],
+        transaction_id: Union[uuid.UUID, str],
+    ) -> Optional["Transaction"]:
+        return (
+            db.query(Transaction)
+            .filter(
+                or_(
+                    Transaction.source_currency_id == currency_id,
+                    Transaction.dest_currency_id == currency_id,
+                )
+            )
+            .filter_by(id=transaction_id)
+            .first()
+        )
+
+    @classmethod
+    def get_transactions_for_currency(
+        cls, db: Session, currency_id: Union[uuid.UUID, str]
+    ) -> List["Transaction"]:
+        return (
+            db.query(Transaction)
+            .filter(
+                or_(
+                    Transaction.source_currency_id == currency_id,
+                    Transaction.dest_currency_id == currency_id,
+                )
+            )
+            .all()
+        )
