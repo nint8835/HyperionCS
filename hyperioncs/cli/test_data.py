@@ -42,7 +42,7 @@ def wipe_db(
 @typer_app.command()
 def dev_data() -> None:
     """Create development data for testing with."""
-    typer.secho("Creating test data...", fg="cyan")
+    typer.secho("Creating dev data...", fg="cyan")
 
     session: Session = SessionLocal()
 
@@ -54,11 +54,11 @@ def dev_data() -> None:
         owner_id=TESTING_DISCORD_ID,
     )
     test_integration = Integration(
-        name="Testing integration",
-        description="A real cool integration for testing. Real good.",
+        name="Hyperion Test Bot",
+        description="A real cool bot for testing. Real good.",
         official=True,
-        link=None,
-        public=True,
+        link="https://github.com/nint8835/hyperion-test-bot",
+        public=False,
         owner_id=TESTING_DISCORD_ID,
     )
 
@@ -81,7 +81,7 @@ def dev_data() -> None:
 
     session.commit()
 
-    typer.secho("Test data created!", fg="green")
+    typer.secho("Dev data created!", fg="green")
 
     for resource_name, resource in [
         ("Currency", test_currency),
