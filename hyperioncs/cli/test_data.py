@@ -6,10 +6,11 @@ from sqlalchemy import text
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session
 
-from ..config import config
-from ..database import SessionLocal
-from ..models.currencies import Account, Currency
-from ..models.integrations import Integration, IntegrationConnection
+from hyperioncs.config import config
+from hyperioncs.database import SessionLocal
+from hyperioncs.models.currencies import Account, Currency
+from hyperioncs.models.integrations import Integration, IntegrationConnection
+
 from . import typer_app
 
 TESTING_DISCORD_ID = "106162668032802816"

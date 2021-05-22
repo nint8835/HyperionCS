@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from ...dependencies import get_discord_user
-from ...schemas import DiscordUser
+from hyperioncs.dependencies import get_discord_user
+from hyperioncs.schemas import DiscordUser
 
 index_router = APIRouter()
 

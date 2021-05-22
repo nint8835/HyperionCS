@@ -13,8 +13,9 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session, relationship
 
-from ...base import Base, BaseDBModel
-from ..account import Account
+from hyperioncs.models.base import Base, BaseDBModel
+from hyperioncs.models.currencies import Account
+
 from .enums import TransactionState
 
 if TYPE_CHECKING:

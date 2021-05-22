@@ -3,7 +3,7 @@ from typing import cast
 from fastapi import APIRouter, Request
 from starlette.responses import RedirectResponse, Response
 
-from ...dependencies.auth import oauth
+from hyperioncs.dependencies.auth import oauth
 
 auth_router = APIRouter()
 

@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import Column, String
 from sqlalchemy.dialects.postgresql import UUID
 
-from ..base import Base, BaseDBModel
+from hyperioncs.models.base import Base, BaseDBModel
 
 
 class Currency(Base, BaseDBModel):

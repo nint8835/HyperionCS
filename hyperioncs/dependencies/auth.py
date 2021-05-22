@@ -8,9 +8,10 @@ from fastapi.exceptions import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
-from ..config import config
-from ..models.integrations import IntegrationConnection
-from ..schemas import DiscordUser
+from hyperioncs.config import config
+from hyperioncs.models.integrations import IntegrationConnection
+from hyperioncs.schemas import DiscordUser
+
 from .database import get_db
 
 oauth = OAuth()

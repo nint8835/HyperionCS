@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Depends
 
-from ...dependencies import get_integration
-from ...models.currencies import Currency
-from ...models.integrations import Integration, IntegrationConnection
-from ...schemas.currencies import CurrencySchema
-from ...schemas.integrations import IntegrationConnectionSchema, IntegrationSchema
+from hyperioncs.dependencies import get_integration
+from hyperioncs.models.currencies import Currency
+from hyperioncs.models.integrations import Integration, IntegrationConnection
+from hyperioncs.schemas.currencies import CurrencySchema
+from hyperioncs.schemas.integrations import (
+    IntegrationConnectionSchema,
+    IntegrationSchema,
+)
 
 integration_router = APIRouter(tags=["Integrations"])
 

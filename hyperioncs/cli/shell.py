@@ -1,7 +1,8 @@
 import IPython
 from sqlalchemy.orm import Session
 
-from ..database import SessionLocal
+from hyperioncs.database import SessionLocal
+
 from . import typer_app
 
 

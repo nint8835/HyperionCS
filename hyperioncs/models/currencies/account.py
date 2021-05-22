@@ -5,7 +5,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session, relationship
 
-from ..base import Base, BaseDBModel
+from hyperioncs.models.base import Base, BaseDBModel
 
 if TYPE_CHECKING:
     from .currency import Currency

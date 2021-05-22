@@ -6,7 +6,7 @@ from sqlalchemy import Column, DateTime
 from sqlalchemy.exc import DataError
 from sqlalchemy.orm import Mapped, Session, declarative_mixin, declared_attr
 
-from ..database import Base
+from hyperioncs.database import Base
 
 ModelType = TypeVar("ModelType", bound="BaseDBModel")
 

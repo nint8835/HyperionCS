@@ -3,10 +3,10 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from ...dependencies import get_db, get_integration
-from ...models.currencies import Account
-from ...models.integrations import IntegrationConnection
-from ...schemas.currencies import AccountSchema, CreateAccountSchema
+from hyperioncs.dependencies import get_db, get_integration
+from hyperioncs.models.currencies import Account
+from hyperioncs.models.integrations import IntegrationConnection
+from hyperioncs.schemas.currencies import AccountSchema, CreateAccountSchema
 
 accounts_router = APIRouter(tags=["Accounts"])
 

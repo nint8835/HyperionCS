@@ -4,7 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from ...models.currencies.transactions import TransactionState
+from hyperioncs.models.currencies.transactions import TransactionState
 
 
 class CreateTransactionSchema(BaseModel):

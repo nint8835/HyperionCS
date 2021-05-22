@@ -6,7 +6,7 @@ from sqlalchemy import Column, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from ..base import Base, BaseDBModel
+from hyperioncs.models.base import Base, BaseDBModel
 
 if TYPE_CHECKING:
     from ..currencies import Currency

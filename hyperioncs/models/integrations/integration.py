@@ -4,7 +4,7 @@ from typing import Optional
 from sqlalchemy import Boolean, Column, String
 from sqlalchemy.dialects.postgresql import UUID
 
-from ..base import Base, BaseDBModel
+from hyperioncs.models.base import Base, BaseDBModel
 
 
 class Integration(Base, BaseDBModel):
