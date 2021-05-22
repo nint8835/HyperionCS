@@ -19,7 +19,8 @@ class Account(Base, BaseDBModel):
     )
     id: str = Column(String, primary_key=True)
     balance: int = Column(Integer, nullable=False, default=0)
-    # system_account: bool = Column(Boolean, default=False, nullable=False)
+    system_account: bool = Column(Boolean, default=False, nullable=False)
+    display_name: Optional[str] = Column(String)
 
     currency: "Currency" = relationship("Currency")
 
