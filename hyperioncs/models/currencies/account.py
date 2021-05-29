@@ -1,27 +1,14 @@
 import uuid
-from typing import TYPE_CHECKING, List, Optional, Type, Union
+from typing import List, Optional, Type, Union
 
-from sqlalchemy import (
-    Boolean,
-    Column,
-    ForeignKey,
-    Integer,
-    String,
-    and_,
-    func,
-    select,
-    table,
-)
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, func, select
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session, column_property, relationship
 from sqlalchemy.sql.functions import coalesce
 
+import hyperioncs.models.currencies as currencies
 import hyperioncs.models.currencies.transactions as transactions
 from hyperioncs.models.base import Base, BaseDBModel
-
-if TYPE_CHECKING:
-    from .currency import Currency
-    from .transactions import Transaction
 
 
 class Account(Base, BaseDBModel):
@@ -56,7 +43,7 @@ class Account(Base, BaseDBModel):
         )
     )
 
-    currency: "Currency" = relationship("Currency")
+    currency: "currencies.Currency" = relationship("Currency")
 
     @classmethod
     def get_accounts_for_currency(

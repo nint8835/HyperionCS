@@ -1,16 +1,14 @@
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from sqlalchemy import Column, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
+import hyperioncs.models.currencies as currencies
+import hyperioncs.models.integrations as integrations
 from hyperioncs.models.base import Base, BaseDBModel
-
-if TYPE_CHECKING:
-    from ..currencies import Currency
-    from .integration import Integration
 
 
 class IntegrationConnection(Base, BaseDBModel):
@@ -25,5 +23,5 @@ class IntegrationConnection(Base, BaseDBModel):
     )
     last_used: Optional[datetime] = Column(DateTime)
 
-    integration: "Integration" = relationship("Integration")
-    currency: "Currency" = relationship("Currency")
+    integration: "integrations.Integration" = relationship("Integration")
+    currency: "currencies.Currency" = relationship("Currency")

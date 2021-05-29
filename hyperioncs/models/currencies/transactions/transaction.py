@@ -1,5 +1,5 @@
 import uuid
-from typing import TYPE_CHECKING, Any, List, Optional, Union
+from typing import Any, List, Optional, Union
 
 from sqlalchemy import (
     Column,
@@ -14,14 +14,10 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session, relationship
 
 import hyperioncs.models.currencies as currencies
+import hyperioncs.models.integrations as integrations
 from hyperioncs.models.base import Base, BaseDBModel
 
 from .enums import TransactionState
-
-if TYPE_CHECKING:
-    from ...integrations import Integration
-    from ..account import Account
-    from ..currency import Currency
 
 
 class Transaction(Base, BaseDBModel):
@@ -44,23 +40,23 @@ class Transaction(Base, BaseDBModel):
     dest_account_id: str = Column(String, index=True)
     integration_id: uuid.UUID = Column(UUID(as_uuid=True), ForeignKey("integration.id"))
 
-    source_currency: "Currency" = relationship(
+    source_currency: "currencies.Currency" = relationship(
         "Currency", foreign_keys=[source_currency_id], overlaps="source_account"
     )
-    source_account: "Account" = relationship(
+    source_account: "currencies.Account" = relationship(
         "Account",
         foreign_keys=[source_currency_id, source_account_id],
         overlaps="source_currency",
     )
-    dest_currency: "Currency" = relationship(
+    dest_currency: "currencies.Currency" = relationship(
         "Currency", foreign_keys=[dest_currency_id], overlaps="dest_account"
     )
-    dest_account: "Account" = relationship(
+    dest_account: "currencies.Account" = relationship(
         "Account",
         foreign_keys=[dest_currency_id, dest_account_id],
         overlaps="dest_currency",
     )
-    integration: "Integration" = relationship("Integration")
+    integration: "integrations.Integration" = relationship("Integration")
 
     __table_args__: Any = (
         ForeignKeyConstraint(
@@ -77,7 +73,7 @@ class Transaction(Base, BaseDBModel):
     def execute(self, db: Session) -> None:
         # TODO: Maybe add a check to ensure the transaction is pending here?
 
-        src_account: Optional["Account"] = (
+        src_account: Optional["currencies.Account"] = (
             db.query(currencies.Account)
             .with_for_update()
             .filter_by(id=self.source_account_id, currency_id=self.source_currency_id)
