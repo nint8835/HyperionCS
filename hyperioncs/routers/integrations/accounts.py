@@ -48,7 +48,6 @@ def create_account(
     new_account = Account(
         id=account.id,
         currency_id=integration.currency_id,
-        balance=account.starting_balance,
         system_account=account.system_account,
         display_name=account.display_name,
     )

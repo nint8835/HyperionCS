@@ -7,7 +7,6 @@ from pydantic import BaseModel
 
 class CreateAccountSchema(BaseModel):
     id: str
-    starting_balance: int = 0
     system_account: bool = False
     display_name: Optional[str] = None
 
