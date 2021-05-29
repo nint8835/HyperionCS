@@ -1,5 +1,5 @@
 import uuid
-from typing import List, Optional, Type, Union
+from typing import List, Optional, Type, Union, cast
 
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, func, select
 from sqlalchemy.dialects.postgresql import UUID
@@ -21,26 +21,31 @@ class Account(Base, BaseDBModel):
     balance: int = Column(Integer, nullable=False, default=0)
     system_account: bool = Column(Boolean, default=False, nullable=False)
     display_name: Optional[str] = Column(String)
-    effective_balance = column_property(
-        balance
-        + (
-            select(coalesce(func.sum(transactions.Transaction.amount), 0))
-            .where(
-                transactions.Transaction.state == transactions.TransactionState.PENDING
+    effective_balance = cast(
+        int,
+        column_property(
+            balance
+            + (
+                select(coalesce(func.sum(transactions.Transaction.amount), 0))
+                .where(
+                    transactions.Transaction.state
+                    == transactions.TransactionState.PENDING
+                )
+                .where(transactions.Transaction.dest_account_id == id)
+                .where(transactions.Transaction.dest_currency_id == currency_id)
+                .scalar_subquery()
             )
-            .where(transactions.Transaction.dest_account_id == id)
-            .where(transactions.Transaction.dest_currency_id == currency_id)
-            .scalar_subquery()
-        )
-        - (
-            select(coalesce(func.sum(transactions.Transaction.amount), 0))
-            .where(
-                transactions.Transaction.state == transactions.TransactionState.PENDING
+            - (
+                select(coalesce(func.sum(transactions.Transaction.amount), 0))
+                .where(
+                    transactions.Transaction.state
+                    == transactions.TransactionState.PENDING
+                )
+                .where(transactions.Transaction.source_account_id == id)
+                .where(transactions.Transaction.source_currency_id == currency_id)
+                .scalar_subquery()
             )
-            .where(transactions.Transaction.source_account_id == id)
-            .where(transactions.Transaction.source_currency_id == currency_id)
-            .scalar_subquery()
-        )
+        ),
     )
 
     currency: "currencies.Currency" = relationship("Currency")
