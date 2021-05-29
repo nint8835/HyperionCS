@@ -11,7 +11,7 @@ from .routers.integrations import (
 )
 from .routers.internal import auth_router, index_router
 
-app = FastAPI()
+app = FastAPI(title="Hyperion Currency System")
 app.add_middleware(SessionMiddleware, secret_key=config.secret_key)
 
 app.include_router(auth_router)
