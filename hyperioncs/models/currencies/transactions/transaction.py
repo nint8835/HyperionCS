@@ -13,13 +13,14 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session, relationship
 
+import hyperioncs.models.currencies as currencies
 from hyperioncs.models.base import Base, BaseDBModel
-from hyperioncs.models.currencies import Account
 
 from .enums import TransactionState
 
 if TYPE_CHECKING:
     from ...integrations import Integration
+    from ..account import Account
     from ..currency import Currency
 
 
@@ -77,14 +78,14 @@ class Transaction(Base, BaseDBModel):
         # TODO: Maybe add a check to ensure the transaction is pending here?
 
         src_account: Optional["Account"] = (
-            db.query(Account)
+            db.query(currencies.Account)
             .with_for_update()
             .filter_by(id=self.source_account_id, currency_id=self.source_currency_id)
             .first()
         )
 
         dest_account = (
-            db.query(Account)
+            db.query(currencies.Account)
             .with_for_update()
             .filter_by(id=self.dest_account_id, currency_id=self.dest_currency_id)
             .first()

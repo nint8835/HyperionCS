@@ -16,6 +16,7 @@ class AccountSchema(BaseModel):
     id: str
     currency_id: UUID
     balance: int
+    effective_balance: int
     date_created: datetime
     date_modified: datetime
     system_account: bool
