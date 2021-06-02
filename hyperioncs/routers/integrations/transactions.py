@@ -7,7 +7,11 @@ from hyperioncs.dependencies import get_db, get_integration
 from hyperioncs.models.currencies import Account
 from hyperioncs.models.currencies.transactions import Transaction, TransactionState
 from hyperioncs.models.integrations import IntegrationConnection
-from hyperioncs.schemas.currencies import CreateTransactionSchema, TransactionSchema
+from hyperioncs.schemas.currencies import (
+    CancelTransactionSchema,
+    CreateTransactionSchema,
+    TransactionSchema,
+)
 
 transaction_router = APIRouter(tags=["Transactions"])
 
@@ -75,5 +79,30 @@ def execute_transaction(
         raise HTTPException(409, "Cannot execute an already executed transaction.")
 
     transaction.execute(db)
+
+    return transaction
+
+
+@transaction_router.post("/{transaction_id}/cancel", response_model=TransactionSchema)
+def cancel_transaction(
+    transaction_id: str,
+    cancel_data: CancelTransactionSchema,
+    integration: IntegrationConnection = Depends(get_integration),
+    db: Session = Depends(get_db),
+) -> Transaction:
+    transaction = Transaction.get_transaction(
+        db, integration.currency_id, transaction_id
+    )
+
+    if transaction is None:
+        raise HTTPException(
+            404,
+            "Specified transaction does not exist.",
+        )
+
+    if transaction.state != TransactionState.PENDING:
+        raise HTTPException(409, "Cannot cancel a non-pending transaction.")
+
+    transaction.cancel(db, cancel_data.reason)
 
     return transaction

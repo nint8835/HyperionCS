@@ -14,6 +14,10 @@ class CreateTransactionSchema(BaseModel):
     description: Optional[str] = None
 
 
+class CancelTransactionSchema(BaseModel):
+    reason: Optional[str] = None
+
+
 class TransactionSchema(BaseModel):
     id: UUID
     amount: int

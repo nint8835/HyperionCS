@@ -116,6 +116,15 @@ class Transaction(Base, BaseDBModel):
 
         db.commit()
 
+    def cancel(self, db: Session, reason: Optional[str] = None) -> None:
+        self.state = TransactionState.CANCELLED
+
+        if reason is not None:
+            self.state_reason = reason
+
+        self.set_modified()
+        db.commit()
+
     @classmethod
     def get_transaction(
         cls,
