@@ -1,3 +1,5 @@
+from typing import Optional
+
 from dotenv import load_dotenv
 from pydantic import BaseSettings
 
@@ -9,6 +11,11 @@ class Config(BaseSettings):
     discord_client_id: str
     discord_client_secret: str
     sqlalchemy_connection_url: str = "postgresql://hyperion:hyperion@localhost/hyperion"
+
+    # Honeycomb config
+    use_honeycomb: bool = False
+    honeycomb_api_key: Optional[str] = None
+    honeycomb_dataset: Optional[str] = None
 
 
 load_dotenv()
