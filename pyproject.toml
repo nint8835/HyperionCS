@@ -19,6 +19,7 @@ python-dotenv = "^0.17.1"
 PyJWT = {version = "^2.1.0", extras = ["crypto"]}
 aiofiles = "^0.6.0"
 Jinja2 = "^2.11.3"
+gunicorn = "^20.1.0"
 
 [tool.poetry.dev-dependencies]
 black = "^21.4b2"
