@@ -23,7 +23,6 @@ app.include_router(accounts_router, prefix="/api/v1/accounts")
 app.include_router(transaction_router, prefix="/api/v1/transactions")
 
 if config.use_honeycomb:
-    # WIP: This absolutely _tanks_ the request times - figure out why it does so.
     from grpc import ssl_channel_credentials
     from opentelemetry import trace
     from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
@@ -31,7 +30,7 @@ if config.use_honeycomb:
     from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
     from opentelemetry.sdk.resources import Resource
     from opentelemetry.sdk.trace import TracerProvider
-    from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
     provider = TracerProvider(
         resource=Resource(attributes={"service.name": "hyperioncs"})
@@ -47,7 +46,7 @@ if config.use_honeycomb:
             ("x-honeycomb-dataset", config.honeycomb_dataset),
         ),
     )
-    provider.add_span_processor(SimpleSpanProcessor(otlp_exporter))
+    provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
 
     FastAPIInstrumentor.instrument_app(app)
     SQLAlchemyInstrumentor().instrument(engine=engine)
