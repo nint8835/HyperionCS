@@ -1,6 +1,4 @@
-from fastapi import FastAPI, Request, Response
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI
 from starlette.middleware.sessions import SessionMiddleware
 
 from .config import config
@@ -50,12 +48,3 @@ if config.use_honeycomb:
 
     FastAPIInstrumentor.instrument_app(app)
     SQLAlchemyInstrumentor().instrument(engine=engine)
-
-
-app.mount("/static", StaticFiles(directory="frontend/build/static"), name="static")
-templates = Jinja2Templates(directory="frontend/build")
-
-
-@app.get("/{rest_of_path:path}", include_in_schema=False)
-async def serve_frontend(request: Request, rest_of_path: str) -> Response:
-    return templates.TemplateResponse("index.html", {"request": request})
