@@ -19,7 +19,7 @@ depends_on = None
 def upgrade() -> None:
     op.create_table(
         "currency",
-        sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("id", sa.String(), nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("singular_form", sa.String(), nullable=False),
         sa.Column("plural_form", sa.String(), nullable=False),
@@ -36,7 +36,7 @@ def upgrade() -> None:
     )
     op.create_table(
         "integration",
-        sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("id", sa.String(), nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("description", sa.String(), nullable=True),
         sa.Column("official", sa.Boolean(), nullable=False),
@@ -50,7 +50,7 @@ def upgrade() -> None:
     )
     op.create_table(
         "account",
-        sa.Column("currency_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("currency_id", sa.String(), nullable=False),
         sa.Column("id", sa.String(), nullable=False),
         sa.Column("balance", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
@@ -61,9 +61,9 @@ def upgrade() -> None:
     )
     op.create_table(
         "integration_connection",
-        sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("integration_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("currency_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("id", sa.String(), nullable=False),
+        sa.Column("integration_id", sa.String(), nullable=False),
+        sa.Column("currency_id", sa.String(), nullable=False),
         sa.Column("last_used", sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(
             ["currency_id"],
@@ -89,7 +89,7 @@ def upgrade() -> None:
     )
     op.create_table(
         "transaction",
-        sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("id", sa.String(), nullable=False),
         sa.Column("amount", sa.Integer(), nullable=False),
         sa.Column(
             "state",
@@ -106,11 +106,11 @@ def upgrade() -> None:
         sa.Column("date_created", sa.DateTime(), nullable=False),
         sa.Column("date_modified", sa.DateTime(), nullable=False),
         sa.Column("description", sa.String(), nullable=True),
-        sa.Column("source_currency_id", postgresql.UUID(as_uuid=True), nullable=True),
+        sa.Column("source_currency_id", sa.String(), nullable=True),
         sa.Column("source_account_id", sa.String(), nullable=True),
-        sa.Column("dest_currency_id", postgresql.UUID(as_uuid=True), nullable=True),
+        sa.Column("dest_currency_id", sa.String(), nullable=True),
         sa.Column("dest_account_id", sa.String(), nullable=True),
-        sa.Column("integration_id", postgresql.UUID(as_uuid=True), nullable=True),
+        sa.Column("integration_id", sa.String(), nullable=True),
         sa.ForeignKeyConstraint(
             ["dest_currency_id", "dest_account_id"],
             ["account.currency_id", "account.id"],

@@ -2,7 +2,6 @@ import uuid
 from typing import List, Optional, Type, Union, cast
 
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, func, select
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session, column_property, relationship
 from sqlalchemy.sql.functions import coalesce
 
@@ -14,9 +13,7 @@ from hyperioncs.models.base import Base, BaseDBModel
 class Account(Base, BaseDBModel):
     __tablename__ = "account"
 
-    currency_id: uuid.UUID = Column(
-        UUID(as_uuid=True), ForeignKey("currency.id"), primary_key=True
-    )
+    currency_id: str = Column(String, ForeignKey("currency.id"), primary_key=True)
     id: str = Column(String, primary_key=True)
     balance: int = Column(Integer, nullable=False, default=0)
     system_account: bool = Column(Boolean, default=False, nullable=False)
@@ -52,7 +49,7 @@ class Account(Base, BaseDBModel):
 
     @classmethod
     def get_accounts_for_currency(
-        cls: Type["Account"], db: Session, currency_id: Union[uuid.UUID, str]
+        cls: Type["Account"], db: Session, currency_id: str
     ) -> List["Account"]:
         return db.query(Account).filter_by(currency_id=currency_id).all()
 
@@ -60,7 +57,7 @@ class Account(Base, BaseDBModel):
     def get_account(
         cls: Type["Account"],
         db: Session,
-        currency_id: Union[uuid.UUID, str],
+        currency_id: str,
         account_id: str,
     ) -> Optional["Account"]:
         return (

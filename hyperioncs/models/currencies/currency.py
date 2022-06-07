@@ -1,15 +1,15 @@
 import uuid
 
 from sqlalchemy import Column, String
-from sqlalchemy.dialects.postgresql import UUID
 
 from hyperioncs.models.base import Base, BaseDBModel
+from hyperioncs.models.utils import default_uuid_str
 
 
 class Currency(Base, BaseDBModel):
     __tablename__ = "currency"
 
-    id: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: str = Column(String, primary_key=True, default=default_uuid_str)
     name: str = Column(String, unique=True, index=True, nullable=False)
     singular_form: str = Column(String, nullable=False)
     plural_form: str = Column(String, nullable=False)

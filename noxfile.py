@@ -11,20 +11,20 @@ PACKAGE_NAME = "hyperioncs"
 PACKAGE_FILES = [PACKAGE_NAME, "noxfile.py"]
 
 
-@nox_session(python="3.9")
+@nox_session(python="3.10")
 def lint(session: nox.sessions.Session) -> None:
     session.install("flake8", "black", ".")
     session.run("flake8", *PACKAGE_FILES)
     session.run("black", "--check", *PACKAGE_FILES)
 
 
-@nox_session(python="3.9")
+@nox_session(python="3.10")
 def typecheck(session: nox.sessions.Session) -> None:
     session.install("mypy", "sqlalchemy-stubs", ".")
     session.run("mypy", PACKAGE_NAME)
 
 
-@nox_session(python="3.9")
+@nox_session(python="3.10")
 def format(session: nox.sessions.Session) -> None:
     session.install("isort", "black", ".")
     session.run("isort", "--recursive", *PACKAGE_FILES)

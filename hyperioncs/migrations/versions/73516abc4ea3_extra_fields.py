@@ -18,7 +18,8 @@ depends_on = None
 def upgrade() -> None:
     op.add_column("account", sa.Column("system_account", sa.Boolean(), nullable=True))
     op.execute("UPDATE account SET system_account = false")
-    op.alter_column("account", "system_account", nullable=True)
+    with op.batch_alter_table("account") as batch_op:
+        batch_op.alter_column("system_account", nullable=True)
     op.add_column("account", sa.Column("display_name", sa.String(), nullable=True))
 
 

@@ -16,6 +16,7 @@ from sqlalchemy.orm import Session, relationship
 import hyperioncs.models.currencies as currencies
 import hyperioncs.models.integrations as integrations
 from hyperioncs.models.base import Base, BaseDBModel
+from hyperioncs.models.utils import default_uuid_str
 
 from .enums import TransactionState
 
@@ -23,22 +24,18 @@ from .enums import TransactionState
 class Transaction(Base, BaseDBModel):
     __tablename__ = "transaction"
 
-    id: uuid.UUID = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: str = Column(String, primary_key=True, default=default_uuid_str)
     amount: int = Column(Integer, nullable=False)
     state: TransactionState = Column(
         Enum(TransactionState), nullable=False, default=TransactionState.PENDING
     )
     state_reason: Optional[str] = Column(String)
     description: Optional[str] = Column(String)
-    source_currency_id: uuid.UUID = Column(
-        UUID(as_uuid=True), ForeignKey("currency.id"), index=True
-    )
+    source_currency_id: str = Column(String, ForeignKey("currency.id"), index=True)
     source_account_id: str = Column(String, index=True)
-    dest_currency_id: uuid.UUID = Column(
-        UUID(as_uuid=True), ForeignKey("currency.id"), index=True
-    )
+    dest_currency_id: str = Column(String, ForeignKey("currency.id"), index=True)
     dest_account_id: str = Column(String, index=True)
-    integration_id: uuid.UUID = Column(UUID(as_uuid=True), ForeignKey("integration.id"))
+    integration_id: str = Column(String, ForeignKey("integration.id"))
 
     source_currency: "currencies.Currency" = relationship(
         "Currency", foreign_keys=[source_currency_id], overlaps="source_account"
@@ -129,8 +126,8 @@ class Transaction(Base, BaseDBModel):
     def get_transaction(
         cls,
         db: Session,
-        currency_id: Union[uuid.UUID, str],
-        transaction_id: Union[uuid.UUID, str],
+        currency_id: str,
+        transaction_id: str,
     ) -> Optional["Transaction"]:
         return (
             db.query(Transaction)
@@ -146,7 +143,7 @@ class Transaction(Base, BaseDBModel):
 
     @classmethod
     def get_transactions_for_currency(
-        cls, db: Session, currency_id: Union[uuid.UUID, str]
+        cls, db: Session, currency_id: str
     ) -> List["Transaction"]:
         return (
             db.query(Transaction)

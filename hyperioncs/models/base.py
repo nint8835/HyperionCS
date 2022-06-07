@@ -1,6 +1,5 @@
-import uuid
 from datetime import datetime
-from typing import Optional, Type, TypeVar, Union
+from typing import Optional, Type, TypeVar
 
 from sqlalchemy import Column, DateTime
 from sqlalchemy.exc import DataError
@@ -28,7 +27,7 @@ class BaseDBModel:
 
     @classmethod
     def get_by_id(
-        cls: Type[ModelType], session: Session, id: Union[uuid.UUID, str]
+        cls: Type[ModelType], session: Session, id: str
     ) -> Optional[ModelType]:
         try:
             return session.query(cls).filter_by(id=id).first()
