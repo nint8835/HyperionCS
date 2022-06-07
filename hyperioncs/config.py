@@ -10,7 +10,9 @@ class Config(BaseSettings):
     jwt_algorithm: str = "HS256"
     discord_client_id: str
     discord_client_secret: str
-    sqlalchemy_connection_url: str = "postgresql://hyperion:hyperion@localhost/hyperion"
+    sqlalchemy_connection_url: str = (
+        "postgresql+pg8000://hyperion:hyperion@localhost/hyperion"
+    )
 
     # Honeycomb config
     use_honeycomb: bool = False
