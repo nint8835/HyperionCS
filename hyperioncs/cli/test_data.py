@@ -17,29 +17,6 @@ TESTING_DISCORD_ID = "106162668032802816"
 
 
 @typer_app.command()
-def wipe_db(
-    migrate: bool = typer.Option(
-        True,
-        help="Apply all database migrations to restore the database to a ready state.",
-    )
-) -> None:
-    """Empty the contents of the development database."""
-    typer.secho("Wiping DB...", fg="yellow")
-
-    session: Session = SessionLocal()
-    session.execute(text("DROP SCHEMA public CASCADE"))
-    session.execute(text("CREATE SCHEMA public"))
-    session.commit()
-
-    if migrate:
-        typer.secho("Upgrading DB...", fg="yellow")
-        alembic_cfg = Config("alembic.ini")
-        command.upgrade(alembic_cfg, "head")
-
-    typer.secho("DB ready!", fg="green")
-
-
-@typer_app.command()
 def dev_data() -> None:
     """Create development data for testing with."""
     typer.secho("Creating dev data...", fg="cyan")
