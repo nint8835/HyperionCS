@@ -44,6 +44,9 @@ def create_transaction(
     ):
         raise HTTPException(404, "Specified destination account does not exist.")
 
+    if transaction.amount <= 0:
+        raise HTTPException(400, "Transaction amount must be greater than zero.")
+
     new_transaction = Transaction(
         source_currency_id=integration.currency_id,
         dest_currency_id=integration.currency_id,
