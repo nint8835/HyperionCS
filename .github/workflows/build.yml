@@ -17,5 +17,5 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: ghcr.io
-          repository: nint8835/hyperion-bot
+          repository: nint8835/hyperioncs
           tags: latest
