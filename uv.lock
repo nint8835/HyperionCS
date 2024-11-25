@@ -53,14 +53,14 @@ wheels = [
 
 [[package]]
 name = "authlib"
-version = "0.15.6"
+version = "1.3.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/50/7f/b217ec080633bba49c09777856a8fb7ebe2124d687cf55fccb03c44ce650/Authlib-0.15.6.tar.gz", hash = "sha256:2988fdf7d0a5c416f5a37ca4b1e7cee360094940229bc97909aed25880326c72", size = 131568 }
+sdist = { url = "https://files.pythonhosted.org/packages/f3/75/47dbab150ef6f9298e227a40c93c7fed5f3ffb67c9fb62cd49f66285e46e/authlib-1.3.2.tar.gz", hash = "sha256:4b16130117f9eb82aa6eec97f6dd4673c3f960ac0283ccdae2897ee4bc030ba2", size = 147313 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1d/7a/3cce82e7cb0550b7e73d4a22fae43584d57618a95b2e6dc43ad60333b9e8/Authlib-0.15.6-py2.py3-none-any.whl", hash = "sha256:6de4508ba8125e438a35bcd910d55df7087dccd3dd8517095c2bd9853c372ec1", size = 203437 },
+    { url = "https://files.pythonhosted.org/packages/df/4c/9aa0416a403d5cc80292cb030bcd2c918cce2755e314d8c1aa18656e1e12/Authlib-1.3.2-py2.py3-none-any.whl", hash = "sha256:ede026a95e9f5cdc2d4364a52103f5405e75aa156357e831ef2bfd0bc5094dfc", size = 225111 },
 ]
 
 [[package]]
@@ -377,7 +377,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "alembic", specifier = "~=1.5.8" },
-    { name = "authlib", specifier = "~=0.15.3" },
+    { name = "authlib", specifier = ">=1.3.2" },
     { name = "fastapi", specifier = ">=0.115.5" },
     { name = "gunicorn", specifier = ">=23.0.0" },
     { name = "httpx", specifier = ">=0.27.2" },
