@@ -1,8 +1,9 @@
-from dotenv import load_dotenv
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Config(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env")
+
     secret_key: str = "top-secret-key"
     jwt_secret_key: str = "really-secret-key"
     jwt_algorithm: str = "HS256"
@@ -11,5 +12,6 @@ class Config(BaseSettings):
     sqlalchemy_connection_url: str = "sqlite:///hyperion.sqlite"
 
 
-load_dotenv()
-config = Config()
+config = Config()  # type: ignore - Pyright doesn't know about pydantic_settings
+
+__all__ = ["config"]

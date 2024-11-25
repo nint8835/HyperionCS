@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class CreateAccountSchema(BaseModel):
@@ -12,6 +12,8 @@ class CreateAccountSchema(BaseModel):
 
 
 class AccountSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     currency_id: UUID
     balance: int
@@ -19,7 +21,4 @@ class AccountSchema(BaseModel):
     date_created: datetime
     date_modified: datetime
     system_account: bool
-    display_name: Optional[str]
-
-    class Config:
-        orm_mode = True
+    display_name: Optional[str] = None

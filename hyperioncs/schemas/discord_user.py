@@ -6,7 +6,7 @@ from pydantic import BaseModel
 class DiscordUser(BaseModel):
     id: str
     username: str
-    avatar: Optional[str]
+    avatar: Optional[str] = None
     discriminator: str
     public_flags: int
     flags: int

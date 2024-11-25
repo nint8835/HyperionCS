@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from hyperioncs.models.currencies.transactions import TransactionState
 
@@ -19,11 +19,13 @@ class CancelTransactionSchema(BaseModel):
 
 
 class TransactionSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     amount: int
     state: TransactionState
-    state_reason: Optional[str]
-    description: Optional[str]
+    state_reason: Optional[str] = None
+    description: Optional[str] = None
     source_currency_id: UUID
     source_account_id: str
     dest_currency_id: UUID
@@ -31,6 +33,3 @@ class TransactionSchema(BaseModel):
     integration_id: UUID
     date_created: datetime
     date_modified: datetime
-
-    class Config:
-        orm_mode = True
