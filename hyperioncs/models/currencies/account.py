@@ -1,5 +1,4 @@
-import uuid
-from typing import List, Optional, Type, Union, cast
+from typing import List, Optional, Type, cast
 
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, func, select
 from sqlalchemy.orm import Session, column_property, relationship

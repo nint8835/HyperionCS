@@ -1,5 +1,4 @@
-import uuid
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional
 
 from sqlalchemy import (
     Column,
@@ -10,7 +9,6 @@ from sqlalchemy import (
     String,
     or_,
 )
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session, relationship
 
 import hyperioncs.models.currencies as currencies

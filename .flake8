@@ -1,4 +1,0 @@
-[flake8]
-import-order-style=edited
-max-line-length=88
-ignore=F401, F403, W503, E501

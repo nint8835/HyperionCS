@@ -1,8 +1,5 @@
 import jwt
 import typer
-from alembic import command
-from alembic.config import Config
-from sqlalchemy import text
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session
 

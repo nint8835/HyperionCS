@@ -1,5 +1,3 @@
-import uuid
-
 from sqlalchemy import Column, String
 
 from hyperioncs.models.base import Base, BaseDBModel

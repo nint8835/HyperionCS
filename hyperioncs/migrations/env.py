@@ -2,7 +2,7 @@ from logging.config import fileConfig
 
 from sqlalchemy import create_engine
 
-import hyperioncs.models._all_models
+import hyperioncs.models._all_models  # noqa: I001, F401
 from hyperioncs.config import config as hyperion_config
 from hyperioncs.database import Base
 
