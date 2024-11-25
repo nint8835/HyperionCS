@@ -1,7 +1,7 @@
 from typing import List, Optional, Type, cast
 
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, func, select
-from sqlalchemy.orm import Session, column_property, relationship
+from sqlalchemy import ForeignKey, func, select
+from sqlalchemy.orm import Mapped, Session, column_property, mapped_column, relationship
 from sqlalchemy.sql.functions import coalesce
 
 import hyperioncs.models.currencies as currencies
@@ -12,11 +12,13 @@ from hyperioncs.models.base import Base, BaseDBModel
 class Account(Base, BaseDBModel):
     __tablename__ = "account"
 
-    currency_id: str = Column(String, ForeignKey("currency.id"), primary_key=True)
-    id: str = Column(String, primary_key=True)
-    balance: int = Column(Integer, nullable=False, default=0)
-    system_account: bool = Column(Boolean, default=False, nullable=False)
-    display_name: Optional[str] = Column(String)
+    currency_id: Mapped[str] = mapped_column(
+        ForeignKey("currency.id"), primary_key=True
+    )
+    id: Mapped[str] = mapped_column(primary_key=True)
+    balance: Mapped[int] = mapped_column(default=0)
+    system_account: Mapped[bool] = mapped_column(default=False, nullable=False)
+    display_name: Mapped[Optional[str]]
     effective_balance = cast(
         int,
         column_property(
@@ -44,7 +46,7 @@ class Account(Base, BaseDBModel):
         ),
     )
 
-    currency: "currencies.Currency" = relationship("Currency")
+    currency: Mapped["currencies.Currency"] = relationship()
 
     @classmethod
     def get_accounts_for_currency(

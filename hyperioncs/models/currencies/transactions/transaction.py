@@ -1,15 +1,11 @@
 from typing import Any, List, Optional
 
 from sqlalchemy import (
-    Column,
-    Enum,
     ForeignKey,
     ForeignKeyConstraint,
-    Integer,
-    String,
     or_,
 )
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
 
 import hyperioncs.models.currencies as currencies
 import hyperioncs.models.integrations as integrations
@@ -22,36 +18,36 @@ from .enums import TransactionState
 class Transaction(Base, BaseDBModel):
     __tablename__ = "transaction"
 
-    id: str = Column(String, primary_key=True, default=default_uuid_str)
-    amount: int = Column(Integer, nullable=False)
-    state: TransactionState = Column(
-        Enum(TransactionState), nullable=False, default=TransactionState.PENDING
+    id: Mapped[str] = mapped_column(primary_key=True, default=default_uuid_str)
+    amount: Mapped[int]
+    state: Mapped[TransactionState] = mapped_column(default=TransactionState.PENDING)
+    state_reason: Mapped[Optional[str]]
+    description: Mapped[Optional[str]]
+    source_currency_id: Mapped[str] = mapped_column(
+        ForeignKey("currency.id"), index=True
     )
-    state_reason: Optional[str] = Column(String)
-    description: Optional[str] = Column(String)
-    source_currency_id: str = Column(String, ForeignKey("currency.id"), index=True)
-    source_account_id: str = Column(String, index=True)
-    dest_currency_id: str = Column(String, ForeignKey("currency.id"), index=True)
-    dest_account_id: str = Column(String, index=True)
-    integration_id: str = Column(String, ForeignKey("integration.id"))
+    source_account_id: Mapped[str] = mapped_column(index=True)
+    dest_currency_id: Mapped[str] = mapped_column(ForeignKey("currency.id"), index=True)
+    dest_account_id: Mapped[str] = mapped_column(index=True)
+    integration_id: Mapped[str] = mapped_column(ForeignKey("integration.id"))
 
-    source_currency: "currencies.Currency" = relationship(
-        "Currency", foreign_keys=[source_currency_id], overlaps="source_account"
+    source_currency: Mapped["currencies.Currency"] = relationship(
+        foreign_keys=[source_currency_id], overlaps="source_account"
     )
-    source_account: "currencies.Account" = relationship(
+    source_account: Mapped["currencies.Account"] = relationship(
         "Account",
         foreign_keys=[source_currency_id, source_account_id],
         overlaps="source_currency",
     )
-    dest_currency: "currencies.Currency" = relationship(
-        "Currency", foreign_keys=[dest_currency_id], overlaps="dest_account"
+    dest_currency: Mapped["currencies.Currency"] = relationship(
+        foreign_keys=[dest_currency_id], overlaps="dest_account"
     )
-    dest_account: "currencies.Account" = relationship(
+    dest_account: Mapped["currencies.Account"] = relationship(
         "Account",
         foreign_keys=[dest_currency_id, dest_account_id],
         overlaps="dest_currency",
     )
-    integration: "integrations.Integration" = relationship("Integration")
+    integration: Mapped["integrations.Integration"] = relationship()
 
     __table_args__: Any = (
         ForeignKeyConstraint(

@@ -3,14 +3,13 @@ from typing import Optional, Type, TypeVar
 
 from sqlalchemy import Column, DateTime
 from sqlalchemy.exc import DataError
-from sqlalchemy.orm import Mapped, Session, declarative_mixin, declared_attr
+from sqlalchemy.orm import Mapped, Session, declared_attr
 
 from hyperioncs.database import Base
 
 ModelType = TypeVar("ModelType", bound="BaseDBModel")
 
 
-@declarative_mixin
 class BaseDBModel:
     """Generic model providing base functionality used by all models.
 

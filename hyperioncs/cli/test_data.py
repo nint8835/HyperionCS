@@ -4,7 +4,7 @@ from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session
 
 from hyperioncs.config import config
-from hyperioncs.database import SessionLocal
+from hyperioncs.database import Base, SessionLocal
 from hyperioncs.models.currencies import Account, Currency
 from hyperioncs.models.integrations import Integration, IntegrationConnection
 
@@ -57,16 +57,22 @@ def dev_data() -> None:
 
     typer.secho("Dev data created!", fg="green")
 
-    for resource_name, resource in [
+    log_resources: list[tuple[str, Base]] = [
         ("Currency", test_currency),
         ("Integration", test_integration),
         ("IntegrationConnection", test_integration_connection),
         ("Account", test_account_1),
         ("Account", test_account_2),
-    ]:
+    ]
+
+    for resource_name, resource in log_resources:
+        identity = inspect(resource).identity
+        if identity is None:
+            continue
+
         typer.echo(
             typer.style(f"{resource_name}: ", fg="green")
-            + typer.style(", ".join(map(str, inspect(resource).identity)), fg="yellow")
+            + typer.style(", ".join(map(str, identity)), fg="yellow")
         )
         if isinstance(resource, IntegrationConnection):
             typer.echo(
