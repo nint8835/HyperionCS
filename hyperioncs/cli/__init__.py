@@ -1,7 +1,6 @@
 from .app import typer_app
-
-from .test_data import *  # isort: skip
-from .shell import *  # isort: skip
-from .create import *  # isort: skip
+from .create import *  # noqa: F403
+from .shell import *  # noqa: F403
+from .test_data import *  # noqa: F403
 
 __all__ = ["typer_app"]
