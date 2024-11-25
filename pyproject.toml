@@ -5,14 +5,12 @@ description = "SaaS platform for building Discord pseudocurrencies"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "aiofiles~=0.6.0",
     "alembic~=1.5.8",
     "authlib~=0.15.3",
     "fastapi~=0.78.0",
     "gunicorn>=23.0.0",
     "httpx~=0.18.1",
-    "itsdangerous~=1.1.0",
-    "jinja2~=3.1.2",
+    "itsdangerous>=2.2.0",
     "pydantic~=1.8.1",
     "pyjwt[crypto]~=2.1.0",
     "python-dotenv~=0.17.1",
