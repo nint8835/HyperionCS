@@ -22,7 +22,11 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["ipython~=7.23.1", "mypy~=0.961", "ruff>=0.8.0", "typer~=0.3.2"]
+dev = [
+    "ipython~=7.23.1",
+    "ruff>=0.8.0",
+    "typer~=0.3.2",
+]
 
 [tool.ruff.lint]
 extend-select = ["I"]

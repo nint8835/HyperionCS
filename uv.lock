@@ -387,7 +387,6 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "ipython" },
-    { name = "mypy" },
     { name = "ruff" },
     { name = "typer" },
 ]
@@ -413,7 +412,6 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "ipython", specifier = "~=7.23.1" },
-    { name = "mypy", specifier = "~=0.961" },
     { name = "ruff", specifier = ">=0.8.0" },
     { name = "typer", specifier = "~=0.3.2" },
 ]
