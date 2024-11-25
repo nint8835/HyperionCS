@@ -17,7 +17,7 @@ class Account(Base, BaseDBModel):
     )
     id: Mapped[str] = mapped_column(primary_key=True)
     balance: Mapped[int] = mapped_column(default=0)
-    system_account: Mapped[bool] = mapped_column(default=False, nullable=False)
+    system_account: Mapped[Optional[bool]] = mapped_column(default=False)
     display_name: Mapped[Optional[str]]
     effective_balance = cast(
         int,

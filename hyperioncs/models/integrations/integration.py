@@ -15,4 +15,4 @@ class Integration(Base, BaseDBModel):
     official: Mapped[bool] = mapped_column(default=False)
     public: Mapped[bool] = mapped_column(default=False)
     link: Mapped[Optional[str]]
-    owner_id: Mapped[str] = mapped_column(index=True)
+    owner_id: Mapped[Optional[str]] = mapped_column(index=True)

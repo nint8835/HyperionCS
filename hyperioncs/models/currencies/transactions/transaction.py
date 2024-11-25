@@ -23,13 +23,15 @@ class Transaction(Base, BaseDBModel):
     state: Mapped[TransactionState] = mapped_column(default=TransactionState.PENDING)
     state_reason: Mapped[Optional[str]]
     description: Mapped[Optional[str]]
-    source_currency_id: Mapped[str] = mapped_column(
+    source_currency_id: Mapped[Optional[str]] = mapped_column(
         ForeignKey("currency.id"), index=True
     )
-    source_account_id: Mapped[str] = mapped_column(index=True)
-    dest_currency_id: Mapped[str] = mapped_column(ForeignKey("currency.id"), index=True)
-    dest_account_id: Mapped[str] = mapped_column(index=True)
-    integration_id: Mapped[str] = mapped_column(ForeignKey("integration.id"))
+    source_account_id: Mapped[Optional[str]] = mapped_column(index=True)
+    dest_currency_id: Mapped[Optional[str]] = mapped_column(
+        ForeignKey("currency.id"), index=True
+    )
+    dest_account_id: Mapped[Optional[str]] = mapped_column(index=True)
+    integration_id: Mapped[Optional[str]] = mapped_column(ForeignKey("integration.id"))
 
     source_currency: Mapped["currencies.Currency"] = relationship(
         foreign_keys=[source_currency_id], overlaps="source_account"
