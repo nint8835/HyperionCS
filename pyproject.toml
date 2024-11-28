@@ -15,11 +15,12 @@ dependencies = [
     "pyjwt[crypto]>=2.10.0",
     "sqlalchemy>=2.0.36",
     "starlette[full]>=0.41.3",
+    "typer>=0.13.1",
     "uvicorn[standard]>=0.32.1",
 ]
 
 [dependency-groups]
-dev = ["ipython>=8.29.0", "ruff>=0.8.0", "typer>=0.13.1"]
+dev = ["ipython>=8.29.0", "ruff>=0.8.0"]
 
 [tool.ruff.lint]
 extend-select = ["I"]

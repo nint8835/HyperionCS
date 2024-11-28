@@ -363,6 +363,7 @@ dependencies = [
     { name = "pyjwt", extra = ["crypto"] },
     { name = "sqlalchemy" },
     { name = "starlette", extra = ["full"] },
+    { name = "typer" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
@@ -370,7 +371,6 @@ dependencies = [
 dev = [
     { name = "ipython" },
     { name = "ruff" },
-    { name = "typer" },
 ]
 
 [package.metadata]
@@ -385,6 +385,7 @@ requires-dist = [
     { name = "pyjwt", extras = ["crypto"], specifier = ">=2.10.0" },
     { name = "sqlalchemy", specifier = ">=2.0.36" },
     { name = "starlette", extras = ["full"], specifier = ">=0.41.3" },
+    { name = "typer", specifier = ">=0.13.1" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.32.1" },
 ]
 
@@ -392,7 +393,6 @@ requires-dist = [
 dev = [
     { name = "ipython", specifier = ">=8.29.0" },
     { name = "ruff", specifier = ">=0.8.0" },
-    { name = "typer", specifier = ">=0.13.1" },
 ]
 
 [[package]]
