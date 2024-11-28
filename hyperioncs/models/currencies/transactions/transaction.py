@@ -1,9 +1,10 @@
-from typing import Any, List, Optional
+from typing import Any, Optional, Sequence
 
 from sqlalchemy import (
     ForeignKey,
     ForeignKeyConstraint,
     or_,
+    select,
 )
 from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
 
@@ -66,19 +67,17 @@ class Transaction(Base, BaseDBModel):
     def execute(self, db: Session) -> None:
         # TODO: Maybe add a check to ensure the transaction is pending here?
 
-        src_account: Optional["currencies.Account"] = (
-            db.query(currencies.Account)
+        src_account = db.execute(
+            select(currencies.Account)
             .with_for_update()
             .filter_by(id=self.source_account_id, currency_id=self.source_currency_id)
-            .first()
-        )
+        ).scalar()
 
-        dest_account = (
-            db.query(currencies.Account)
+        dest_account = db.execute(
+            select(currencies.Account)
             .with_for_update()
             .filter_by(id=self.dest_account_id, currency_id=self.dest_currency_id)
-            .first()
-        )
+        ).scalar()
 
         if src_account is None:
             self.state = TransactionState.FAILED
@@ -125,8 +124,8 @@ class Transaction(Base, BaseDBModel):
         currency_id: str,
         transaction_id: str,
     ) -> Optional["Transaction"]:
-        return (
-            db.query(Transaction)
+        return db.execute(
+            select(Transaction)
             .filter(
                 or_(
                     Transaction.source_currency_id == currency_id,
@@ -134,20 +133,21 @@ class Transaction(Base, BaseDBModel):
                 )
             )
             .filter_by(id=transaction_id)
-            .first()
-        )
+        ).scalar()
 
     @classmethod
     def get_transactions_for_currency(
         cls, db: Session, currency_id: str
-    ) -> List["Transaction"]:
+    ) -> Sequence["Transaction"]:
         return (
-            db.query(Transaction)
-            .filter(
-                or_(
-                    Transaction.source_currency_id == currency_id,
-                    Transaction.dest_currency_id == currency_id,
+            db.execute(
+                select(Transaction).filter(
+                    or_(
+                        Transaction.source_currency_id == currency_id,
+                        Transaction.dest_currency_id == currency_id,
+                    )
                 )
             )
+            .scalars()
             .all()
         )

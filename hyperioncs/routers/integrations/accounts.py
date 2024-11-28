@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Sequence
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -15,7 +15,7 @@ accounts_router = APIRouter(tags=["Accounts"])
 def get_all_accounts(
     integration: IntegrationConnection = Depends(get_integration),
     db: Session = Depends(get_db),
-) -> List[Account]:
+) -> Sequence[Account]:
     """Get details of all accounts for the current currency."""
     return Account.get_accounts_for_currency(db, integration.currency_id)
 
