@@ -10,5 +10,5 @@ from . import typer_app
 def shell() -> None:
     """Open an interactive Python shell for testing."""
 
-    db: Session = SessionLocal()  # noqa
-    IPython.embed()
+    db: Session = SessionLocal()  # type: ignore # noqa
+    IPython.embed()  # type: ignore

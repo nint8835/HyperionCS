@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 import jwt
@@ -83,6 +83,6 @@ def get_integration(
     if not integration_connection:
         raise HTTPException(status_code=403, detail="Invalid token.")
 
-    integration_connection.last_used = datetime.utcnow()
+    integration_connection.last_used = datetime.now(timezone.utc)
     db.commit()
     return integration_connection

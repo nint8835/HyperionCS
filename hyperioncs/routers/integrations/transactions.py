@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Sequence
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -20,7 +20,7 @@ transaction_router = APIRouter(tags=["Transactions"])
 def get_all_transactions(
     integration: IntegrationConnection = Depends(get_integration),
     db: Session = Depends(get_db),
-) -> List[Transaction]:
+) -> Sequence[Transaction]:
     """Get details of all transactions for the current currency."""
     return Transaction.get_transactions_for_currency(db, integration.currency_id)
 

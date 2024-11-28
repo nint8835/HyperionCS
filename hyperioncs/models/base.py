@@ -1,9 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Type, TypeVar
 
-from sqlalchemy import Column, DateTime
+from sqlalchemy import select
 from sqlalchemy.exc import DataError
-from sqlalchemy.orm import Mapped, Session, declared_attr
+from sqlalchemy.orm import Mapped, Session, mapped_column
 
 from hyperioncs.database import Base
 
@@ -16,25 +16,25 @@ class BaseDBModel:
     Must be inherited from in addition to Base.
     """
 
-    @declared_attr
-    def date_created(cls) -> Mapped[datetime]:
-        return Column(DateTime, nullable=False, default=datetime.utcnow)
-
-    @declared_attr
-    def date_modified(cls) -> Mapped[datetime]:
-        return Column(DateTime, nullable=False, default=datetime.utcnow)
+    date_created: Mapped[datetime] = mapped_column(
+        default=lambda: datetime.now(timezone.utc)
+    )
+    date_modified: Mapped[datetime] = mapped_column(
+        default=lambda: datetime.now(timezone.utc)
+    )
 
     @classmethod
     def get_by_id(
         cls: Type[ModelType], session: Session, id: str
     ) -> Optional[ModelType]:
         try:
-            return session.query(cls).filter_by(id=id).first()
+            return session.execute(select(cls).filter_by(id=id)).scalar()
+        # TODO: Why am I doing this?
         except DataError:
             return None
 
     def set_modified(self) -> None:
-        self.date_modified = datetime.utcnow()
+        self.date_modified = datetime.now(timezone.utc)
 
 
 __all__ = ["Base", "BaseDBModel"]
