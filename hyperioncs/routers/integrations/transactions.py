@@ -48,8 +48,7 @@ def create_transaction(
         raise HTTPException(400, "Transaction amount must be greater than zero.")
 
     new_transaction = Transaction(
-        source_currency_id=integration.currency_id,
-        dest_currency_id=integration.currency_id,
+        currency_id=integration.currency_id,
         source_account_id=transaction.source_account_id,
         dest_account_id=transaction.dest_account_id,
         amount=transaction.amount,

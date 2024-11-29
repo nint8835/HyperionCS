@@ -3,7 +3,6 @@ from typing import Any, Optional, Sequence
 from sqlalchemy import (
     ForeignKey,
     ForeignKeyConstraint,
-    or_,
     select,
 )
 from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
@@ -24,41 +23,33 @@ class Transaction(Base, BaseDBModel):
     state: Mapped[TransactionState] = mapped_column(default=TransactionState.PENDING)
     state_reason: Mapped[Optional[str]]
     description: Mapped[Optional[str]]
-    source_currency_id: Mapped[Optional[str]] = mapped_column(
-        ForeignKey("currency.id"), index=True
-    )
+    currency_id: Mapped[str] = mapped_column(ForeignKey("currency.id"), index=True)
     source_account_id: Mapped[Optional[str]] = mapped_column(index=True)
-    dest_currency_id: Mapped[Optional[str]] = mapped_column(
-        ForeignKey("currency.id"), index=True
-    )
     dest_account_id: Mapped[Optional[str]] = mapped_column(index=True)
     integration_id: Mapped[Optional[str]] = mapped_column(ForeignKey("integration.id"))
 
-    source_currency: Mapped["currencies.Currency"] = relationship(
-        foreign_keys=[source_currency_id], overlaps="source_account"
+    currency: Mapped["currencies.Currency"] = relationship(
+        "Currency", overlaps="source_account, dest_account"
     )
     source_account: Mapped["currencies.Account"] = relationship(
         "Account",
-        foreign_keys=[source_currency_id, source_account_id],
-        overlaps="source_currency",
-    )
-    dest_currency: Mapped["currencies.Currency"] = relationship(
-        foreign_keys=[dest_currency_id], overlaps="dest_account"
+        foreign_keys=[currency_id, source_account_id],
+        overlaps="currency, dest_account",
     )
     dest_account: Mapped["currencies.Account"] = relationship(
         "Account",
-        foreign_keys=[dest_currency_id, dest_account_id],
-        overlaps="dest_currency",
+        foreign_keys=[currency_id, dest_account_id],
+        overlaps="currency, source_account",
     )
     integration: Mapped["integrations.Integration"] = relationship()
 
     __table_args__: Any = (
         ForeignKeyConstraint(
-            ["source_currency_id", "source_account_id"],
+            ["currency_id", "source_account_id"],
             ["account.currency_id", "account.id"],
         ),
         ForeignKeyConstraint(
-            ["dest_currency_id", "dest_account_id"],
+            ["currency_id", "dest_account_id"],
             ["account.currency_id", "account.id"],
         ),
         {},
@@ -70,13 +61,13 @@ class Transaction(Base, BaseDBModel):
         src_account = db.execute(
             select(currencies.Account)
             .with_for_update()
-            .filter_by(id=self.source_account_id, currency_id=self.source_currency_id)
+            .filter_by(id=self.source_account_id, currency_id=self.currency_id)
         ).scalar()
 
         dest_account = db.execute(
             select(currencies.Account)
             .with_for_update()
-            .filter_by(id=self.dest_account_id, currency_id=self.dest_currency_id)
+            .filter_by(id=self.dest_account_id, currency_id=self.currency_id)
         ).scalar()
 
         if src_account is None:
@@ -125,14 +116,7 @@ class Transaction(Base, BaseDBModel):
         transaction_id: str,
     ) -> Optional["Transaction"]:
         return db.execute(
-            select(Transaction)
-            .filter(
-                or_(
-                    Transaction.source_currency_id == currency_id,
-                    Transaction.dest_currency_id == currency_id,
-                )
-            )
-            .filter_by(id=transaction_id)
+            select(Transaction).filter_by(id=transaction_id, currency_id=currency_id)
         ).scalar()
 
     @classmethod
@@ -140,14 +124,7 @@ class Transaction(Base, BaseDBModel):
         cls, db: Session, currency_id: str
     ) -> Sequence["Transaction"]:
         return (
-            db.execute(
-                select(Transaction).filter(
-                    or_(
-                        Transaction.source_currency_id == currency_id,
-                        Transaction.dest_currency_id == currency_id,
-                    )
-                )
-            )
+            db.execute(select(Transaction).filter_by(currency_id=currency_id))
             .scalars()
             .all()
         )

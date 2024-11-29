@@ -30,7 +30,7 @@ class Account(Base, BaseDBModel):
                     == transactions.TransactionState.PENDING
                 )
                 .where(transactions.Transaction.dest_account_id == id)
-                .where(transactions.Transaction.dest_currency_id == currency_id)
+                .where(transactions.Transaction.currency_id == currency_id)
                 .scalar_subquery()
             )
             - (
@@ -40,7 +40,7 @@ class Account(Base, BaseDBModel):
                     == transactions.TransactionState.PENDING
                 )
                 .where(transactions.Transaction.source_account_id == id)
-                .where(transactions.Transaction.source_currency_id == currency_id)
+                .where(transactions.Transaction.currency_id == currency_id)
                 .scalar_subquery()
             )
         ),

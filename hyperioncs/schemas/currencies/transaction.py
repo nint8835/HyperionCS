@@ -26,9 +26,8 @@ class TransactionSchema(BaseModel):
     state: TransactionState
     state_reason: Optional[str] = None
     description: Optional[str] = None
-    source_currency_id: UUID
+    currency_id: UUID
     source_account_id: str
-    dest_currency_id: UUID
     dest_account_id: str
     integration_id: UUID
     date_created: datetime
