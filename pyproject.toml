@@ -3,24 +3,24 @@ name = "hyperioncs"
 version = "0.1.0"
 description = "SaaS platform for building Discord pseudocurrencies"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.13"
 dependencies = [
-    "alembic>=1.14.0",
-    "authlib>=1.3.2",
-    "fastapi>=0.115.5",
+    "alembic>=1.15.2",
+    "authlib>=1.5.2",
+    "fastapi>=0.115.12",
     "gunicorn>=23.0.0",
-    "httpx>=0.27.2",
-    "pydantic-settings>=2.6.1",
-    "pydantic>=2.10.1",
-    "pyjwt[crypto]>=2.10.0",
-    "sqlalchemy>=2.0.36",
-    "starlette[full]>=0.41.3",
-    "typer>=0.13.1",
-    "uvicorn[standard]>=0.32.1",
+    "httpx>=0.28.1",
+    "pydantic-settings>=2.9.1",
+    "pydantic>=2.11.4",
+    "pyjwt[crypto]>=2.10.1",
+    "sqlalchemy>=2.0.41",
+    "starlette[full]>=0.46.2",
+    "typer>=0.15.4",
+    "uvicorn[standard]>=0.34.2",
 ]
 
 [dependency-groups]
-dev = ["ipython>=8.29.0", "ruff>=0.8.0"]
+dev = ["ipython>=9.2.0", "ruff>=0.11.10"]
 
 [tool.ruff.lint]
 extend-select = ["I"]
