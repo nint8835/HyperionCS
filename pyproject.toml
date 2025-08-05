@@ -1,0 +1,20 @@
+[project]
+name = "hyperioncs"
+version = "0.1.0"
+description = "SaaS platform for building Discord pseudocurrencies."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.116.1",
+    "pydantic>=2.11.7",
+    "pydantic-settings>=2.10.1",
+    "starlette[full]>=0.47.2",
+    "typer>=0.16.0",
+    "uvicorn>=0.35.0",
+]
+
+[dependency-groups]
+dev = ["ruff>=0.12.7"]
+
+[tool.ruff.lint]
+select = ["I"]
