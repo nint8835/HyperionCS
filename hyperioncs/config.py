@@ -24,5 +24,3 @@ class Config(BaseSettings):
 
 
 config = Config()
-
-__all__ = ["config"]

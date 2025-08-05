@@ -1,3 +1,4 @@
+import alembic.config
 import typer
 import uvicorn
 
@@ -19,4 +20,7 @@ def start() -> None:
     )
 
 
-__all__ = ["app"]
+@app.command()
+def upgrade() -> None:
+    """Perform database migrations."""
+    alembic.config.main(argv=["--raiseerr", "upgrade", "head"])

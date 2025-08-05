@@ -5,9 +5,12 @@ description = "SaaS platform for building Discord pseudocurrencies."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "aiosqlite>=0.21.0",
+    "alembic>=1.16.4",
     "fastapi>=0.116.1",
     "pydantic>=2.11.7",
     "pydantic-settings>=2.10.1",
+    "sqlalchemy[asyncio]>=2.0.42",
     "starlette[full]>=0.47.2",
     "typer>=0.16.0",
     "uvicorn>=0.35.0",
