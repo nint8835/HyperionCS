@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CurrenciesCreateRouteImport } from './routes/currencies/create'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CurrenciesCreateRoute = CurrenciesCreateRouteImport.update({
+  id: '/currencies/create',
+  path: '/currencies/create',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthLogoutRoute = AuthLogoutRouteImport.update({
@@ -33,30 +39,34 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
+  '/currencies/create': typeof CurrenciesCreateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
+  '/currencies/create': typeof CurrenciesCreateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
+  '/currencies/create': typeof CurrenciesCreateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth/login' | '/auth/logout'
+  fullPaths: '/' | '/auth/login' | '/auth/logout' | '/currencies/create'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth/login' | '/auth/logout'
-  id: '__root__' | '/' | '/auth/login' | '/auth/logout'
+  to: '/' | '/auth/login' | '/auth/logout' | '/currencies/create'
+  id: '__root__' | '/' | '/auth/login' | '/auth/logout' | '/currencies/create'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthLogoutRoute: typeof AuthLogoutRoute
+  CurrenciesCreateRoute: typeof CurrenciesCreateRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/currencies/create': {
+      id: '/currencies/create'
+      path: '/currencies/create'
+      fullPath: '/currencies/create'
+      preLoaderRoute: typeof CurrenciesCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/logout': {
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthLogoutRoute: AuthLogoutRoute,
+  CurrenciesCreateRoute: CurrenciesCreateRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
