@@ -19,4 +19,21 @@ export default defineConfig({
       });
     },
   },
+  integrationsV1: {
+    from: {
+      source: 'url',
+      url: 'http://localhost:8000/api/v1/openapi.json',
+    },
+    outputDir: 'frontend/src/queries/integrations/v1',
+    to: async (context) => {
+      const filenamePrefix = 'integrationsV1';
+      const { schemasFiles } = await generateSchemaTypes(context, {
+        filenamePrefix,
+      });
+      await generateReactQueryComponents(context, {
+        filenamePrefix,
+        schemasFiles,
+      });
+    },
+  },
 });

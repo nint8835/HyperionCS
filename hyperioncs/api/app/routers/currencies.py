@@ -4,11 +4,12 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from hyperioncs.api.app.schemas import ErrorResponseSchema
-from hyperioncs.api.app.schemas.currencies import CreateCurrencySchema, CurrencySchema
+from hyperioncs.api.app.schemas.currencies import CreateCurrencySchema
 from hyperioncs.db.models.currency import Currency
 from hyperioncs.db.models.permission import Permission, PermissionRole
 from hyperioncs.dependencies.auth import require_session_user
 from hyperioncs.dependencies.database import get_db
+from hyperioncs.schemas.currencies import CurrencySchema
 from hyperioncs.schemas.user import SessionUser
 
 currencies_router = APIRouter(tags=["Currencies"])
