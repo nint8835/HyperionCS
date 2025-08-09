@@ -3,9 +3,6 @@
  *
  * @version 0.1.0
  */
-export type PlaceholderSchema = {
-  /**
-   * @default This is a placeholder endpoint to ensure OpenAPI code generation works correctly.
-   */
-  message?: string;
+export type DiscordUser = {
+  id: string;
 };

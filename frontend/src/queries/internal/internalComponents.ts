@@ -15,74 +15,86 @@ type QueryFnOptions = {
   signal?: AbortController['signal'];
 };
 
-export type PlaceholderEndpointError = Fetcher.ErrorWrapper<undefined>;
+export type GetCurrentUserError = Fetcher.ErrorWrapper<undefined>;
 
-export type PlaceholderEndpointVariables = InternalContext['fetcherOptions'];
+export type GetCurrentUserVariables = InternalContext['fetcherOptions'];
 
-export const fetchPlaceholderEndpoint = (variables: PlaceholderEndpointVariables, signal?: AbortSignal) =>
-  internalFetch<Schemas.PlaceholderSchema, PlaceholderEndpointError, undefined, {}, {}, {}>({
-    url: '/placeholder',
+/**
+ * Retrieve the details of the current user.
+ */
+export const fetchGetCurrentUser = (variables: GetCurrentUserVariables, signal?: AbortSignal) =>
+  internalFetch<Schemas.DiscordUser | null, GetCurrentUserError, undefined, {}, {}, {}>({
+    url: '/auth/me',
     method: 'get',
     ...variables,
     signal,
   });
 
-export function placeholderEndpointQuery(variables: PlaceholderEndpointVariables): {
+/**
+ * Retrieve the details of the current user.
+ */
+export function getCurrentUserQuery(variables: GetCurrentUserVariables): {
   queryKey: reactQuery.QueryKey;
-  queryFn: (options: QueryFnOptions) => Promise<Schemas.PlaceholderSchema>;
+  queryFn: (options: QueryFnOptions) => Promise<Schemas.DiscordUser | null>;
 };
 
-export function placeholderEndpointQuery(variables: PlaceholderEndpointVariables | reactQuery.SkipToken): {
+export function getCurrentUserQuery(variables: GetCurrentUserVariables | reactQuery.SkipToken): {
   queryKey: reactQuery.QueryKey;
-  queryFn: ((options: QueryFnOptions) => Promise<Schemas.PlaceholderSchema>) | reactQuery.SkipToken;
+  queryFn: ((options: QueryFnOptions) => Promise<Schemas.DiscordUser | null>) | reactQuery.SkipToken;
 };
 
-export function placeholderEndpointQuery(variables: PlaceholderEndpointVariables | reactQuery.SkipToken) {
+export function getCurrentUserQuery(variables: GetCurrentUserVariables | reactQuery.SkipToken) {
   return {
     queryKey: queryKeyFn({
-      path: '/placeholder',
-      operationId: 'placeholderEndpoint',
+      path: '/auth/me',
+      operationId: 'getCurrentUser',
       variables,
     }),
     queryFn:
       variables === reactQuery.skipToken
         ? reactQuery.skipToken
-        : ({ signal }: QueryFnOptions) => fetchPlaceholderEndpoint(variables, signal),
+        : ({ signal }: QueryFnOptions) => fetchGetCurrentUser(variables, signal),
   };
 }
 
-export const useSuspensePlaceholderEndpoint = <TData = Schemas.PlaceholderSchema>(
-  variables: PlaceholderEndpointVariables,
+/**
+ * Retrieve the details of the current user.
+ */
+export const useSuspenseGetCurrentUser = <TData = Schemas.DiscordUser | null>(
+  variables: GetCurrentUserVariables,
   options?: Omit<
-    reactQuery.UseQueryOptions<Schemas.PlaceholderSchema, PlaceholderEndpointError, TData>,
+    reactQuery.UseQueryOptions<Schemas.DiscordUser | null, GetCurrentUserError, TData>,
     'queryKey' | 'queryFn' | 'initialData'
   >,
 ) => {
   const { queryOptions, fetcherOptions } = useInternalContext(options);
-  return reactQuery.useSuspenseQuery<Schemas.PlaceholderSchema, PlaceholderEndpointError, TData>({
-    ...placeholderEndpointQuery(deepMerge(fetcherOptions, variables)),
+  return reactQuery.useSuspenseQuery<Schemas.DiscordUser | null, GetCurrentUserError, TData>({
+    ...getCurrentUserQuery(deepMerge(fetcherOptions, variables)),
     ...options,
     ...queryOptions,
   });
 };
 
-export const usePlaceholderEndpoint = <TData = Schemas.PlaceholderSchema>(
-  variables: PlaceholderEndpointVariables | reactQuery.SkipToken,
+/**
+ * Retrieve the details of the current user.
+ */
+export const useGetCurrentUser = <TData = Schemas.DiscordUser | null>(
+  variables: GetCurrentUserVariables | reactQuery.SkipToken,
   options?: Omit<
-    reactQuery.UseQueryOptions<Schemas.PlaceholderSchema, PlaceholderEndpointError, TData>,
+    reactQuery.UseQueryOptions<Schemas.DiscordUser | null, GetCurrentUserError, TData>,
     'queryKey' | 'queryFn' | 'initialData'
   >,
 ) => {
   const { queryOptions, fetcherOptions } = useInternalContext(options);
-  return reactQuery.useQuery<Schemas.PlaceholderSchema, PlaceholderEndpointError, TData>({
-    ...placeholderEndpointQuery(variables === reactQuery.skipToken ? variables : deepMerge(fetcherOptions, variables)),
+  return reactQuery.useQuery<Schemas.DiscordUser | null, GetCurrentUserError, TData>({
+    ...getCurrentUserQuery(variables === reactQuery.skipToken ? variables : deepMerge(fetcherOptions, variables)),
     ...options,
     ...queryOptions,
   });
 };
 
 export type QueryOperation = {
-  path: '/placeholder';
-  operationId: 'placeholderEndpoint';
-  variables: PlaceholderEndpointVariables | reactQuery.SkipToken;
+  path: '/auth/me';
+  operationId: 'getCurrentUser';
+  variables: GetCurrentUserVariables | reactQuery.SkipToken;
 };

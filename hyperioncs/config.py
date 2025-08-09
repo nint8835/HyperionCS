@@ -8,6 +8,9 @@ class Config(BaseSettings):
     is_production: bool = False
     session_secret: str
 
+    client_id: str
+    client_secret: str
+
     bind_host: str = "0.0.0.0"
     bind_port: int = 8000
     behind_reverse_proxy: bool = False

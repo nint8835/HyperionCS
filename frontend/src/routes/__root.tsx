@@ -5,9 +5,19 @@ import { type NavigateOptions, Outlet, type ToOptions, createRootRoute, useRoute
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 
 import { queryClient } from '@/lib/query';
+import { useStore } from '@/lib/state';
+import { fetchGetCurrentUser } from '@/queries/internal/internalComponents';
 
 export const Route = createRootRoute({
   component: RootComponent,
+  beforeLoad: async () => {
+    if (useStore.getState().user !== undefined) {
+      return;
+    }
+
+    const currentUser = await fetchGetCurrentUser({});
+    useStore.getState().setUser(currentUser);
+  },
 });
 
 declare module '@react-types/shared' {
