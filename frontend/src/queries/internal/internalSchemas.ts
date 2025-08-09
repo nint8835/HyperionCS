@@ -3,6 +3,72 @@
  *
  * @version 0.1.0
  */
+export type CreateCurrencySchema = {
+  /**
+   * A unique shortcode to identify the currency.
+   *
+   * @pattern ^[A-Z0-9]{3,5}$
+   */
+  shortcode: string;
+  /**
+   * The full name of the currency.
+   */
+  name: string;
+  /**
+   * The singular form of the currency.
+   */
+  singular_form: string;
+  /**
+   * The plural form of the currency.
+   */
+  plural_form: string;
+};
+
+export type CurrencySchema = {
+  /**
+   * The unique shortcode of the currency.
+   */
+  shortcode: string;
+  /**
+   * The full name of the currency.
+   */
+  name: string;
+  /**
+   * The singular form of the currency.
+   */
+  singular_form: string;
+  /**
+   * The plural form of the currency.
+   */
+  plural_form: string;
+};
+
+/**
+ * A generic error response.
+ */
+export type ErrorResponseSchema = {
+  /**
+   * A description of the error.
+   */
+  detail: string;
+};
+
+export type HTTPValidationError = {
+  detail?: ValidationError[];
+};
+
+/**
+ * Details of the currently authenticated user.
+ */
 export type SessionUser = {
+  /**
+   * Discord snowflake of the authenticated user.
+   */
   id: string;
+};
+
+export type ValidationError = {
+  loc: (string | number)[];
+  msg: string;
+  type: string;
 };

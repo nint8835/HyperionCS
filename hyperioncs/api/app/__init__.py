@@ -4,11 +4,11 @@ from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import Response
 from starlette.types import Scope
 
 from hyperioncs.api.app.routers.auth import auth_router
+from hyperioncs.api.app.routers.currencies import currencies_router
 from hyperioncs.config import config
 
 
@@ -45,8 +45,6 @@ main_app = FastAPI(
     **app_kwargs,
 )
 
-
-main_app.add_middleware(SessionMiddleware, secret_key=config.session_secret)
-
 main_app.include_router(auth_router, prefix="/auth")
+main_app.include_router(currencies_router, prefix="/api/internal/currencies")
 main_app.mount("/", SPAStaticFiles(directory="frontend/dist", html=True), "frontend")

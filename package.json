@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "gen-openapi": "npx openapi-codegen gen && npx prettier -w frontend/src/queries/**/*.ts"
+    "gen-openapi": "npx openapi-codegen gen && npx ts-to-zod --all && npx prettier -w frontend/src/queries/**/*.ts"
   },
   "dependencies": {
     "@heroui/react": "^2.8.2",
@@ -23,6 +23,7 @@
     "react-dom": "^19.1.0",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.11",
+    "zod": "^4.0.17",
     "zustand": "^5.0.7"
   },
   "devDependencies": {
@@ -41,6 +42,7 @@
     "globals": "^16.3.0",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
+    "ts-to-zod": "^3.15.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.1",
     "vite": "^7.0.4"

@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
-import type { DiscordUser } from '@/queries/internal/internalSchemas';
+import type { SessionUser } from '@/queries/internal/internalSchemas';
 
 interface State {
-  user: DiscordUser | null | undefined;
-  setUser: (user: DiscordUser | null) => void;
+  user: SessionUser | null | undefined;
+  setUser: (user: SessionUser | null) => void;
 }
 
 export const useStore = create<State>()(

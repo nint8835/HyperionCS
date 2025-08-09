@@ -1,5 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class SessionUser(BaseModel):
-    id: str
+    """Details of the currently authenticated user."""
+
+    id: str = Field(description="Discord snowflake of the authenticated user.")

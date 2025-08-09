@@ -2,6 +2,8 @@ import enum
 import typing
 
 import sqlalchemy
+from sqlalchemy import event
+from sqlalchemy.dialects.sqlite.aiosqlite import AsyncAdapt_aiosqlite_connection
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
@@ -26,5 +28,16 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 
 engine = create_async_engine(config.async_db_connection_uri, echo=config.db_log_queries)
+
+
+@event.listens_for(engine.sync_engine, "connect")
+def set_sqlite_pragma(
+    dbapi_connection: AsyncAdapt_aiosqlite_connection,
+    connection_record: sqlalchemy.engine.Connection,
+):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
+
 
 async_session = async_sessionmaker(engine, expire_on_commit=False)

@@ -93,6 +93,48 @@ export const useGetCurrentUser = <TData = Schemas.SessionUser | null>(
   });
 };
 
+export type CreateCurrencyError = Fetcher.ErrorWrapper<
+  | {
+      status: 409;
+      payload: Schemas.ErrorResponseSchema;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
+
+export type CreateCurrencyVariables = {
+  body: Schemas.CreateCurrencySchema;
+} & InternalContext['fetcherOptions'];
+
+/**
+ * Create a new currency.
+ */
+export const fetchCreateCurrency = (variables: CreateCurrencyVariables, signal?: AbortSignal) =>
+  internalFetch<Schemas.CurrencySchema, CreateCurrencyError, Schemas.CreateCurrencySchema, {}, {}, {}>({
+    url: '/api/internal/currencies/',
+    method: 'post',
+    ...variables,
+    signal,
+  });
+
+/**
+ * Create a new currency.
+ */
+export const useCreateCurrency = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<Schemas.CurrencySchema, CreateCurrencyError, CreateCurrencyVariables>,
+    'mutationFn'
+  >,
+) => {
+  const { fetcherOptions } = useInternalContext();
+  return reactQuery.useMutation<Schemas.CurrencySchema, CreateCurrencyError, CreateCurrencyVariables>({
+    mutationFn: (variables: CreateCurrencyVariables) => fetchCreateCurrency(deepMerge(fetcherOptions, variables)),
+    ...options,
+  });
+};
+
 export type QueryOperation = {
   path: '/auth/me';
   operationId: 'getCurrentUser';
