@@ -23,7 +23,7 @@ export type GetCurrentUserVariables = InternalContext['fetcherOptions'];
  * Retrieve the details of the current user.
  */
 export const fetchGetCurrentUser = (variables: GetCurrentUserVariables, signal?: AbortSignal) =>
-  internalFetch<Schemas.DiscordUser | null, GetCurrentUserError, undefined, {}, {}, {}>({
+  internalFetch<Schemas.SessionUser | null, GetCurrentUserError, undefined, {}, {}, {}>({
     url: '/auth/me',
     method: 'get',
     ...variables,
@@ -35,12 +35,12 @@ export const fetchGetCurrentUser = (variables: GetCurrentUserVariables, signal?:
  */
 export function getCurrentUserQuery(variables: GetCurrentUserVariables): {
   queryKey: reactQuery.QueryKey;
-  queryFn: (options: QueryFnOptions) => Promise<Schemas.DiscordUser | null>;
+  queryFn: (options: QueryFnOptions) => Promise<Schemas.SessionUser | null>;
 };
 
 export function getCurrentUserQuery(variables: GetCurrentUserVariables | reactQuery.SkipToken): {
   queryKey: reactQuery.QueryKey;
-  queryFn: ((options: QueryFnOptions) => Promise<Schemas.DiscordUser | null>) | reactQuery.SkipToken;
+  queryFn: ((options: QueryFnOptions) => Promise<Schemas.SessionUser | null>) | reactQuery.SkipToken;
 };
 
 export function getCurrentUserQuery(variables: GetCurrentUserVariables | reactQuery.SkipToken) {
@@ -60,15 +60,15 @@ export function getCurrentUserQuery(variables: GetCurrentUserVariables | reactQu
 /**
  * Retrieve the details of the current user.
  */
-export const useSuspenseGetCurrentUser = <TData = Schemas.DiscordUser | null>(
+export const useSuspenseGetCurrentUser = <TData = Schemas.SessionUser | null>(
   variables: GetCurrentUserVariables,
   options?: Omit<
-    reactQuery.UseQueryOptions<Schemas.DiscordUser | null, GetCurrentUserError, TData>,
+    reactQuery.UseQueryOptions<Schemas.SessionUser | null, GetCurrentUserError, TData>,
     'queryKey' | 'queryFn' | 'initialData'
   >,
 ) => {
   const { queryOptions, fetcherOptions } = useInternalContext(options);
-  return reactQuery.useSuspenseQuery<Schemas.DiscordUser | null, GetCurrentUserError, TData>({
+  return reactQuery.useSuspenseQuery<Schemas.SessionUser | null, GetCurrentUserError, TData>({
     ...getCurrentUserQuery(deepMerge(fetcherOptions, variables)),
     ...options,
     ...queryOptions,
@@ -78,15 +78,15 @@ export const useSuspenseGetCurrentUser = <TData = Schemas.DiscordUser | null>(
 /**
  * Retrieve the details of the current user.
  */
-export const useGetCurrentUser = <TData = Schemas.DiscordUser | null>(
+export const useGetCurrentUser = <TData = Schemas.SessionUser | null>(
   variables: GetCurrentUserVariables | reactQuery.SkipToken,
   options?: Omit<
-    reactQuery.UseQueryOptions<Schemas.DiscordUser | null, GetCurrentUserError, TData>,
+    reactQuery.UseQueryOptions<Schemas.SessionUser | null, GetCurrentUserError, TData>,
     'queryKey' | 'queryFn' | 'initialData'
   >,
 ) => {
   const { queryOptions, fetcherOptions } = useInternalContext(options);
-  return reactQuery.useQuery<Schemas.DiscordUser | null, GetCurrentUserError, TData>({
+  return reactQuery.useQuery<Schemas.SessionUser | null, GetCurrentUserError, TData>({
     ...getCurrentUserQuery(variables === reactQuery.skipToken ? variables : deepMerge(fetcherOptions, variables)),
     ...options,
     ...queryOptions,

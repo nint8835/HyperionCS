@@ -3,6 +3,6 @@
  *
  * @version 0.1.0
  */
-export type DiscordUser = {
+export type SessionUser = {
   id: string;
 };

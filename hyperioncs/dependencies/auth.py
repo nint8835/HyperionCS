@@ -3,8 +3,8 @@
 from authlib.integrations.starlette_client import OAuth
 from fastapi import HTTPException, Request
 
-from hyperioncs.api.app.schemas.user import DiscordUser
 from hyperioncs.config import config
+from hyperioncs.schemas.user import SessionUser
 
 oauth = OAuth()
 oauth.register(
@@ -21,15 +21,15 @@ oauth.register(
 )
 
 
-def get_discord_user(request: Request) -> DiscordUser | None:
+def get_session_user(request: Request) -> SessionUser | None:
     if "user" not in request.session:
         return None
 
-    return DiscordUser(**request.session["user"])
+    return SessionUser(**request.session["user"])
 
 
-def require_discord_user(request: Request) -> DiscordUser:
-    user = get_discord_user(request)
+def require_session_user(request: Request) -> SessionUser:
+    user = get_session_user(request)
     if user is None:
         raise HTTPException(
             status_code=401,

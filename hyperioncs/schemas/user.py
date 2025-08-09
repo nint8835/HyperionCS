@@ -1,5 +1,5 @@
 from pydantic import BaseModel
 
 
-class DiscordUser(BaseModel):
+class SessionUser(BaseModel):
     id: str
