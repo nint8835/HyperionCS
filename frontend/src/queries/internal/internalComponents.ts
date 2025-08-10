@@ -135,6 +135,53 @@ export const useCreateCurrency = (
   });
 };
 
+export type EditCurrencyPathParams = {
+  shortcode: string;
+};
+
+export type EditCurrencyError = Fetcher.ErrorWrapper<
+  | {
+      status: 403;
+      payload: Schemas.ErrorResponseSchema;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
+
+export type EditCurrencyVariables = {
+  body: Schemas.EditCurrencySchema;
+  pathParams: EditCurrencyPathParams;
+} & InternalContext['fetcherOptions'];
+
+/**
+ * Edit an existing currency.
+ */
+export const fetchEditCurrency = (variables: EditCurrencyVariables, signal?: AbortSignal) =>
+  internalFetch<Schemas.CurrencySchema, EditCurrencyError, Schemas.EditCurrencySchema, {}, {}, EditCurrencyPathParams>({
+    url: '/api/internal/currencies/{shortcode}',
+    method: 'patch',
+    ...variables,
+    signal,
+  });
+
+/**
+ * Edit an existing currency.
+ */
+export const useEditCurrency = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<Schemas.CurrencySchema, EditCurrencyError, EditCurrencyVariables>,
+    'mutationFn'
+  >,
+) => {
+  const { fetcherOptions } = useInternalContext();
+  return reactQuery.useMutation<Schemas.CurrencySchema, EditCurrencyError, EditCurrencyVariables>({
+    mutationFn: (variables: EditCurrencyVariables) => fetchEditCurrency(deepMerge(fetcherOptions, variables)),
+    ...options,
+  });
+};
+
 export type QueryOperation = {
   path: '/auth/me';
   operationId: 'getCurrentUser';

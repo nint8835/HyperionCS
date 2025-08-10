@@ -43,6 +43,21 @@ export type CurrencySchema = {
   plural_form: string;
 };
 
+export type EditCurrencySchema = {
+  /**
+   * The full name of the currency.
+   */
+  name: string;
+  /**
+   * The singular form of the currency.
+   */
+  singular_form: string;
+  /**
+   * The plural form of the currency.
+   */
+  plural_form: string;
+};
+
 /**
  * A generic error response.
  */

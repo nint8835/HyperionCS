@@ -15,6 +15,12 @@ export const CurrencySchemaZod = z.object({
   plural_form: z.string(),
 });
 
+export const EditCurrencySchemaZod = z.object({
+  name: z.string(),
+  singular_form: z.string(),
+  plural_form: z.string(),
+});
+
 export const ErrorResponseSchemaZod = z.object({
   detail: z.string(),
 });

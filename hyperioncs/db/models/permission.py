@@ -16,6 +16,10 @@ class PermissionRole(enum.Enum):
     Owner = "owner"
 
 
+class ActionRoles:
+    EditCurrency = [PermissionRole.Owner]
+
+
 class Permission(Base):
     __tablename__ = "permissions"
 
