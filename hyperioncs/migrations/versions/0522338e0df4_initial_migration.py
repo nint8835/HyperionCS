@@ -1,8 +1,8 @@
-"""Initial currencies table
+"""Initial migration
 
-Revision ID: d59e08077330
+Revision ID: 0522338e0df4
 Revises:
-Create Date: 2025-08-09 17:27:25.554598
+Create Date: 2025-08-23 11:31:43.340234
 
 """
 
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "d59e08077330"
+revision: str = "0522338e0df4"
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,25 +28,25 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("shortcode", name=op.f("pk_currencies")),
     )
     op.create_table(
-        "permissions",
+        "currency_permissions",
         sa.Column("id", sa.String(), nullable=False),
-        sa.Column("user_id", sa.String(), nullable=True),
-        sa.Column("currency_shortcode", sa.String(), nullable=True),
+        sa.Column("user_id", sa.String(), nullable=False),
+        sa.Column("currency_shortcode", sa.String(), nullable=False),
         sa.Column(
             "role",
-            sa.Enum("Owner", name="permissionrole", native_enum=False),
+            sa.Enum("Owner", name="currencyrole", native_enum=False),
             nullable=False,
         ),
         sa.ForeignKeyConstraint(
             ["currency_shortcode"],
             ["currencies.shortcode"],
-            name=op.f("fk_permissions_currency_shortcode_currencies"),
+            name=op.f("fk_currency_permissions_currency_shortcode_currencies"),
             ondelete="CASCADE",
         ),
-        sa.PrimaryKeyConstraint("id", name=op.f("pk_permissions")),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_currency_permissions")),
     )
 
 
 def downgrade() -> None:
-    op.drop_table("permissions")
+    op.drop_table("currency_permissions")
     op.drop_table("currencies")

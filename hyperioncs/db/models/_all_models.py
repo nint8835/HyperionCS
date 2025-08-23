@@ -5,4 +5,4 @@
 # Should not be imported outside of hyperioncs.migrations.env
 
 from .currency import Currency
-from .permission import Permission
+from .currency_permission import CurrencyPermission

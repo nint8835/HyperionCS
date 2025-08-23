@@ -9,7 +9,11 @@ from hyperioncs.api.app.schemas.currencies import (
     EditCurrencySchema,
 )
 from hyperioncs.db.models.currency import Currency
-from hyperioncs.db.models.permission import ActionRoles, Permission, PermissionRole
+from hyperioncs.db.models.currency_permission import (
+    CurrencyActionRoles,
+    CurrencyPermission,
+    CurrencyRole,
+)
 from hyperioncs.dependencies.auth import require_session_user
 from hyperioncs.dependencies.database import get_db
 from hyperioncs.schemas.currencies import CurrencySchema
@@ -54,10 +58,10 @@ async def create_currency(
             singular_form=currency.singular_form,
             plural_form=currency.plural_form,
         )
-        permission = Permission(
+        permission = CurrencyPermission(
             user_id=current_user.id,
             currency_shortcode=currency.shortcode,
-            role=PermissionRole.Owner,
+            role=CurrencyRole.Owner,
         )
         db.add(new_currency)
         db.add(permission)
@@ -89,9 +93,12 @@ async def edit_currency(
             await db.execute(
                 select(Currency)
                 .filter_by(shortcode=shortcode)
-                .join(Permission, Permission.currency_shortcode == Currency.shortcode)
-                .filter(Permission.user_id == current_user.id)
-                .filter(Permission.role.in_(ActionRoles.EditCurrency))
+                .join(
+                    CurrencyPermission,
+                    CurrencyPermission.currency_shortcode == Currency.shortcode,
+                )
+                .filter(CurrencyPermission.user_id == current_user.id)
+                .filter(CurrencyPermission.role.in_(CurrencyActionRoles.Edit))
             )
         ).scalar_one_or_none()
 
