@@ -1,6 +1,6 @@
 import { type DefaultError, type Enabled, type QueryKey, type UseQueryOptions, skipToken } from '@tanstack/react-query';
 
-import { QueryOperation } from './internalComponents';
+import type { QueryOperation } from './internalComponents';
 
 export type InternalContext<
   TQueryFnData = unknown,

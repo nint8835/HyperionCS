@@ -1,4 +1,4 @@
-import { IntegrationsV1Context } from "./integrationsV1Context";
+import type { IntegrationsV1Context } from "./integrationsV1Context";
 
 const baseUrl = "/api/v1";
 

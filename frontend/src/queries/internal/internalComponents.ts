@@ -5,7 +5,7 @@
  */
 import * as reactQuery from '@tanstack/react-query';
 
-import { InternalContext, queryKeyFn, useInternalContext } from './internalContext';
+import { type InternalContext, queryKeyFn, useInternalContext } from './internalContext';
 import type * as Fetcher from './internalFetcher';
 import { internalFetch } from './internalFetcher';
 import type * as Schemas from './internalSchemas';
@@ -17,13 +17,15 @@ type QueryFnOptions = {
 
 export type GetCurrentUserError = Fetcher.ErrorWrapper<undefined>;
 
+export type GetCurrentUserResponse = Schemas.SessionUser | null;
+
 export type GetCurrentUserVariables = InternalContext['fetcherOptions'];
 
 /**
  * Retrieve the details of the current user.
  */
 export const fetchGetCurrentUser = (variables: GetCurrentUserVariables, signal?: AbortSignal) =>
-  internalFetch<Schemas.SessionUser | null, GetCurrentUserError, undefined, {}, {}, {}>({
+  internalFetch<GetCurrentUserResponse, GetCurrentUserError, undefined, {}, {}, {}>({
     url: '/auth/me',
     method: 'get',
     ...variables,
@@ -35,12 +37,12 @@ export const fetchGetCurrentUser = (variables: GetCurrentUserVariables, signal?:
  */
 export function getCurrentUserQuery(variables: GetCurrentUserVariables): {
   queryKey: reactQuery.QueryKey;
-  queryFn: (options: QueryFnOptions) => Promise<Schemas.SessionUser | null>;
+  queryFn: (options: QueryFnOptions) => Promise<GetCurrentUserResponse>;
 };
 
 export function getCurrentUserQuery(variables: GetCurrentUserVariables | reactQuery.SkipToken): {
   queryKey: reactQuery.QueryKey;
-  queryFn: ((options: QueryFnOptions) => Promise<Schemas.SessionUser | null>) | reactQuery.SkipToken;
+  queryFn: ((options: QueryFnOptions) => Promise<GetCurrentUserResponse>) | reactQuery.SkipToken;
 };
 
 export function getCurrentUserQuery(variables: GetCurrentUserVariables | reactQuery.SkipToken) {
@@ -60,15 +62,15 @@ export function getCurrentUserQuery(variables: GetCurrentUserVariables | reactQu
 /**
  * Retrieve the details of the current user.
  */
-export const useSuspenseGetCurrentUser = <TData = Schemas.SessionUser | null>(
+export const useSuspenseGetCurrentUser = <TData = GetCurrentUserResponse>(
   variables: GetCurrentUserVariables,
   options?: Omit<
-    reactQuery.UseQueryOptions<Schemas.SessionUser | null, GetCurrentUserError, TData>,
+    reactQuery.UseQueryOptions<GetCurrentUserResponse, GetCurrentUserError, TData>,
     'queryKey' | 'queryFn' | 'initialData'
   >,
 ) => {
   const { queryOptions, fetcherOptions } = useInternalContext(options);
-  return reactQuery.useSuspenseQuery<Schemas.SessionUser | null, GetCurrentUserError, TData>({
+  return reactQuery.useSuspenseQuery<GetCurrentUserResponse, GetCurrentUserError, TData>({
     ...getCurrentUserQuery(deepMerge(fetcherOptions, variables)),
     ...options,
     ...queryOptions,
@@ -78,15 +80,15 @@ export const useSuspenseGetCurrentUser = <TData = Schemas.SessionUser | null>(
 /**
  * Retrieve the details of the current user.
  */
-export const useGetCurrentUser = <TData = Schemas.SessionUser | null>(
+export const useGetCurrentUser = <TData = GetCurrentUserResponse>(
   variables: GetCurrentUserVariables | reactQuery.SkipToken,
   options?: Omit<
-    reactQuery.UseQueryOptions<Schemas.SessionUser | null, GetCurrentUserError, TData>,
+    reactQuery.UseQueryOptions<GetCurrentUserResponse, GetCurrentUserError, TData>,
     'queryKey' | 'queryFn' | 'initialData'
   >,
 ) => {
   const { queryOptions, fetcherOptions } = useInternalContext(options);
-  return reactQuery.useQuery<Schemas.SessionUser | null, GetCurrentUserError, TData>({
+  return reactQuery.useQuery<GetCurrentUserResponse, GetCurrentUserError, TData>({
     ...getCurrentUserQuery(variables === reactQuery.skipToken ? variables : deepMerge(fetcherOptions, variables)),
     ...options,
     ...queryOptions,

@@ -5,8 +5,8 @@
  */
 import * as reactQuery from "@tanstack/react-query";
 import {
+  type IntegrationsV1Context,
   useIntegrationsV1Context,
-  IntegrationsV1Context,
   queryKeyFn,
 } from "./integrationsV1Context";
 import { deepMerge } from "./integrationsV1Utils";

@@ -1,4 +1,4 @@
-import { InternalContext } from './internalContext';
+import type { InternalContext } from './internalContext';
 
 const baseUrl = ''; // TODO add your baseUrl
 

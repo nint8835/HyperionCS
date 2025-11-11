@@ -5,7 +5,7 @@ import {
   type QueryKey,
   type UseQueryOptions,
 } from "@tanstack/react-query";
-import { QueryOperation } from "./integrationsV1Components";
+import type { QueryOperation } from "./integrationsV1Components";
 
 export type IntegrationsV1Context<
   TQueryFnData = unknown,

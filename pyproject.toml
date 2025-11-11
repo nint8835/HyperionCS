@@ -5,20 +5,20 @@ description = "SaaS platform for building Discord pseudocurrencies."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "aiosqlite>=0.21.0",
-    "alembic>=1.16.4",
-    "authlib>=1.6.1",
-    "fastapi>=0.116.1",
-    "pydantic>=2.11.7",
-    "pydantic-settings>=2.10.1",
-    "sqlalchemy[asyncio]>=2.0.42",
-    "starlette[full]>=0.47.2",
-    "typer>=0.16.0",
-    "uvicorn>=0.35.0",
+    "aiosqlite~=0.21.0",
+    "alembic~=1.17.1",
+    "authlib~=1.6.5",
+    "fastapi~=0.121.1",
+    "pydantic~=2.12.4",
+    "pydantic-settings~=2.12.0",
+    "sqlalchemy[asyncio]~=2.0.44",
+    "starlette[full]~=0.49.3",
+    "typer~=0.20.0",
+    "uvicorn~=0.38.0",
 ]
 
 [dependency-groups]
-dev = ["ruff>=0.12.7"]
+dev = ["ruff~=0.14.4"]
 
 [tool.ruff.lint]
 select = ["I"]
