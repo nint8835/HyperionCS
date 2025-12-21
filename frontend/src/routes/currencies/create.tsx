@@ -87,9 +87,10 @@ function CreateCurrencyForm() {
         children={(field) => (
           <Input
             name={field.name}
+            placeholder="Coin"
             isRequired
             label="Singular Form"
-            description={`The singular form of the currency to use in user-facing messages. Example: "They received 1 ${field.state.value}."`}
+            description={`The singular form of the currency to use in user-facing messages. Example: "They received 1 ${field.state.value || 'Coin'}."`}
             value={field.state.value}
             onBlur={field.handleBlur}
             onChange={(e) => field.handleChange(e.target.value)}
@@ -108,9 +109,10 @@ function CreateCurrencyForm() {
         children={(field) => (
           <Input
             name={field.name}
+            placeholder="Coins"
             isRequired
             label="Plural Form"
-            description={`The plural form of the currency to use in user-facing messages. Example: "They received 2 ${field.state.value}."`}
+            description={`The plural form of the currency to use in user-facing messages. Example: "They received 2 ${field.state.value || 'Coins'}."`}
             value={field.state.value}
             onBlur={field.handleBlur}
             onChange={(e) => field.handleChange(e.target.value)}
