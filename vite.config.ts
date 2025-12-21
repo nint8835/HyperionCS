@@ -10,8 +10,8 @@ export default defineConfig({
     tanstackRouter({
       target: 'react',
       autoCodeSplitting: true,
-      routesDirectory: './frontend/src/routes',
-      generatedRouteTree: './frontend/src/routeTree.gen.ts',
+      routesDirectory: './src/routes',
+      generatedRouteTree: './src/routeTree.gen.ts',
     }),
     react(),
     tailwindcss(),
