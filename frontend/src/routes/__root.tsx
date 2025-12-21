@@ -44,7 +44,7 @@ function RootComponent() {
               </Link>
             </NavbarBrand>
           </Navbar>
-          <main className="container mx-auto max-w-7xl flex-grow px-6">
+          <main className="container mx-auto max-w-7xl grow px-6">
             <Outlet />
           </main>
         </div>

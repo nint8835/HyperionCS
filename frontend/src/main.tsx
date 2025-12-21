@@ -7,7 +7,7 @@ import { routeTree } from './routeTree.gen';
 
 function LoadingSpinner() {
   return (
-    <div className="flex h-full flex-grow items-center justify-center">
+    <div className="flex h-full grow items-center justify-center">
       <Spinner size="lg" />
     </div>
   );

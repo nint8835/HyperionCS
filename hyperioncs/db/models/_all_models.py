@@ -6,3 +6,6 @@
 
 from .currency import Currency
 from .currency_permission import CurrencyPermission
+from .integration import Integration
+from .integration_connection import IntegrationConnection
+from .integration_permission import IntegrationPermission
