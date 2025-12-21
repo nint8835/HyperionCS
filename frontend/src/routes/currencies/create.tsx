@@ -128,10 +128,9 @@ function CreateCurrencyForm() {
         Create Currency
       </Button>
 
-      {/* TODO: Validation errors cause error boundary */}
       <form.Subscribe
-        selector={(state) => state.errors}
-        children={(errors) => errors.length > 0 && <Alert color="danger">{errors as unknown as string}</Alert>}
+        selector={(state) => state.errors.filter((e) => typeof e === 'string')}
+        children={(errors) => errors.length > 0 && <Alert color="danger">{errors}</Alert>}
       />
 
       {data && <Alert color="success">Currency created!</Alert>}
