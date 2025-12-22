@@ -9,6 +9,7 @@ from starlette.types import Scope
 
 from hyperioncs.api.app.routers.auth import auth_router
 from hyperioncs.api.app.routers.currencies import currencies_router
+from hyperioncs.api.app.routers.integrations import integrations_router
 from hyperioncs.config import config
 
 
@@ -47,4 +48,6 @@ main_app = FastAPI(
 
 main_app.include_router(auth_router, prefix="/auth")
 main_app.include_router(currencies_router, prefix="/api/internal/currencies")
+main_app.include_router(integrations_router, prefix="/api/internal/integrations")
+
 main_app.mount("/", SPAStaticFiles(directory="frontend/dist", html=True), "frontend")

@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as IntegrationsCreateRouteImport } from './routes/integrations/create'
 import { Route as CurrenciesCreateRouteImport } from './routes/currencies/create'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
@@ -19,6 +20,11 @@ import { Route as CurrenciesShortcodeManageRouteImport } from './routes/currenci
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegrationsCreateRoute = IntegrationsCreateRouteImport.update({
+  id: '/integrations/create',
+  path: '/integrations/create',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CurrenciesCreateRoute = CurrenciesCreateRouteImport.update({
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/currencies/create': typeof CurrenciesCreateRoute
+  '/integrations/create': typeof IntegrationsCreateRoute
   '/currencies/$shortcode/manage': typeof CurrenciesShortcodeManageRoute
   '/currencies/$shortcode': typeof CurrenciesShortcodeIndexRoute
 }
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/currencies/create': typeof CurrenciesCreateRoute
+  '/integrations/create': typeof IntegrationsCreateRoute
   '/currencies/$shortcode/manage': typeof CurrenciesShortcodeManageRoute
   '/currencies/$shortcode': typeof CurrenciesShortcodeIndexRoute
 }
@@ -71,6 +79,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/currencies/create': typeof CurrenciesCreateRoute
+  '/integrations/create': typeof IntegrationsCreateRoute
   '/currencies/$shortcode/manage': typeof CurrenciesShortcodeManageRoute
   '/currencies/$shortcode/': typeof CurrenciesShortcodeIndexRoute
 }
@@ -81,6 +90,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/logout'
     | '/currencies/create'
+    | '/integrations/create'
     | '/currencies/$shortcode/manage'
     | '/currencies/$shortcode'
   fileRoutesByTo: FileRoutesByTo
@@ -89,6 +99,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/logout'
     | '/currencies/create'
+    | '/integrations/create'
     | '/currencies/$shortcode/manage'
     | '/currencies/$shortcode'
   id:
@@ -97,6 +108,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/logout'
     | '/currencies/create'
+    | '/integrations/create'
     | '/currencies/$shortcode/manage'
     | '/currencies/$shortcode/'
   fileRoutesById: FileRoutesById
@@ -106,6 +118,7 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthLogoutRoute: typeof AuthLogoutRoute
   CurrenciesCreateRoute: typeof CurrenciesCreateRoute
+  IntegrationsCreateRoute: typeof IntegrationsCreateRoute
   CurrenciesShortcodeManageRoute: typeof CurrenciesShortcodeManageRoute
   CurrenciesShortcodeIndexRoute: typeof CurrenciesShortcodeIndexRoute
 }
@@ -117,6 +130,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integrations/create': {
+      id: '/integrations/create'
+      path: '/integrations/create'
+      fullPath: '/integrations/create'
+      preLoaderRoute: typeof IntegrationsCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/currencies/create': {
@@ -162,6 +182,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthLogoutRoute: AuthLogoutRoute,
   CurrenciesCreateRoute: CurrenciesCreateRoute,
+  IntegrationsCreateRoute: IntegrationsCreateRoute,
   CurrenciesShortcodeManageRoute: CurrenciesShortcodeManageRoute,
   CurrenciesShortcodeIndexRoute: CurrenciesShortcodeIndexRoute,
 }

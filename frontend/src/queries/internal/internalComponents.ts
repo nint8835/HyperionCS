@@ -280,6 +280,42 @@ export const useGetCurrencyPermissions = <TData = Schemas.CurrencyPermissionsSch
   });
 };
 
+export type CreateIntegrationError = Fetcher.ErrorWrapper<{
+  status: 422;
+  payload: Schemas.HTTPValidationError;
+}>;
+
+export type CreateIntegrationVariables = {
+  body: Schemas.CreateIntegrationSchema;
+} & InternalContext['fetcherOptions'];
+
+/**
+ * Create a new integration.
+ */
+export const fetchCreateIntegration = (variables: CreateIntegrationVariables, signal?: AbortSignal) =>
+  internalFetch<Schemas.IntegrationSchema, CreateIntegrationError, Schemas.CreateIntegrationSchema, {}, {}, {}>({
+    url: '/api/internal/integrations/',
+    method: 'post',
+    ...variables,
+    signal,
+  });
+
+/**
+ * Create a new integration.
+ */
+export const useCreateIntegration = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<Schemas.IntegrationSchema, CreateIntegrationError, CreateIntegrationVariables>,
+    'mutationFn'
+  >,
+) => {
+  const { fetcherOptions } = useInternalContext();
+  return reactQuery.useMutation<Schemas.IntegrationSchema, CreateIntegrationError, CreateIntegrationVariables>({
+    mutationFn: (variables: CreateIntegrationVariables) => fetchCreateIntegration(deepMerge(fetcherOptions, variables)),
+    ...options,
+  });
+};
+
 export type QueryOperation =
   | {
       path: '/auth/me';

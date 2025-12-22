@@ -8,6 +8,12 @@ export const CreateCurrencySchemaZod = z.object({
   plural_form: z.string(),
 });
 
+export const CreateIntegrationSchemaZod = z.object({
+  name: z.string(),
+  description: z.string(),
+  url: z.string().optional().nullable(),
+});
+
 export const CurrencyPermissionsSchemaZod = z.object({
   edit: z.boolean().optional().default(false),
 });
@@ -33,6 +39,14 @@ export const ValidationErrorZod = z.object({
   loc: z.array(z.union([z.string(), z.number()])),
   msg: z.string(),
   type: z.string(),
+});
+
+export const IntegrationSchemaZod = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  url: z.string().optional().nullable(),
+  private: z.boolean(),
 });
 
 export const SessionUserZod = z.object({

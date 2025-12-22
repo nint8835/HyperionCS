@@ -24,6 +24,21 @@ export type CreateCurrencySchema = {
   plural_form: string;
 };
 
+export type CreateIntegrationSchema = {
+  /**
+   * The name of the integration.
+   */
+  name: string;
+  /**
+   * A description of the integration.
+   */
+  description: string;
+  /**
+   * URL to the website for the integration.
+   */
+  url?: string | null;
+};
+
 export type CurrencyPermissionsSchema = {
   /**
    * Whether the user can edit the currency.
@@ -79,6 +94,29 @@ export type ErrorResponseSchema = {
 
 export type HTTPValidationError = {
   detail?: ValidationError[];
+};
+
+export type IntegrationSchema = {
+  /**
+   * The unique identifier of the integration.
+   */
+  id: string;
+  /**
+   * The name of the integration.
+   */
+  name: string;
+  /**
+   * A description of the integration.
+   */
+  description: string;
+  /**
+   * URL to the website for the integration.
+   */
+  url?: string | null;
+  /**
+   * Whether the integration is private.
+   */
+  private: boolean;
 };
 
 /**
