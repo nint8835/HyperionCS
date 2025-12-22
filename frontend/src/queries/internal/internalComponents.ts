@@ -184,8 +184,110 @@ export const useEditCurrency = (
   });
 };
 
-export type QueryOperation = {
-  path: '/auth/me';
-  operationId: 'getCurrentUser';
-  variables: GetCurrentUserVariables | reactQuery.SkipToken;
+export type GetCurrencyPermissionsPathParams = {
+  shortcode: string;
 };
+
+export type GetCurrencyPermissionsError = Fetcher.ErrorWrapper<{
+  status: 422;
+  payload: Schemas.HTTPValidationError;
+}>;
+
+export type GetCurrencyPermissionsVariables = {
+  pathParams: GetCurrencyPermissionsPathParams;
+} & InternalContext['fetcherOptions'];
+
+/**
+ * Get the permissions the current user has on a given currency.
+ */
+export const fetchGetCurrencyPermissions = (variables: GetCurrencyPermissionsVariables, signal?: AbortSignal) =>
+  internalFetch<
+    Schemas.CurrencyPermissionsSchema,
+    GetCurrencyPermissionsError,
+    undefined,
+    {},
+    {},
+    GetCurrencyPermissionsPathParams
+  >({
+    url: '/api/internal/currencies/{shortcode}/permissions',
+    method: 'get',
+    ...variables,
+    signal,
+  });
+
+/**
+ * Get the permissions the current user has on a given currency.
+ */
+export function getCurrencyPermissionsQuery(variables: GetCurrencyPermissionsVariables): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<Schemas.CurrencyPermissionsSchema>;
+};
+
+export function getCurrencyPermissionsQuery(variables: GetCurrencyPermissionsVariables | reactQuery.SkipToken): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: ((options: QueryFnOptions) => Promise<Schemas.CurrencyPermissionsSchema>) | reactQuery.SkipToken;
+};
+
+export function getCurrencyPermissionsQuery(variables: GetCurrencyPermissionsVariables | reactQuery.SkipToken) {
+  return {
+    queryKey: queryKeyFn({
+      path: '/api/internal/currencies/{shortcode}/permissions',
+      operationId: 'getCurrencyPermissions',
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) => fetchGetCurrencyPermissions(variables, signal),
+  };
+}
+
+/**
+ * Get the permissions the current user has on a given currency.
+ */
+export const useSuspenseGetCurrencyPermissions = <TData = Schemas.CurrencyPermissionsSchema>(
+  variables: GetCurrencyPermissionsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<Schemas.CurrencyPermissionsSchema, GetCurrencyPermissionsError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useInternalContext(options);
+  return reactQuery.useSuspenseQuery<Schemas.CurrencyPermissionsSchema, GetCurrencyPermissionsError, TData>({
+    ...getCurrencyPermissionsQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+/**
+ * Get the permissions the current user has on a given currency.
+ */
+export const useGetCurrencyPermissions = <TData = Schemas.CurrencyPermissionsSchema>(
+  variables: GetCurrencyPermissionsVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<Schemas.CurrencyPermissionsSchema, GetCurrencyPermissionsError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useInternalContext(options);
+  return reactQuery.useQuery<Schemas.CurrencyPermissionsSchema, GetCurrencyPermissionsError, TData>({
+    ...getCurrencyPermissionsQuery(
+      variables === reactQuery.skipToken ? variables : deepMerge(fetcherOptions, variables),
+    ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type QueryOperation =
+  | {
+      path: '/auth/me';
+      operationId: 'getCurrentUser';
+      variables: GetCurrentUserVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: '/api/internal/currencies/{shortcode}/permissions';
+      operationId: 'getCurrencyPermissions';
+      variables: GetCurrencyPermissionsVariables | reactQuery.SkipToken;
+    };

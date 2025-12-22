@@ -13,6 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CurrenciesCreateRouteImport } from './routes/currencies/create'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as CurrenciesShortcodeIndexRouteImport } from './routes/currencies/$shortcode/index'
+import { Route as CurrenciesShortcodeManageRouteImport } from './routes/currencies/$shortcode/manage'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +36,34 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CurrenciesShortcodeIndexRoute =
+  CurrenciesShortcodeIndexRouteImport.update({
+    id: '/currencies/$shortcode/',
+    path: '/currencies/$shortcode/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CurrenciesShortcodeManageRoute =
+  CurrenciesShortcodeManageRouteImport.update({
+    id: '/currencies/$shortcode/manage',
+    path: '/currencies/$shortcode/manage',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/currencies/create': typeof CurrenciesCreateRoute
+  '/currencies/$shortcode/manage': typeof CurrenciesShortcodeManageRoute
+  '/currencies/$shortcode': typeof CurrenciesShortcodeIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/currencies/create': typeof CurrenciesCreateRoute
+  '/currencies/$shortcode/manage': typeof CurrenciesShortcodeManageRoute
+  '/currencies/$shortcode': typeof CurrenciesShortcodeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +71,34 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/logout': typeof AuthLogoutRoute
   '/currencies/create': typeof CurrenciesCreateRoute
+  '/currencies/$shortcode/manage': typeof CurrenciesShortcodeManageRoute
+  '/currencies/$shortcode/': typeof CurrenciesShortcodeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth/login' | '/auth/logout' | '/currencies/create'
+  fullPaths:
+    | '/'
+    | '/auth/login'
+    | '/auth/logout'
+    | '/currencies/create'
+    | '/currencies/$shortcode/manage'
+    | '/currencies/$shortcode'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth/login' | '/auth/logout' | '/currencies/create'
-  id: '__root__' | '/' | '/auth/login' | '/auth/logout' | '/currencies/create'
+  to:
+    | '/'
+    | '/auth/login'
+    | '/auth/logout'
+    | '/currencies/create'
+    | '/currencies/$shortcode/manage'
+    | '/currencies/$shortcode'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth/login'
+    | '/auth/logout'
+    | '/currencies/create'
+    | '/currencies/$shortcode/manage'
+    | '/currencies/$shortcode/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +106,8 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthLogoutRoute: typeof AuthLogoutRoute
   CurrenciesCreateRoute: typeof CurrenciesCreateRoute
+  CurrenciesShortcodeManageRoute: typeof CurrenciesShortcodeManageRoute
+  CurrenciesShortcodeIndexRoute: typeof CurrenciesShortcodeIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +140,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/currencies/$shortcode/': {
+      id: '/currencies/$shortcode/'
+      path: '/currencies/$shortcode'
+      fullPath: '/currencies/$shortcode'
+      preLoaderRoute: typeof CurrenciesShortcodeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/currencies/$shortcode/manage': {
+      id: '/currencies/$shortcode/manage'
+      path: '/currencies/$shortcode/manage'
+      fullPath: '/currencies/$shortcode/manage'
+      preLoaderRoute: typeof CurrenciesShortcodeManageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +162,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthLogoutRoute: AuthLogoutRoute,
   CurrenciesCreateRoute: CurrenciesCreateRoute,
+  CurrenciesShortcodeManageRoute: CurrenciesShortcodeManageRoute,
+  CurrenciesShortcodeIndexRoute: CurrenciesShortcodeIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

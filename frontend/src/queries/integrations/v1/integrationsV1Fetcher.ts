@@ -1,17 +1,10 @@
-import type { IntegrationsV1Context } from "./integrationsV1Context";
+import type { IntegrationsV1Context } from './integrationsV1Context';
 
-const baseUrl = "/api/v1";
+const baseUrl = '/api/v1';
 
-export type ErrorWrapper<TError> =
-  | TError
-  | { status: "unknown"; payload: string };
+export type ErrorWrapper<TError> = TError | { status: 'unknown'; payload: string };
 
-export type IntegrationsV1FetcherOptions<
-  TBody,
-  THeaders,
-  TQueryParams,
-  TPathParams,
-> = {
+export type IntegrationsV1FetcherOptions<TBody, THeaders, TQueryParams, TPathParams> = {
   url: string;
   method: string;
   body?: TBody;
@@ -19,7 +12,7 @@ export type IntegrationsV1FetcherOptions<
   queryParams?: TQueryParams;
   pathParams?: TPathParams;
   signal?: AbortSignal;
-} & IntegrationsV1Context["fetcherOptions"];
+} & IntegrationsV1Context['fetcherOptions'];
 
 export async function integrationsV1Fetch<
   TData,
@@ -36,16 +29,11 @@ export async function integrationsV1Fetch<
   pathParams,
   queryParams,
   signal,
-}: IntegrationsV1FetcherOptions<
-  TBody,
-  THeaders,
-  TQueryParams,
-  TPathParams
->): Promise<TData> {
+}: IntegrationsV1FetcherOptions<TBody, THeaders, TQueryParams, TPathParams>): Promise<TData> {
   let error: ErrorWrapper<TError>;
   try {
     const requestHeaders: HeadersInit = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       ...headers,
     };
 
@@ -55,40 +43,26 @@ export async function integrationsV1Fetch<
      * the correct boundary.
      * https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects#sending_files_using_a_formdata_object
      */
-    if (
-      requestHeaders["Content-Type"]
-        ?.toLowerCase()
-        .includes("multipart/form-data")
-    ) {
-      delete requestHeaders["Content-Type"];
+    if (requestHeaders['Content-Type']?.toLowerCase().includes('multipart/form-data')) {
+      delete requestHeaders['Content-Type'];
     }
 
-    const response = await window.fetch(
-      `${baseUrl}${resolveUrl(url, queryParams, pathParams)}`,
-      {
-        signal,
-        method: method.toUpperCase(),
-        body: body
-          ? body instanceof FormData
-            ? body
-            : JSON.stringify(body)
-          : undefined,
-        headers: requestHeaders,
-      },
-    );
+    const response = await window.fetch(`${baseUrl}${resolveUrl(url, queryParams, pathParams)}`, {
+      signal,
+      method: method.toUpperCase(),
+      body: body ? (body instanceof FormData ? body : JSON.stringify(body)) : undefined,
+      headers: requestHeaders,
+    });
     if (!response.ok) {
       try {
         error = await response.json();
       } catch (e) {
         error = {
-          status: "unknown" as const,
-          payload:
-            e instanceof Error
-              ? `Unexpected error (${e.message})`
-              : "Unexpected error",
+          status: 'unknown' as const,
+          payload: e instanceof Error ? `Unexpected error (${e.message})` : 'Unexpected error',
         };
       }
-    } else if (response.headers.get("content-type")?.includes("json")) {
+    } else if (response.headers.get('content-type')?.includes('json')) {
       return await response.json();
     } else {
       // if it is not a json response, assume it is a blob and cast it to TData
@@ -96,9 +70,8 @@ export async function integrationsV1Fetch<
     }
   } catch (e) {
     const errorObject: Error = {
-      name: "unknown" as const,
-      message:
-        e instanceof Error ? `Network error (${e.message})` : "Network error",
+      name: 'unknown' as const,
+      message: e instanceof Error ? `Network error (${e.message})` : 'Network error',
       stack: e as string,
     };
     throw errorObject;
@@ -106,14 +79,8 @@ export async function integrationsV1Fetch<
   throw error;
 }
 
-const resolveUrl = (
-  url: string,
-  queryParams: Record<string, string> = {},
-  pathParams: Record<string, string> = {},
-) => {
+const resolveUrl = (url: string, queryParams: Record<string, string> = {}, pathParams: Record<string, string> = {}) => {
   let query = new URLSearchParams(queryParams).toString();
   if (query) query = `?${query}`;
-  return (
-    url.replace(/\{\w*\}/g, (key) => pathParams[key.slice(1, -1)] ?? "") + query
-  );
+  return url.replace(/\{\w*\}/g, (key) => pathParams[key.slice(1, -1)] ?? '') + query;
 };

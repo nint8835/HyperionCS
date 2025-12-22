@@ -3,42 +3,34 @@
  *
  * @version 1.0
  */
-import * as reactQuery from "@tanstack/react-query";
-import {
-  type IntegrationsV1Context,
-  useIntegrationsV1Context,
-  queryKeyFn,
-} from "./integrationsV1Context";
-import { deepMerge } from "./integrationsV1Utils";
-import type * as Fetcher from "./integrationsV1Fetcher";
-import { integrationsV1Fetch } from "./integrationsV1Fetcher";
-import type * as Schemas from "./integrationsV1Schemas";
+import * as reactQuery from '@tanstack/react-query';
+
+import { type IntegrationsV1Context, queryKeyFn, useIntegrationsV1Context } from './integrationsV1Context';
+import type * as Fetcher from './integrationsV1Fetcher';
+import { integrationsV1Fetch } from './integrationsV1Fetcher';
+import type * as Schemas from './integrationsV1Schemas';
+import { deepMerge } from './integrationsV1Utils';
 
 type QueryFnOptions = {
-  signal?: AbortController["signal"];
+  signal?: AbortController['signal'];
 };
 
 export type ListCurrenciesError = Fetcher.ErrorWrapper<undefined>;
 
 export type ListCurrenciesResponse = Schemas.CurrencySchema[];
 
-export type ListCurrenciesVariables = IntegrationsV1Context["fetcherOptions"];
+export type ListCurrenciesVariables = IntegrationsV1Context['fetcherOptions'];
 
 /**
  * List all currencies.
  */
-export const fetchListCurrencies = (
-  variables: ListCurrenciesVariables,
-  signal?: AbortSignal,
-) =>
-  integrationsV1Fetch<
-    ListCurrenciesResponse,
-    ListCurrenciesError,
-    undefined,
-    {},
-    {},
-    {}
-  >({ url: "/currencies/", method: "get", ...variables, signal });
+export const fetchListCurrencies = (variables: ListCurrenciesVariables, signal?: AbortSignal) =>
+  integrationsV1Fetch<ListCurrenciesResponse, ListCurrenciesError, undefined, {}, {}, {}>({
+    url: '/currencies/',
+    method: 'get',
+    ...variables,
+    signal,
+  });
 
 /**
  * List all currencies.
@@ -48,52 +40,37 @@ export function listCurrenciesQuery(variables: ListCurrenciesVariables): {
   queryFn: (options: QueryFnOptions) => Promise<ListCurrenciesResponse>;
 };
 
-export function listCurrenciesQuery(
-  variables: ListCurrenciesVariables | reactQuery.SkipToken,
-): {
+export function listCurrenciesQuery(variables: ListCurrenciesVariables | reactQuery.SkipToken): {
   queryKey: reactQuery.QueryKey;
-  queryFn:
-    | ((options: QueryFnOptions) => Promise<ListCurrenciesResponse>)
-    | reactQuery.SkipToken;
+  queryFn: ((options: QueryFnOptions) => Promise<ListCurrenciesResponse>) | reactQuery.SkipToken;
 };
 
-export function listCurrenciesQuery(
-  variables: ListCurrenciesVariables | reactQuery.SkipToken,
-) {
+export function listCurrenciesQuery(variables: ListCurrenciesVariables | reactQuery.SkipToken) {
   return {
     queryKey: queryKeyFn({
-      path: "/currencies/",
-      operationId: "listCurrencies",
+      path: '/currencies/',
+      operationId: 'listCurrencies',
       variables,
     }),
     queryFn:
       variables === reactQuery.skipToken
         ? reactQuery.skipToken
-        : ({ signal }: QueryFnOptions) =>
-            fetchListCurrencies(variables, signal),
+        : ({ signal }: QueryFnOptions) => fetchListCurrencies(variables, signal),
   };
 }
 
 /**
  * List all currencies.
  */
-export const useSuspenseListCurrencies = <TData = ListCurrenciesResponse,>(
+export const useSuspenseListCurrencies = <TData = ListCurrenciesResponse>(
   variables: ListCurrenciesVariables,
   options?: Omit<
-    reactQuery.UseQueryOptions<
-      ListCurrenciesResponse,
-      ListCurrenciesError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
+    reactQuery.UseQueryOptions<ListCurrenciesResponse, ListCurrenciesError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
   >,
 ) => {
   const { queryOptions, fetcherOptions } = useIntegrationsV1Context(options);
-  return reactQuery.useSuspenseQuery<
-    ListCurrenciesResponse,
-    ListCurrenciesError,
-    TData
-  >({
+  return reactQuery.useSuspenseQuery<ListCurrenciesResponse, ListCurrenciesError, TData>({
     ...listCurrenciesQuery(deepMerge(fetcherOptions, variables)),
     ...options,
     ...queryOptions,
@@ -103,35 +80,122 @@ export const useSuspenseListCurrencies = <TData = ListCurrenciesResponse,>(
 /**
  * List all currencies.
  */
-export const useListCurrencies = <TData = ListCurrenciesResponse,>(
+export const useListCurrencies = <TData = ListCurrenciesResponse>(
   variables: ListCurrenciesVariables | reactQuery.SkipToken,
   options?: Omit<
-    reactQuery.UseQueryOptions<
-      ListCurrenciesResponse,
-      ListCurrenciesError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
+    reactQuery.UseQueryOptions<ListCurrenciesResponse, ListCurrenciesError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
   >,
 ) => {
   const { queryOptions, fetcherOptions } = useIntegrationsV1Context(options);
-  return reactQuery.useQuery<
-    ListCurrenciesResponse,
-    ListCurrenciesError,
-    TData
-  >({
-    ...listCurrenciesQuery(
-      variables === reactQuery.skipToken
-        ? variables
-        : deepMerge(fetcherOptions, variables),
-    ),
+  return reactQuery.useQuery<ListCurrenciesResponse, ListCurrenciesError, TData>({
+    ...listCurrenciesQuery(variables === reactQuery.skipToken ? variables : deepMerge(fetcherOptions, variables)),
     ...options,
     ...queryOptions,
   });
 };
 
-export type QueryOperation = {
-  path: "/currencies/";
-  operationId: "listCurrencies";
-  variables: ListCurrenciesVariables | reactQuery.SkipToken;
+export type GetCurrencyPathParams = {
+  shortcode: string;
 };
+
+export type GetCurrencyError = Fetcher.ErrorWrapper<
+  | {
+      status: 404;
+      payload: Schemas.ErrorResponseSchema;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
+
+export type GetCurrencyVariables = {
+  pathParams: GetCurrencyPathParams;
+} & IntegrationsV1Context['fetcherOptions'];
+
+/**
+ * Get a currency by its shortcode.
+ */
+export const fetchGetCurrency = (variables: GetCurrencyVariables, signal?: AbortSignal) =>
+  integrationsV1Fetch<Schemas.CurrencySchema, GetCurrencyError, undefined, {}, {}, GetCurrencyPathParams>({
+    url: '/currencies/{shortcode}',
+    method: 'get',
+    ...variables,
+    signal,
+  });
+
+/**
+ * Get a currency by its shortcode.
+ */
+export function getCurrencyQuery(variables: GetCurrencyVariables): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<Schemas.CurrencySchema>;
+};
+
+export function getCurrencyQuery(variables: GetCurrencyVariables | reactQuery.SkipToken): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: ((options: QueryFnOptions) => Promise<Schemas.CurrencySchema>) | reactQuery.SkipToken;
+};
+
+export function getCurrencyQuery(variables: GetCurrencyVariables | reactQuery.SkipToken) {
+  return {
+    queryKey: queryKeyFn({
+      path: '/currencies/{shortcode}',
+      operationId: 'getCurrency',
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) => fetchGetCurrency(variables, signal),
+  };
+}
+
+/**
+ * Get a currency by its shortcode.
+ */
+export const useSuspenseGetCurrency = <TData = Schemas.CurrencySchema>(
+  variables: GetCurrencyVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<Schemas.CurrencySchema, GetCurrencyError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useIntegrationsV1Context(options);
+  return reactQuery.useSuspenseQuery<Schemas.CurrencySchema, GetCurrencyError, TData>({
+    ...getCurrencyQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+/**
+ * Get a currency by its shortcode.
+ */
+export const useGetCurrency = <TData = Schemas.CurrencySchema>(
+  variables: GetCurrencyVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<Schemas.CurrencySchema, GetCurrencyError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useIntegrationsV1Context(options);
+  return reactQuery.useQuery<Schemas.CurrencySchema, GetCurrencyError, TData>({
+    ...getCurrencyQuery(variables === reactQuery.skipToken ? variables : deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type QueryOperation =
+  | {
+      path: '/currencies/';
+      operationId: 'listCurrencies';
+      variables: ListCurrenciesVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: '/currencies/{shortcode}';
+      operationId: 'getCurrency';
+      variables: GetCurrencyVariables | reactQuery.SkipToken;
+    };

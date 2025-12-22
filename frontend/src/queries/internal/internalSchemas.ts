@@ -24,6 +24,15 @@ export type CreateCurrencySchema = {
   plural_form: string;
 };
 
+export type CurrencyPermissionsSchema = {
+  /**
+   * Whether the user can edit the currency.
+   *
+   * @default false
+   */
+  edit?: boolean;
+};
+
 export type CurrencySchema = {
   /**
    * The unique shortcode of the currency.

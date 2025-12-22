@@ -8,6 +8,10 @@ export const CreateCurrencySchemaZod = z.object({
   plural_form: z.string(),
 });
 
+export const CurrencyPermissionsSchemaZod = z.object({
+  edit: z.boolean().optional().default(false),
+});
+
 export const CurrencySchemaZod = z.object({
   shortcode: z.string(),
   name: z.string(),

@@ -21,3 +21,23 @@ export type CurrencySchema = {
    */
   plural_form: string;
 };
+
+/**
+ * A generic error response.
+ */
+export type ErrorResponseSchema = {
+  /**
+   * A description of the error.
+   */
+  detail: string;
+};
+
+export type HTTPValidationError = {
+  detail?: ValidationError[];
+};
+
+export type ValidationError = {
+  loc: (string | number)[];
+  msg: string;
+  type: string;
+};

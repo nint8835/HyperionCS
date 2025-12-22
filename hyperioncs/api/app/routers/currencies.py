@@ -3,9 +3,9 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from hyperioncs.api.app.schemas import ErrorResponseSchema
 from hyperioncs.api.app.schemas.currencies import (
     CreateCurrencySchema,
+    CurrencyPermissionsSchema,
     EditCurrencySchema,
 )
 from hyperioncs.db.models.currency import Currency
@@ -14,8 +14,9 @@ from hyperioncs.db.models.currency_permission import (
     CurrencyPermission,
     CurrencyRole,
 )
-from hyperioncs.dependencies.auth import require_session_user
+from hyperioncs.dependencies.auth import get_session_user, require_session_user
 from hyperioncs.dependencies.database import get_db
+from hyperioncs.schemas import ErrorResponseSchema
 from hyperioncs.schemas.currencies import CurrencySchema
 from hyperioncs.schemas.user import SessionUser
 
@@ -117,3 +118,32 @@ async def edit_currency(
         await db.commit()
 
         return existing_currency
+
+
+@currencies_router.get(
+    "/{shortcode}/permissions", response_model=CurrencyPermissionsSchema
+)
+async def get_currency_permissions(
+    shortcode: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: SessionUser = Depends(get_session_user),
+):
+    """Get the permissions the current user has on a given currency."""
+    if not current_user:
+        return CurrencyPermissionsSchema.from_role(None)
+
+    permissions = (
+        (
+            await db.execute(
+                select(CurrencyPermission).filter_by(
+                    currency_shortcode=shortcode, user_id=current_user.id
+                )
+            )
+        )
+        .scalars()
+        .one_or_none()
+    )
+
+    return CurrencyPermissionsSchema.from_role(
+        permissions.role if permissions else None
+    )

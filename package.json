@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "gen-openapi": "npx openapi-codegen gen && npx ts-to-zod --all --skipValidation && npx prettier -w frontend/src/queries/**/*.ts"
+    "gen-openapi": "npx openapi-codegen gen && npx ts-to-zod --all --skipValidation && npx prettier -w \"frontend/src/queries/**/*.ts\""
   },
   "dependencies": {
     "@heroui/react": "^2.8.7",
