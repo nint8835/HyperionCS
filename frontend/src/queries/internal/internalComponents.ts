@@ -280,6 +280,86 @@ export const useGetCurrencyPermissions = <TData = Schemas.CurrencyPermissionsSch
   });
 };
 
+export type ListIntegrationsError = Fetcher.ErrorWrapper<undefined>;
+
+export type ListIntegrationsResponse = Schemas.IntegrationSchema[];
+
+export type ListIntegrationsVariables = InternalContext['fetcherOptions'];
+
+/**
+ * List all integrations the current user has access to.
+ */
+export const fetchListIntegrations = (variables: ListIntegrationsVariables, signal?: AbortSignal) =>
+  internalFetch<ListIntegrationsResponse, ListIntegrationsError, undefined, {}, {}, {}>({
+    url: '/api/internal/integrations/',
+    method: 'get',
+    ...variables,
+    signal,
+  });
+
+/**
+ * List all integrations the current user has access to.
+ */
+export function listIntegrationsQuery(variables: ListIntegrationsVariables): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<ListIntegrationsResponse>;
+};
+
+export function listIntegrationsQuery(variables: ListIntegrationsVariables | reactQuery.SkipToken): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: ((options: QueryFnOptions) => Promise<ListIntegrationsResponse>) | reactQuery.SkipToken;
+};
+
+export function listIntegrationsQuery(variables: ListIntegrationsVariables | reactQuery.SkipToken) {
+  return {
+    queryKey: queryKeyFn({
+      path: '/api/internal/integrations/',
+      operationId: 'listIntegrations',
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) => fetchListIntegrations(variables, signal),
+  };
+}
+
+/**
+ * List all integrations the current user has access to.
+ */
+export const useSuspenseListIntegrations = <TData = ListIntegrationsResponse>(
+  variables: ListIntegrationsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<ListIntegrationsResponse, ListIntegrationsError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useInternalContext(options);
+  return reactQuery.useSuspenseQuery<ListIntegrationsResponse, ListIntegrationsError, TData>({
+    ...listIntegrationsQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+/**
+ * List all integrations the current user has access to.
+ */
+export const useListIntegrations = <TData = ListIntegrationsResponse>(
+  variables: ListIntegrationsVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<ListIntegrationsResponse, ListIntegrationsError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useInternalContext(options);
+  return reactQuery.useQuery<ListIntegrationsResponse, ListIntegrationsError, TData>({
+    ...listIntegrationsQuery(variables === reactQuery.skipToken ? variables : deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type CreateIntegrationError = Fetcher.ErrorWrapper<{
   status: 422;
   payload: Schemas.HTTPValidationError;
@@ -316,6 +396,117 @@ export const useCreateIntegration = (
   });
 };
 
+export type ConnectIntegrationPathParams = {
+  integrationId: string;
+};
+
+export type ConnectIntegrationError = Fetcher.ErrorWrapper<
+  | {
+      status: 403;
+      payload: Schemas.ErrorResponseSchema;
+    }
+  | {
+      status: 409;
+      payload: Schemas.ErrorResponseSchema;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
+
+export type ConnectIntegrationVariables = {
+  body: Schemas.ConnectIntegrationSchema;
+  pathParams: ConnectIntegrationPathParams;
+} & InternalContext['fetcherOptions'];
+
+/**
+ * Connect an integration to a currency.
+ */
+export const fetchConnectIntegration = (variables: ConnectIntegrationVariables, signal?: AbortSignal) =>
+  internalFetch<void, ConnectIntegrationError, Schemas.ConnectIntegrationSchema, {}, {}, ConnectIntegrationPathParams>({
+    url: '/api/internal/integrations/{integrationId}/connect',
+    method: 'post',
+    ...variables,
+    signal,
+  });
+
+/**
+ * Connect an integration to a currency.
+ */
+export const useConnectIntegration = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<void, ConnectIntegrationError, ConnectIntegrationVariables>,
+    'mutationFn'
+  >,
+) => {
+  const { fetcherOptions } = useInternalContext();
+  return reactQuery.useMutation<void, ConnectIntegrationError, ConnectIntegrationVariables>({
+    mutationFn: (variables: ConnectIntegrationVariables) =>
+      fetchConnectIntegration(deepMerge(fetcherOptions, variables)),
+    ...options,
+  });
+};
+
+export type DisconnectIntegrationPathParams = {
+  integrationId: string;
+};
+
+export type DisconnectIntegrationError = Fetcher.ErrorWrapper<
+  | {
+      status: 403;
+      payload: Schemas.ErrorResponseSchema;
+    }
+  | {
+      status: 409;
+      payload: Schemas.ErrorResponseSchema;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
+
+export type DisconnectIntegrationVariables = {
+  body: Schemas.ConnectIntegrationSchema;
+  pathParams: DisconnectIntegrationPathParams;
+} & InternalContext['fetcherOptions'];
+
+/**
+ * Disconnect an integration from a currency.
+ */
+export const fetchDisconnectIntegration = (variables: DisconnectIntegrationVariables, signal?: AbortSignal) =>
+  internalFetch<
+    undefined,
+    DisconnectIntegrationError,
+    Schemas.ConnectIntegrationSchema,
+    {},
+    {},
+    DisconnectIntegrationPathParams
+  >({
+    url: '/api/internal/integrations/{integrationId}/disconnect',
+    method: 'post',
+    ...variables,
+    signal,
+  });
+
+/**
+ * Disconnect an integration from a currency.
+ */
+export const useDisconnectIntegration = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<undefined, DisconnectIntegrationError, DisconnectIntegrationVariables>,
+    'mutationFn'
+  >,
+) => {
+  const { fetcherOptions } = useInternalContext();
+  return reactQuery.useMutation<undefined, DisconnectIntegrationError, DisconnectIntegrationVariables>({
+    mutationFn: (variables: DisconnectIntegrationVariables) =>
+      fetchDisconnectIntegration(deepMerge(fetcherOptions, variables)),
+    ...options,
+  });
+};
+
 export type QueryOperation =
   | {
       path: '/auth/me';
@@ -326,4 +517,9 @@ export type QueryOperation =
       path: '/api/internal/currencies/{shortcode}/permissions';
       operationId: 'getCurrencyPermissions';
       variables: GetCurrencyPermissionsVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: '/api/internal/integrations/';
+      operationId: 'listIntegrations';
+      variables: ListIntegrationsVariables | reactQuery.SkipToken;
     };

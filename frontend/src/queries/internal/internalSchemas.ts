@@ -3,6 +3,13 @@
  *
  * @version 0.1.0
  */
+export type ConnectIntegrationSchema = {
+  /**
+   * The shortcode of the currency to connect the integration to.
+   */
+  currency_shortcode: string;
+};
+
 export type CreateCurrencySchema = {
   /**
    * A unique shortcode to identify the currency.

@@ -17,6 +17,7 @@ class CurrencyRole(enum.Enum):
 
 class CurrencyActionRoles:
     Edit = [CurrencyRole.Owner]
+    ConnectIntegration = [CurrencyRole.Owner]
 
 
 class CurrencyPermission(Base):

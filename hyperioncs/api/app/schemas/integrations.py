@@ -9,3 +9,9 @@ class CreateIntegrationSchema(BaseModel):
     url: NullableString = Field(
         default=None, description="URL to the website for the integration."
     )
+
+
+class ConnectIntegrationSchema(BaseModel):
+    currency_shortcode: str = Field(
+        description="The shortcode of the currency to connect the integration to."
+    )

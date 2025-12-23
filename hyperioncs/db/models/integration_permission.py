@@ -17,6 +17,7 @@ class IntegrationRole(enum.Enum):
 
 class IntegrationActionRoles:
     Edit = [IntegrationRole.Owner]
+    Connect = [IntegrationRole.Owner]
 
 
 class IntegrationPermission(Base):
