@@ -1,17 +1,21 @@
-import { Button } from '@heroui/react';
+import { Alert, Button, Form, Input } from '@heroui/react';
+import { useForm } from '@tanstack/react-form';
 import { createFileRoute } from '@tanstack/react-router';
+import z from 'zod';
 
 import { queryClient } from '@/lib/query';
-import { getCurrencyQuery } from '@/queries/integrations/v1/integrationsV1Components';
+import { getCurrencyQuery, useSuspenseGetCurrency } from '@/queries/integrations/v1/integrationsV1Components';
 import {
   getCurrencyIntegrationsQuery,
   listIntegrationsQuery,
   useConnectIntegration,
   useDisconnectIntegration,
+  useEditCurrency,
   useSuspenseGetCurrencyIntegrations,
   useSuspenseListIntegrations,
 } from '@/queries/internal/internalComponents';
-import type { IntegrationSchema } from '@/queries/internal/internalSchemas';
+import type { ErrorResponseSchema, IntegrationSchema } from '@/queries/internal/internalSchemas';
+import { EditCurrencySchemaZod } from '@/queries/internal/internalSchemas.zod';
 
 export const Route = createFileRoute('/currencies/$shortcode/manage')({
   component: RouteComponent,
@@ -121,11 +125,124 @@ function ManageIntegrations({ shortcode }: { shortcode: string }) {
   );
 }
 
+function ManageCurrencyDetails({ shortcode }: { shortcode: string }) {
+  const { data: currency } = useSuspenseGetCurrency({ pathParams: { shortcode } });
+  const { mutateAsync: editCurrency, isPending, data } = useEditCurrency();
+
+  async function handleSubmit(value: z.infer<typeof EditCurrencySchemaZod>) {
+    try {
+      await editCurrency({ pathParams: { shortcode }, body: value });
+      await queryClient.invalidateQueries(getCurrencyQuery({ pathParams: { shortcode } }));
+    } catch (error) {
+      // TODO: Better, re-usable error handling
+      form.setErrorMap({ onSubmit: { fields: {}, form: (error as ErrorResponseSchema).detail } });
+    }
+  }
+
+  const form = useForm({
+    defaultValues: {
+      name: currency.name,
+      singular_form: currency.singular_form,
+      plural_form: currency.plural_form,
+    },
+    onSubmit: ({ value }) => handleSubmit(value),
+    validators: { onSubmit: EditCurrencySchemaZod },
+  });
+
+  return (
+    <div>
+      <h2 className="text-2xl font-semibold">Manage Currency Details</h2>
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit();
+        }}
+      >
+        <form.Field
+          name="name"
+          children={(field) => (
+            <Input
+              name={field.name}
+              isRequired
+              label="Name"
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+              validationBehavior="aria"
+              errorMessage={field.state.meta.errors
+                .filter((e) => e !== undefined)
+                .map((e) => e.message)
+                .join(', ')}
+              isInvalid={!field.state.meta.isValid}
+            />
+          )}
+        />
+
+        <form.Field
+          name="singular_form"
+          children={(field) => (
+            <Input
+              name={field.name}
+              placeholder="Coin"
+              isRequired
+              label="Singular Form"
+              description={`The singular form of the currency to use in user-facing messages. Example: "They received 1 ${field.state.value || 'Coin'}."`}
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+              validationBehavior="aria"
+              errorMessage={field.state.meta.errors
+                .filter((e) => e !== undefined)
+                .map((e) => e.message)
+                .join(', ')}
+              isInvalid={!field.state.meta.isValid}
+            />
+          )}
+        />
+
+        <form.Field
+          name="plural_form"
+          children={(field) => (
+            <Input
+              name={field.name}
+              placeholder="Coins"
+              isRequired
+              label="Plural Form"
+              description={`The plural form of the currency to use in user-facing messages. Example: "They received 2 ${field.state.value || 'Coins'}."`}
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+              validationBehavior="aria"
+              errorMessage={field.state.meta.errors
+                .filter((e) => e !== undefined)
+                .map((e) => e.message)
+                .join(', ')}
+              isInvalid={!field.state.meta.isValid}
+            />
+          )}
+        />
+
+        <Button type="submit" isLoading={isPending}>
+          Save
+        </Button>
+
+        <form.Subscribe
+          selector={(state) => state.errors.filter((e) => typeof e === 'string')}
+          children={(errors) => errors.length > 0 && <Alert color="danger">{errors}</Alert>}
+        />
+
+        {data && <Alert color="success">Currency updated!</Alert>}
+      </Form>
+    </div>
+  );
+}
+
 function RouteComponent() {
   const { shortcode } = Route.useParams();
 
   return (
-    <div>
+    <div className="space-y-8">
+      <ManageCurrencyDetails shortcode={shortcode} />
       <ManageIntegrations shortcode={shortcode} />
     </div>
   );
