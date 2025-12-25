@@ -97,7 +97,7 @@ async def list_integrations(
 # TODO: Can the permission logic between the two apis be deduplicated?
 @integrations_router.post(
     "/{integration_id}/connect",
-    status_code=status.HTTP_201_CREATED,
+    status_code=status.HTTP_202_ACCEPTED,
     responses={
         status.HTTP_403_FORBIDDEN: {
             "description": "Unauthorized",
@@ -193,10 +193,12 @@ async def connect_integration(
 
         await db.commit()
 
+    return JSONResponse(status_code=status.HTTP_202_ACCEPTED, content={})
+
 
 @integrations_router.post(
     "/{integration_id}/disconnect",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_202_ACCEPTED,
     responses={
         status.HTTP_403_FORBIDDEN: {
             "description": "Unauthorized",
@@ -287,3 +289,5 @@ async def disconnect_integration(
         await db.delete(existing_connection)
 
         await db.commit()
+
+    return JSONResponse(status_code=status.HTTP_202_ACCEPTED, content={})

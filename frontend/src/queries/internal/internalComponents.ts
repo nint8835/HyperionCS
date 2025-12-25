@@ -581,7 +581,7 @@ export type DisconnectIntegrationVariables = {
  */
 export const fetchDisconnectIntegration = (variables: DisconnectIntegrationVariables, signal?: AbortSignal) =>
   internalFetch<
-    undefined,
+    void,
     DisconnectIntegrationError,
     Schemas.ConnectIntegrationSchema,
     {},
@@ -599,12 +599,12 @@ export const fetchDisconnectIntegration = (variables: DisconnectIntegrationVaria
  */
 export const useDisconnectIntegration = (
   options?: Omit<
-    reactQuery.UseMutationOptions<undefined, DisconnectIntegrationError, DisconnectIntegrationVariables>,
+    reactQuery.UseMutationOptions<void, DisconnectIntegrationError, DisconnectIntegrationVariables>,
     'mutationFn'
   >,
 ) => {
   const { fetcherOptions } = useInternalContext();
-  return reactQuery.useMutation<undefined, DisconnectIntegrationError, DisconnectIntegrationVariables>({
+  return reactQuery.useMutation<void, DisconnectIntegrationError, DisconnectIntegrationVariables>({
     mutationFn: (variables: DisconnectIntegrationVariables) =>
       fetchDisconnectIntegration(deepMerge(fetcherOptions, variables)),
     ...options,
