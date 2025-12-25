@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
-from sqlalchemy import select
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from hyperioncs.api.app.schemas.currencies import (
@@ -14,10 +14,13 @@ from hyperioncs.db.models.currency_permission import (
     CurrencyPermission,
     CurrencyRole,
 )
+from hyperioncs.db.models.integration import Integration
+from hyperioncs.db.models.integration_connection import IntegrationConnection
 from hyperioncs.dependencies.auth import get_session_user, require_session_user
 from hyperioncs.dependencies.database import get_db
 from hyperioncs.schemas import ErrorResponseSchema
 from hyperioncs.schemas.currencies import CurrencySchema
+from hyperioncs.schemas.integrations import IntegrationSchema
 from hyperioncs.schemas.user import SessionUser
 
 currencies_router = APIRouter(tags=["Currencies"])
@@ -146,4 +149,55 @@ async def get_currency_permissions(
 
     return CurrencyPermissionsSchema.from_role(
         permissions.role if permissions else None
+    )
+
+
+# TODO: Should this be optionally returned straight from the currency get API?
+@currencies_router.get(
+    "/{shortcode}/integrations",
+    response_model=list[IntegrationSchema],
+    responses={
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Unauthorized",
+            "model": ErrorResponseSchema,
+        }
+    },
+)
+async def get_currency_integrations(
+    shortcode: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: SessionUser = Depends(get_session_user),
+):
+    """Get the integrations linked to a given currency."""
+    # TODO: Should this permit anyone with edit permissions to see integrations?
+    currency_permission = (
+        await db.execute(
+            select(CurrencyPermission)
+            .filter_by(currency_shortcode=shortcode, user_id=current_user.id)
+            .filter(CurrencyPermission.role.in_(CurrencyActionRoles.ConnectIntegration))
+        )
+    ).scalar_one_or_none()
+
+    if currency_permission is None:
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content=ErrorResponseSchema(
+                detail="The requested currency doesn't exist or you do not have permission to view its integrations."
+            ).model_dump(),
+        )
+
+    return (
+        (
+            await db.execute(
+                select(Integration).join(
+                    IntegrationConnection,
+                    and_(
+                        IntegrationConnection.integration_id == Integration.id,
+                        IntegrationConnection.currency_shortcode == shortcode,
+                    ),
+                )
+            )
+        )
+        .scalars()
+        .all()
     )

@@ -280,6 +280,110 @@ export const useGetCurrencyPermissions = <TData = Schemas.CurrencyPermissionsSch
   });
 };
 
+export type GetCurrencyIntegrationsPathParams = {
+  shortcode: string;
+};
+
+export type GetCurrencyIntegrationsError = Fetcher.ErrorWrapper<
+  | {
+      status: 403;
+      payload: Schemas.ErrorResponseSchema;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
+
+export type GetCurrencyIntegrationsResponse = Schemas.IntegrationSchema[];
+
+export type GetCurrencyIntegrationsVariables = {
+  pathParams: GetCurrencyIntegrationsPathParams;
+} & InternalContext['fetcherOptions'];
+
+/**
+ * Get the integrations linked to a given currency.
+ */
+export const fetchGetCurrencyIntegrations = (variables: GetCurrencyIntegrationsVariables, signal?: AbortSignal) =>
+  internalFetch<
+    GetCurrencyIntegrationsResponse,
+    GetCurrencyIntegrationsError,
+    undefined,
+    {},
+    {},
+    GetCurrencyIntegrationsPathParams
+  >({
+    url: '/api/internal/currencies/{shortcode}/integrations',
+    method: 'get',
+    ...variables,
+    signal,
+  });
+
+/**
+ * Get the integrations linked to a given currency.
+ */
+export function getCurrencyIntegrationsQuery(variables: GetCurrencyIntegrationsVariables): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<GetCurrencyIntegrationsResponse>;
+};
+
+export function getCurrencyIntegrationsQuery(variables: GetCurrencyIntegrationsVariables | reactQuery.SkipToken): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: ((options: QueryFnOptions) => Promise<GetCurrencyIntegrationsResponse>) | reactQuery.SkipToken;
+};
+
+export function getCurrencyIntegrationsQuery(variables: GetCurrencyIntegrationsVariables | reactQuery.SkipToken) {
+  return {
+    queryKey: queryKeyFn({
+      path: '/api/internal/currencies/{shortcode}/integrations',
+      operationId: 'getCurrencyIntegrations',
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) => fetchGetCurrencyIntegrations(variables, signal),
+  };
+}
+
+/**
+ * Get the integrations linked to a given currency.
+ */
+export const useSuspenseGetCurrencyIntegrations = <TData = GetCurrencyIntegrationsResponse>(
+  variables: GetCurrencyIntegrationsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<GetCurrencyIntegrationsResponse, GetCurrencyIntegrationsError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useInternalContext(options);
+  return reactQuery.useSuspenseQuery<GetCurrencyIntegrationsResponse, GetCurrencyIntegrationsError, TData>({
+    ...getCurrencyIntegrationsQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+/**
+ * Get the integrations linked to a given currency.
+ */
+export const useGetCurrencyIntegrations = <TData = GetCurrencyIntegrationsResponse>(
+  variables: GetCurrencyIntegrationsVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<GetCurrencyIntegrationsResponse, GetCurrencyIntegrationsError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useInternalContext(options);
+  return reactQuery.useQuery<GetCurrencyIntegrationsResponse, GetCurrencyIntegrationsError, TData>({
+    ...getCurrencyIntegrationsQuery(
+      variables === reactQuery.skipToken ? variables : deepMerge(fetcherOptions, variables),
+    ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type ListIntegrationsError = Fetcher.ErrorWrapper<undefined>;
 
 export type ListIntegrationsResponse = Schemas.IntegrationSchema[];
@@ -517,6 +621,11 @@ export type QueryOperation =
       path: '/api/internal/currencies/{shortcode}/permissions';
       operationId: 'getCurrencyPermissions';
       variables: GetCurrencyPermissionsVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: '/api/internal/currencies/{shortcode}/integrations';
+      operationId: 'getCurrencyIntegrations';
+      variables: GetCurrencyIntegrationsVariables | reactQuery.SkipToken;
     }
   | {
       path: '/api/internal/integrations/';
