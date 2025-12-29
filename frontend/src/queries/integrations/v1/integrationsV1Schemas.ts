@@ -36,6 +36,29 @@ export type HTTPValidationError = {
   detail?: ValidationError[];
 };
 
+export type IntegrationSchema = {
+  /**
+   * The unique identifier of the integration.
+   */
+  id: string;
+  /**
+   * The name of the integration.
+   */
+  name: string;
+  /**
+   * A description of the integration.
+   */
+  description: string;
+  /**
+   * URL to the website for the integration.
+   */
+  url?: string | null;
+  /**
+   * Whether the integration is private.
+   */
+  private: boolean;
+};
+
 export type ValidationError = {
   loc: (string | number)[];
   msg: string;

@@ -9,3 +9,4 @@ from .currency_permission import CurrencyPermission
 from .integration import Integration
 from .integration_connection import IntegrationConnection
 from .integration_permission import IntegrationPermission
+from .integration_token import IntegrationToken

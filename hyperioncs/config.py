@@ -18,6 +18,9 @@ class Config(BaseSettings):
     db_path: str = "hyperion.sqlite"
     db_log_queries: bool = False
 
+    jwt_secret: str
+    jwt_algorithm: str = "HS256"
+
     @property
     def async_db_connection_uri(self) -> str:
         return f"sqlite+aiosqlite:///{self.db_path}"

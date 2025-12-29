@@ -188,6 +188,84 @@ export const useGetCurrency = <TData = Schemas.CurrencySchema>(
   });
 };
 
+export type WhoamiError = Fetcher.ErrorWrapper<undefined>;
+
+export type WhoamiVariables = IntegrationsV1Context['fetcherOptions'];
+
+/**
+ * Get details about the currently authenticated integration.
+ */
+export const fetchWhoami = (variables: WhoamiVariables, signal?: AbortSignal) =>
+  integrationsV1Fetch<Schemas.IntegrationSchema, WhoamiError, undefined, {}, {}, {}>({
+    url: '/whoami',
+    method: 'get',
+    ...variables,
+    signal,
+  });
+
+/**
+ * Get details about the currently authenticated integration.
+ */
+export function whoamiQuery(variables: WhoamiVariables): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<Schemas.IntegrationSchema>;
+};
+
+export function whoamiQuery(variables: WhoamiVariables | reactQuery.SkipToken): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: ((options: QueryFnOptions) => Promise<Schemas.IntegrationSchema>) | reactQuery.SkipToken;
+};
+
+export function whoamiQuery(variables: WhoamiVariables | reactQuery.SkipToken) {
+  return {
+    queryKey: queryKeyFn({
+      path: '/whoami',
+      operationId: 'whoami',
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) => fetchWhoami(variables, signal),
+  };
+}
+
+/**
+ * Get details about the currently authenticated integration.
+ */
+export const useSuspenseWhoami = <TData = Schemas.IntegrationSchema>(
+  variables: WhoamiVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<Schemas.IntegrationSchema, WhoamiError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useIntegrationsV1Context(options);
+  return reactQuery.useSuspenseQuery<Schemas.IntegrationSchema, WhoamiError, TData>({
+    ...whoamiQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+/**
+ * Get details about the currently authenticated integration.
+ */
+export const useWhoami = <TData = Schemas.IntegrationSchema>(
+  variables: WhoamiVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<Schemas.IntegrationSchema, WhoamiError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useIntegrationsV1Context(options);
+  return reactQuery.useQuery<Schemas.IntegrationSchema, WhoamiError, TData>({
+    ...whoamiQuery(variables === reactQuery.skipToken ? variables : deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
 export type QueryOperation =
   | {
       path: '/currencies/';
@@ -198,4 +276,9 @@ export type QueryOperation =
       path: '/currencies/{shortcode}';
       operationId: 'getCurrency';
       variables: GetCurrencyVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: '/whoami';
+      operationId: 'whoami';
+      variables: WhoamiVariables | reactQuery.SkipToken;
     };

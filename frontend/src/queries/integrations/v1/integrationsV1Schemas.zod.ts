@@ -18,6 +18,14 @@ export const ValidationErrorZod = z.object({
   type: z.string(),
 });
 
+export const IntegrationSchemaZod = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  url: z.string().optional().nullable(),
+  private: z.boolean(),
+});
+
 export const HTTPValidationErrorZod = z.object({
   detail: z.array(ValidationErrorZod).optional(),
 });
