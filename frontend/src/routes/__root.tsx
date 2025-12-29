@@ -1,9 +1,10 @@
-import { HeroUIProvider, Link, Navbar, NavbarBrand } from '@heroui/react';
+import { HeroUIProvider, Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@heroui/react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { type NavigateOptions, Outlet, type ToOptions, createRootRoute, useRouter } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 
+import { Link } from '@/components/link';
 import { queryClient } from '@/lib/query';
 import { useStore } from '@/lib/state';
 import { fetchGetCurrentUser } from '@/queries/internal/internalComponents';
@@ -29,6 +30,7 @@ declare module '@react-types/shared' {
 
 function RootComponent() {
   const router = useRouter();
+  const user = useStore((state) => state.user);
 
   return (
     <HeroUIProvider
@@ -39,10 +41,28 @@ function RootComponent() {
         <div className="relative flex h-screen flex-col overflow-auto">
           <Navbar>
             <NavbarBrand>
-              <Link href="/" color="foreground">
+              <Link to="/" color="foreground">
                 <h1 className="text-2xl font-bold">Hyperion</h1>
               </Link>
             </NavbarBrand>
+            <NavbarContent justify="end">
+              <NavbarItem>
+                <Link to="/currencies" color="foreground">
+                  Currencies
+                </Link>
+              </NavbarItem>
+              <NavbarItem>
+                {user ? (
+                  <Link to="/auth/logout" search={{ next: window.location.href }} color="foreground">
+                    Logout
+                  </Link>
+                ) : (
+                  <Link to="/auth/login" search={{ next: window.location.href }} color="foreground">
+                    Login
+                  </Link>
+                )}
+              </NavbarItem>
+            </NavbarContent>
           </Navbar>
           <main className="container mx-auto max-w-7xl grow px-6">
             <Outlet />

@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CurrenciesIndexRouteImport } from './routes/currencies/index'
 import { Route as IntegrationsCreateRouteImport } from './routes/integrations/create'
 import { Route as CurrenciesCreateRouteImport } from './routes/currencies/create'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
@@ -20,6 +21,11 @@ import { Route as CurrenciesShortcodeManageRouteImport } from './routes/currenci
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CurrenciesIndexRoute = CurrenciesIndexRouteImport.update({
+  id: '/currencies/',
+  path: '/currencies/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IntegrationsCreateRoute = IntegrationsCreateRouteImport.update({
@@ -61,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/auth/logout': typeof AuthLogoutRoute
   '/currencies/create': typeof CurrenciesCreateRoute
   '/integrations/create': typeof IntegrationsCreateRoute
+  '/currencies': typeof CurrenciesIndexRoute
   '/currencies/$shortcode/manage': typeof CurrenciesShortcodeManageRoute
   '/currencies/$shortcode': typeof CurrenciesShortcodeIndexRoute
 }
@@ -70,6 +77,7 @@ export interface FileRoutesByTo {
   '/auth/logout': typeof AuthLogoutRoute
   '/currencies/create': typeof CurrenciesCreateRoute
   '/integrations/create': typeof IntegrationsCreateRoute
+  '/currencies': typeof CurrenciesIndexRoute
   '/currencies/$shortcode/manage': typeof CurrenciesShortcodeManageRoute
   '/currencies/$shortcode': typeof CurrenciesShortcodeIndexRoute
 }
@@ -80,6 +88,7 @@ export interface FileRoutesById {
   '/auth/logout': typeof AuthLogoutRoute
   '/currencies/create': typeof CurrenciesCreateRoute
   '/integrations/create': typeof IntegrationsCreateRoute
+  '/currencies/': typeof CurrenciesIndexRoute
   '/currencies/$shortcode/manage': typeof CurrenciesShortcodeManageRoute
   '/currencies/$shortcode/': typeof CurrenciesShortcodeIndexRoute
 }
@@ -91,6 +100,7 @@ export interface FileRouteTypes {
     | '/auth/logout'
     | '/currencies/create'
     | '/integrations/create'
+    | '/currencies'
     | '/currencies/$shortcode/manage'
     | '/currencies/$shortcode'
   fileRoutesByTo: FileRoutesByTo
@@ -100,6 +110,7 @@ export interface FileRouteTypes {
     | '/auth/logout'
     | '/currencies/create'
     | '/integrations/create'
+    | '/currencies'
     | '/currencies/$shortcode/manage'
     | '/currencies/$shortcode'
   id:
@@ -109,6 +120,7 @@ export interface FileRouteTypes {
     | '/auth/logout'
     | '/currencies/create'
     | '/integrations/create'
+    | '/currencies/'
     | '/currencies/$shortcode/manage'
     | '/currencies/$shortcode/'
   fileRoutesById: FileRoutesById
@@ -119,6 +131,7 @@ export interface RootRouteChildren {
   AuthLogoutRoute: typeof AuthLogoutRoute
   CurrenciesCreateRoute: typeof CurrenciesCreateRoute
   IntegrationsCreateRoute: typeof IntegrationsCreateRoute
+  CurrenciesIndexRoute: typeof CurrenciesIndexRoute
   CurrenciesShortcodeManageRoute: typeof CurrenciesShortcodeManageRoute
   CurrenciesShortcodeIndexRoute: typeof CurrenciesShortcodeIndexRoute
 }
@@ -130,6 +143,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/currencies/': {
+      id: '/currencies/'
+      path: '/currencies'
+      fullPath: '/currencies'
+      preLoaderRoute: typeof CurrenciesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/integrations/create': {
@@ -183,6 +203,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLogoutRoute: AuthLogoutRoute,
   CurrenciesCreateRoute: CurrenciesCreateRoute,
   IntegrationsCreateRoute: IntegrationsCreateRoute,
+  CurrenciesIndexRoute: CurrenciesIndexRoute,
   CurrenciesShortcodeManageRoute: CurrenciesShortcodeManageRoute,
   CurrenciesShortcodeIndexRoute: CurrenciesShortcodeIndexRoute,
 }
