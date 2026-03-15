@@ -10,17 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as IntegrationsIndexRouteImport } from './routes/integrations/index'
 import { Route as CurrenciesIndexRouteImport } from './routes/currencies/index'
 import { Route as IntegrationsCreateRouteImport } from './routes/integrations/create'
 import { Route as CurrenciesCreateRouteImport } from './routes/currencies/create'
 import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as CurrenciesShortcodeIndexRouteImport } from './routes/currencies/$shortcode/index'
+import { Route as IntegrationsIntegrationIdManageRouteImport } from './routes/integrations/$integrationId/manage'
 import { Route as CurrenciesShortcodeManageRouteImport } from './routes/currencies/$shortcode/manage'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegrationsIndexRoute = IntegrationsIndexRouteImport.update({
+  id: '/integrations/',
+  path: '/integrations/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CurrenciesIndexRoute = CurrenciesIndexRouteImport.update({
@@ -54,6 +61,12 @@ const CurrenciesShortcodeIndexRoute =
     path: '/currencies/$shortcode/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const IntegrationsIntegrationIdManageRoute =
+  IntegrationsIntegrationIdManageRouteImport.update({
+    id: '/integrations/$integrationId/manage',
+    path: '/integrations/$integrationId/manage',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CurrenciesShortcodeManageRoute =
   CurrenciesShortcodeManageRouteImport.update({
     id: '/currencies/$shortcode/manage',
@@ -68,7 +81,9 @@ export interface FileRoutesByFullPath {
   '/currencies/create': typeof CurrenciesCreateRoute
   '/integrations/create': typeof IntegrationsCreateRoute
   '/currencies/': typeof CurrenciesIndexRoute
+  '/integrations/': typeof IntegrationsIndexRoute
   '/currencies/$shortcode/manage': typeof CurrenciesShortcodeManageRoute
+  '/integrations/$integrationId/manage': typeof IntegrationsIntegrationIdManageRoute
   '/currencies/$shortcode/': typeof CurrenciesShortcodeIndexRoute
 }
 export interface FileRoutesByTo {
@@ -78,7 +93,9 @@ export interface FileRoutesByTo {
   '/currencies/create': typeof CurrenciesCreateRoute
   '/integrations/create': typeof IntegrationsCreateRoute
   '/currencies': typeof CurrenciesIndexRoute
+  '/integrations': typeof IntegrationsIndexRoute
   '/currencies/$shortcode/manage': typeof CurrenciesShortcodeManageRoute
+  '/integrations/$integrationId/manage': typeof IntegrationsIntegrationIdManageRoute
   '/currencies/$shortcode': typeof CurrenciesShortcodeIndexRoute
 }
 export interface FileRoutesById {
@@ -89,7 +106,9 @@ export interface FileRoutesById {
   '/currencies/create': typeof CurrenciesCreateRoute
   '/integrations/create': typeof IntegrationsCreateRoute
   '/currencies/': typeof CurrenciesIndexRoute
+  '/integrations/': typeof IntegrationsIndexRoute
   '/currencies/$shortcode/manage': typeof CurrenciesShortcodeManageRoute
+  '/integrations/$integrationId/manage': typeof IntegrationsIntegrationIdManageRoute
   '/currencies/$shortcode/': typeof CurrenciesShortcodeIndexRoute
 }
 export interface FileRouteTypes {
@@ -101,7 +120,9 @@ export interface FileRouteTypes {
     | '/currencies/create'
     | '/integrations/create'
     | '/currencies/'
+    | '/integrations/'
     | '/currencies/$shortcode/manage'
+    | '/integrations/$integrationId/manage'
     | '/currencies/$shortcode/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -111,7 +132,9 @@ export interface FileRouteTypes {
     | '/currencies/create'
     | '/integrations/create'
     | '/currencies'
+    | '/integrations'
     | '/currencies/$shortcode/manage'
+    | '/integrations/$integrationId/manage'
     | '/currencies/$shortcode'
   id:
     | '__root__'
@@ -121,7 +144,9 @@ export interface FileRouteTypes {
     | '/currencies/create'
     | '/integrations/create'
     | '/currencies/'
+    | '/integrations/'
     | '/currencies/$shortcode/manage'
+    | '/integrations/$integrationId/manage'
     | '/currencies/$shortcode/'
   fileRoutesById: FileRoutesById
 }
@@ -132,7 +157,9 @@ export interface RootRouteChildren {
   CurrenciesCreateRoute: typeof CurrenciesCreateRoute
   IntegrationsCreateRoute: typeof IntegrationsCreateRoute
   CurrenciesIndexRoute: typeof CurrenciesIndexRoute
+  IntegrationsIndexRoute: typeof IntegrationsIndexRoute
   CurrenciesShortcodeManageRoute: typeof CurrenciesShortcodeManageRoute
+  IntegrationsIntegrationIdManageRoute: typeof IntegrationsIntegrationIdManageRoute
   CurrenciesShortcodeIndexRoute: typeof CurrenciesShortcodeIndexRoute
 }
 
@@ -143,6 +170,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integrations/': {
+      id: '/integrations/'
+      path: '/integrations'
+      fullPath: '/integrations/'
+      preLoaderRoute: typeof IntegrationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/currencies/': {
@@ -187,6 +221,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CurrenciesShortcodeIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/integrations/$integrationId/manage': {
+      id: '/integrations/$integrationId/manage'
+      path: '/integrations/$integrationId/manage'
+      fullPath: '/integrations/$integrationId/manage'
+      preLoaderRoute: typeof IntegrationsIntegrationIdManageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/currencies/$shortcode/manage': {
       id: '/currencies/$shortcode/manage'
       path: '/currencies/$shortcode/manage'
@@ -204,7 +245,9 @@ const rootRouteChildren: RootRouteChildren = {
   CurrenciesCreateRoute: CurrenciesCreateRoute,
   IntegrationsCreateRoute: IntegrationsCreateRoute,
   CurrenciesIndexRoute: CurrenciesIndexRoute,
+  IntegrationsIndexRoute: IntegrationsIndexRoute,
   CurrenciesShortcodeManageRoute: CurrenciesShortcodeManageRoute,
+  IntegrationsIntegrationIdManageRoute: IntegrationsIntegrationIdManageRoute,
   CurrenciesShortcodeIndexRoute: CurrenciesShortcodeIndexRoute,
 }
 export const routeTree = rootRouteImport
