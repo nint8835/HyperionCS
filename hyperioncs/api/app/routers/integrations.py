@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from hyperioncs.api.app.schemas.integrations import (
     ConnectIntegrationSchema,
     CreateIntegrationSchema,
+    EditIntegrationSchema,
 )
 from hyperioncs.db.models.currency import Currency
 from hyperioncs.db.models.currency_permission import (
@@ -164,6 +165,56 @@ async def get_integration(
         )
 
     return integration
+
+
+@integrations_router.patch(
+    "/{integration_id}",
+    response_model=IntegrationSchema,
+    responses={
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Unauthorized",
+            "model": ErrorResponseSchema,
+        }
+    },
+)
+async def edit_integration(
+    integration_id: str,
+    body: EditIntegrationSchema,
+    db: AsyncSession = Depends(get_db),
+    current_user: SessionUser = Depends(require_session_user),
+):
+    """Edit an integration's metadata. Requires Edit role."""
+    async with db.begin():
+        integration = (
+            await db.execute(
+                select(Integration)
+                .filter_by(id=integration_id)
+                .join(
+                    IntegrationPermission,
+                    and_(
+                        IntegrationPermission.user_id == current_user.id,
+                        IntegrationPermission.integration_id == Integration.id,
+                        IntegrationPermission.role.in_(IntegrationActionRoles.Edit),
+                    ),
+                )
+            )
+        ).scalar_one_or_none()
+
+        if not integration:
+            return JSONResponse(
+                status_code=status.HTTP_403_FORBIDDEN,
+                content=ErrorResponseSchema(
+                    detail="The requested integration could not be found or you do not have permission to edit it."
+                ).model_dump(),
+            )
+
+        integration.name = body.name
+        integration.description = body.description
+        integration.url = body.url
+
+        await db.commit()
+
+        return integration
 
 
 # TODO: Should this and the disconnect endpoint be made more restful?
