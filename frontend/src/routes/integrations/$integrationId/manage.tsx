@@ -190,7 +190,7 @@ function ManageTokens({ integrationId }: { integrationId: string }) {
   });
   const { mutateAsync: createToken, isPending } = useCreateIntegrationToken();
 
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [newTokenValue, setNewTokenValue] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
@@ -202,9 +202,9 @@ function ManageTokens({ integrationId }: { integrationId: string }) {
         pathParams: { integrationId },
         body: value,
       });
-      setNewTokenValue(result.token);
-      setShowCreateForm(false);
+      setCreateModalOpen(false);
       form.reset();
+      setNewTokenValue(result.token);
       await queryClient.invalidateQueries(
         listIntegrationTokensQuery({ pathParams: { integrationId } }),
       );
@@ -255,52 +255,73 @@ function ManageTokens({ integrationId }: { integrationId: string }) {
 
       <Button
         onPress={() => {
-          setShowCreateForm((v) => !v);
+          setCreateModalOpen(true);
           form.reset();
         }}
       >
         Create Token
       </Button>
 
-      {showCreateForm && (
-        <Form
-          onSubmit={(e) => {
-            e.preventDefault();
-            form.handleSubmit();
-          }}
-        >
-          <form.Field
-            name="name"
-            children={(field) => (
-              <Input
-                name={field.name}
-                isRequired
-                label="Token Name"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-                validationBehavior="aria"
-                errorMessage={field.state.meta.errors
-                  .filter((e) => e !== undefined)
-                  .map((e) => e.message)
-                  .join(', ')}
-                isInvalid={!field.state.meta.isValid}
+      <Modal
+        isOpen={createModalOpen}
+        onClose={() => {
+          setCreateModalOpen(false);
+          form.reset();
+        }}
+      >
+        <ModalContent>
+          <ModalHeader>Create Token</ModalHeader>
+          <ModalBody>
+            <Form
+              onSubmit={(e) => {
+                e.preventDefault();
+                form.handleSubmit();
+              }}
+            >
+              <form.Field
+                name="name"
+                children={(field) => (
+                  <Input
+                    name={field.name}
+                    isRequired
+                    label="Token Name"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    validationBehavior="aria"
+                    errorMessage={field.state.meta.errors
+                      .filter((e) => e !== undefined)
+                      .map((e) => e.message)
+                      .join(', ')}
+                    isInvalid={!field.state.meta.isValid}
+                  />
+                )}
               />
-            )}
-          />
-          <Button type="submit" isLoading={isPending}>
-            Create
-          </Button>
-          <form.Subscribe
-            selector={(state) =>
-              state.errors.filter((e) => typeof e === 'string')
-            }
-            children={(errors) =>
-              errors.length > 0 && <Alert color="danger">{errors}</Alert>
-            }
-          />
-        </Form>
-      )}
+              <Button type="submit" isLoading={isPending}>
+                Create
+              </Button>
+              <form.Subscribe
+                selector={(state) =>
+                  state.errors.filter((e) => typeof e === 'string')
+                }
+                children={(errors) =>
+                  errors.length > 0 && <Alert color="danger">{errors}</Alert>
+                }
+              />
+            </Form>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              onPress={() => {
+                setCreateModalOpen(false);
+                form.reset();
+              }}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       <Modal
         isOpen={newTokenValue !== null}

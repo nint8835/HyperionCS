@@ -75,54 +75,29 @@ async def create_integration(
 
 @integrations_router.get("/", response_model=list[IntegrationSchema])
 async def list_integrations(
-    manageable: bool = Query(False),
+    manageable: bool = Query(
+        False,
+        description="When true, returns only integrations the user can edit. Otherwise returns public integrations and integrations the user can connect.",
+    ),
     db: AsyncSession = Depends(get_db),
     current_user: SessionUser = Depends(require_session_user),
 ):
-    """List integrations visible to the current user.
-
-    When manageable=true, returns only integrations the user can edit.
-    Otherwise returns public integrations and integrations the user can connect.
-    """
-    if manageable:
-        return (
-            (
-                await db.execute(
-                    select(Integration).join(
-                        IntegrationPermission,
-                        and_(
-                            IntegrationPermission.user_id == current_user.id,
-                            IntegrationPermission.integration_id == Integration.id,
-                            IntegrationPermission.role.in_(IntegrationActionRoles.Edit),
-                        ),
-                    )
-                )
-            )
-            .scalars()
-            .all()
-        )
-
-    return (
-        (
-            await db.execute(
-                select(Integration)
-                .join(
-                    IntegrationPermission,
-                    and_(
-                        IntegrationPermission.user_id == current_user.id,
-                        IntegrationPermission.integration_id == Integration.id,
-                        IntegrationPermission.role.in_(IntegrationActionRoles.Connect),
-                    ),
-                    isouter=True,
-                )
-                .filter(
-                    or_(not_(Integration.private), IntegrationPermission.id.isnot(None))
-                )
-            )
-        )
-        .scalars()
-        .all()
+    """List integrations visible to the current user."""
+    roles = IntegrationActionRoles.Edit if manageable else IntegrationActionRoles.Connect
+    query = select(Integration).join(
+        IntegrationPermission,
+        and_(
+            IntegrationPermission.user_id == current_user.id,
+            IntegrationPermission.integration_id == Integration.id,
+            IntegrationPermission.role.in_(roles),
+        ),
+        isouter=not manageable,
     )
+    if not manageable:
+        query = query.filter(
+            or_(not_(Integration.private), IntegrationPermission.id.isnot(None))
+        )
+    return (await db.execute(query)).scalars().all()
 
 
 @integrations_router.get(
@@ -140,11 +115,7 @@ async def get_integration(
     db: AsyncSession = Depends(get_db),
     current_user: SessionUser = Depends(require_session_user),
 ):
-    """Get a single integration visible to the current user.
-
-    Public integrations are accessible to all authenticated users.
-    Private integrations require the View role.
-    """
+    """Get a single integration visible to the current user."""
     integration = (
         await db.execute(
             select(Integration)
@@ -191,7 +162,7 @@ async def edit_integration(
     db: AsyncSession = Depends(get_db),
     current_user: SessionUser = Depends(require_session_user),
 ):
-    """Edit an integration's metadata. Requires Edit role."""
+    """Edit an integration's metadata."""
     async with db.begin():
         integration = (
             await db.execute(
@@ -240,7 +211,7 @@ async def list_integration_tokens(
     db: AsyncSession = Depends(get_db),
     current_user: SessionUser = Depends(require_session_user),
 ):
-    """List tokens for an integration. Requires Edit role."""
+    """List tokens for an integration."""
     integration = (
         await db.execute(
             select(Integration)
@@ -292,7 +263,7 @@ async def create_integration_token(
     db: AsyncSession = Depends(get_db),
     current_user: SessionUser = Depends(require_session_user),
 ):
-    """Create a new token for an integration. Requires Edit role.
+    """Create a new token for an integration.
 
     The token value is only returned in this response — it cannot be retrieved later.
     """
@@ -362,7 +333,7 @@ async def delete_integration_token(
     db: AsyncSession = Depends(get_db),
     current_user: SessionUser = Depends(require_session_user),
 ):
-    """Delete an integration token. Requires Edit role."""
+    """Delete an integration token."""
     async with db.begin():
         integration = (
             await db.execute(

@@ -28,6 +28,7 @@ function CreateIntegrationForm() {
       );
       navigate({ to: '/integrations' });
     } catch (error) {
+      // TODO: Better, re-usable error handling
       form.setErrorMap({ onSubmit: { fields: {}, form: (error as ErrorResponseSchema).detail } });
     }
   }
