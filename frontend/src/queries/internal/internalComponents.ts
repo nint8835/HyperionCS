@@ -384,86 +384,6 @@ export const useGetCurrencyIntegrations = <TData = GetCurrencyIntegrationsRespon
   });
 };
 
-export type ListIntegrationsError = Fetcher.ErrorWrapper<undefined>;
-
-export type ListIntegrationsResponse = Schemas.IntegrationSchema[];
-
-export type ListIntegrationsVariables = InternalContext['fetcherOptions'];
-
-/**
- * List all integrations the current user has access to.
- */
-export const fetchListIntegrations = (variables: ListIntegrationsVariables, signal?: AbortSignal) =>
-  internalFetch<ListIntegrationsResponse, ListIntegrationsError, undefined, {}, {}, {}>({
-    url: '/api/internal/integrations/',
-    method: 'get',
-    ...variables,
-    signal,
-  });
-
-/**
- * List all integrations the current user has access to.
- */
-export function listIntegrationsQuery(variables: ListIntegrationsVariables): {
-  queryKey: reactQuery.QueryKey;
-  queryFn: (options: QueryFnOptions) => Promise<ListIntegrationsResponse>;
-};
-
-export function listIntegrationsQuery(variables: ListIntegrationsVariables | reactQuery.SkipToken): {
-  queryKey: reactQuery.QueryKey;
-  queryFn: ((options: QueryFnOptions) => Promise<ListIntegrationsResponse>) | reactQuery.SkipToken;
-};
-
-export function listIntegrationsQuery(variables: ListIntegrationsVariables | reactQuery.SkipToken) {
-  return {
-    queryKey: queryKeyFn({
-      path: '/api/internal/integrations/',
-      operationId: 'listIntegrations',
-      variables,
-    }),
-    queryFn:
-      variables === reactQuery.skipToken
-        ? reactQuery.skipToken
-        : ({ signal }: QueryFnOptions) => fetchListIntegrations(variables, signal),
-  };
-}
-
-/**
- * List all integrations the current user has access to.
- */
-export const useSuspenseListIntegrations = <TData = ListIntegrationsResponse>(
-  variables: ListIntegrationsVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<ListIntegrationsResponse, ListIntegrationsError, TData>,
-    'queryKey' | 'queryFn' | 'initialData'
-  >,
-) => {
-  const { queryOptions, fetcherOptions } = useInternalContext(options);
-  return reactQuery.useSuspenseQuery<ListIntegrationsResponse, ListIntegrationsError, TData>({
-    ...listIntegrationsQuery(deepMerge(fetcherOptions, variables)),
-    ...options,
-    ...queryOptions,
-  });
-};
-
-/**
- * List all integrations the current user has access to.
- */
-export const useListIntegrations = <TData = ListIntegrationsResponse>(
-  variables: ListIntegrationsVariables | reactQuery.SkipToken,
-  options?: Omit<
-    reactQuery.UseQueryOptions<ListIntegrationsResponse, ListIntegrationsError, TData>,
-    'queryKey' | 'queryFn' | 'initialData'
-  >,
-) => {
-  const { queryOptions, fetcherOptions } = useInternalContext(options);
-  return reactQuery.useQuery<ListIntegrationsResponse, ListIntegrationsError, TData>({
-    ...listIntegrationsQuery(variables === reactQuery.skipToken ? variables : deepMerge(fetcherOptions, variables)),
-    ...options,
-    ...queryOptions,
-  });
-};
-
 export type CreateIntegrationError = Fetcher.ErrorWrapper<{
   status: 422;
   payload: Schemas.HTTPValidationError;
@@ -496,6 +416,492 @@ export const useCreateIntegration = (
   const { fetcherOptions } = useInternalContext();
   return reactQuery.useMutation<Schemas.IntegrationSchema, CreateIntegrationError, CreateIntegrationVariables>({
     mutationFn: (variables: CreateIntegrationVariables) => fetchCreateIntegration(deepMerge(fetcherOptions, variables)),
+    ...options,
+  });
+};
+
+export type ListIntegrationsQueryParams = {
+  /**
+   * @default false
+   */
+  manageable?: boolean;
+};
+
+export type ListIntegrationsError = Fetcher.ErrorWrapper<{
+  status: 422;
+  payload: Schemas.HTTPValidationError;
+}>;
+
+export type ListIntegrationsResponse = Schemas.IntegrationSchema[];
+
+export type ListIntegrationsVariables = {
+  queryParams?: ListIntegrationsQueryParams;
+} & InternalContext['fetcherOptions'];
+
+/**
+ * List integrations visible to the current user.
+ *
+ * When manageable=true, returns only integrations the user can edit.
+ * Otherwise returns public integrations and integrations the user can connect.
+ */
+export const fetchListIntegrations = (variables: ListIntegrationsVariables, signal?: AbortSignal) =>
+  internalFetch<ListIntegrationsResponse, ListIntegrationsError, undefined, {}, ListIntegrationsQueryParams, {}>({
+    url: '/api/internal/integrations/',
+    method: 'get',
+    ...variables,
+    signal,
+  });
+
+/**
+ * List integrations visible to the current user.
+ *
+ * When manageable=true, returns only integrations the user can edit.
+ * Otherwise returns public integrations and integrations the user can connect.
+ */
+export function listIntegrationsQuery(variables: ListIntegrationsVariables): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<ListIntegrationsResponse>;
+};
+
+export function listIntegrationsQuery(variables: ListIntegrationsVariables | reactQuery.SkipToken): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: ((options: QueryFnOptions) => Promise<ListIntegrationsResponse>) | reactQuery.SkipToken;
+};
+
+export function listIntegrationsQuery(variables: ListIntegrationsVariables | reactQuery.SkipToken) {
+  return {
+    queryKey: queryKeyFn({
+      path: '/api/internal/integrations/',
+      operationId: 'listIntegrations',
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) => fetchListIntegrations(variables, signal),
+  };
+}
+
+/**
+ * List integrations visible to the current user.
+ *
+ * When manageable=true, returns only integrations the user can edit.
+ * Otherwise returns public integrations and integrations the user can connect.
+ */
+export const useSuspenseListIntegrations = <TData = ListIntegrationsResponse>(
+  variables: ListIntegrationsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<ListIntegrationsResponse, ListIntegrationsError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useInternalContext(options);
+  return reactQuery.useSuspenseQuery<ListIntegrationsResponse, ListIntegrationsError, TData>({
+    ...listIntegrationsQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+/**
+ * List integrations visible to the current user.
+ *
+ * When manageable=true, returns only integrations the user can edit.
+ * Otherwise returns public integrations and integrations the user can connect.
+ */
+export const useListIntegrations = <TData = ListIntegrationsResponse>(
+  variables: ListIntegrationsVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<ListIntegrationsResponse, ListIntegrationsError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useInternalContext(options);
+  return reactQuery.useQuery<ListIntegrationsResponse, ListIntegrationsError, TData>({
+    ...listIntegrationsQuery(variables === reactQuery.skipToken ? variables : deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type GetIntegrationPathParams = {
+  integrationId: string;
+};
+
+export type GetIntegrationError = Fetcher.ErrorWrapper<
+  | {
+      status: 403;
+      payload: Schemas.ErrorResponseSchema;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
+
+export type GetIntegrationVariables = {
+  pathParams: GetIntegrationPathParams;
+} & InternalContext['fetcherOptions'];
+
+/**
+ * Get a single integration visible to the current user.
+ *
+ * Public integrations are accessible to all authenticated users.
+ * Private integrations require the View role.
+ */
+export const fetchGetIntegration = (variables: GetIntegrationVariables, signal?: AbortSignal) =>
+  internalFetch<Schemas.IntegrationSchema, GetIntegrationError, undefined, {}, {}, GetIntegrationPathParams>({
+    url: '/api/internal/integrations/{integrationId}',
+    method: 'get',
+    ...variables,
+    signal,
+  });
+
+/**
+ * Get a single integration visible to the current user.
+ *
+ * Public integrations are accessible to all authenticated users.
+ * Private integrations require the View role.
+ */
+export function getIntegrationQuery(variables: GetIntegrationVariables): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<Schemas.IntegrationSchema>;
+};
+
+export function getIntegrationQuery(variables: GetIntegrationVariables | reactQuery.SkipToken): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: ((options: QueryFnOptions) => Promise<Schemas.IntegrationSchema>) | reactQuery.SkipToken;
+};
+
+export function getIntegrationQuery(variables: GetIntegrationVariables | reactQuery.SkipToken) {
+  return {
+    queryKey: queryKeyFn({
+      path: '/api/internal/integrations/{integrationId}',
+      operationId: 'getIntegration',
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) => fetchGetIntegration(variables, signal),
+  };
+}
+
+/**
+ * Get a single integration visible to the current user.
+ *
+ * Public integrations are accessible to all authenticated users.
+ * Private integrations require the View role.
+ */
+export const useSuspenseGetIntegration = <TData = Schemas.IntegrationSchema>(
+  variables: GetIntegrationVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<Schemas.IntegrationSchema, GetIntegrationError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useInternalContext(options);
+  return reactQuery.useSuspenseQuery<Schemas.IntegrationSchema, GetIntegrationError, TData>({
+    ...getIntegrationQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+/**
+ * Get a single integration visible to the current user.
+ *
+ * Public integrations are accessible to all authenticated users.
+ * Private integrations require the View role.
+ */
+export const useGetIntegration = <TData = Schemas.IntegrationSchema>(
+  variables: GetIntegrationVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<Schemas.IntegrationSchema, GetIntegrationError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useInternalContext(options);
+  return reactQuery.useQuery<Schemas.IntegrationSchema, GetIntegrationError, TData>({
+    ...getIntegrationQuery(variables === reactQuery.skipToken ? variables : deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type EditIntegrationPathParams = {
+  integrationId: string;
+};
+
+export type EditIntegrationError = Fetcher.ErrorWrapper<
+  | {
+      status: 403;
+      payload: Schemas.ErrorResponseSchema;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
+
+export type EditIntegrationVariables = {
+  body: Schemas.EditIntegrationSchema;
+  pathParams: EditIntegrationPathParams;
+} & InternalContext['fetcherOptions'];
+
+/**
+ * Edit an integration's metadata. Requires Edit role.
+ */
+export const fetchEditIntegration = (variables: EditIntegrationVariables, signal?: AbortSignal) =>
+  internalFetch<
+    Schemas.IntegrationSchema,
+    EditIntegrationError,
+    Schemas.EditIntegrationSchema,
+    {},
+    {},
+    EditIntegrationPathParams
+  >({
+    url: '/api/internal/integrations/{integrationId}',
+    method: 'patch',
+    ...variables,
+    signal,
+  });
+
+/**
+ * Edit an integration's metadata. Requires Edit role.
+ */
+export const useEditIntegration = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<Schemas.IntegrationSchema, EditIntegrationError, EditIntegrationVariables>,
+    'mutationFn'
+  >,
+) => {
+  const { fetcherOptions } = useInternalContext();
+  return reactQuery.useMutation<Schemas.IntegrationSchema, EditIntegrationError, EditIntegrationVariables>({
+    mutationFn: (variables: EditIntegrationVariables) => fetchEditIntegration(deepMerge(fetcherOptions, variables)),
+    ...options,
+  });
+};
+
+export type ListIntegrationTokensPathParams = {
+  integrationId: string;
+};
+
+export type ListIntegrationTokensError = Fetcher.ErrorWrapper<
+  | {
+      status: 403;
+      payload: Schemas.ErrorResponseSchema;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
+
+export type ListIntegrationTokensResponse = Schemas.IntegrationTokenSchema[];
+
+export type ListIntegrationTokensVariables = {
+  pathParams: ListIntegrationTokensPathParams;
+} & InternalContext['fetcherOptions'];
+
+/**
+ * List tokens for an integration. Requires Edit role.
+ */
+export const fetchListIntegrationTokens = (variables: ListIntegrationTokensVariables, signal?: AbortSignal) =>
+  internalFetch<
+    ListIntegrationTokensResponse,
+    ListIntegrationTokensError,
+    undefined,
+    {},
+    {},
+    ListIntegrationTokensPathParams
+  >({
+    url: '/api/internal/integrations/{integrationId}/tokens',
+    method: 'get',
+    ...variables,
+    signal,
+  });
+
+/**
+ * List tokens for an integration. Requires Edit role.
+ */
+export function listIntegrationTokensQuery(variables: ListIntegrationTokensVariables): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: (options: QueryFnOptions) => Promise<ListIntegrationTokensResponse>;
+};
+
+export function listIntegrationTokensQuery(variables: ListIntegrationTokensVariables | reactQuery.SkipToken): {
+  queryKey: reactQuery.QueryKey;
+  queryFn: ((options: QueryFnOptions) => Promise<ListIntegrationTokensResponse>) | reactQuery.SkipToken;
+};
+
+export function listIntegrationTokensQuery(variables: ListIntegrationTokensVariables | reactQuery.SkipToken) {
+  return {
+    queryKey: queryKeyFn({
+      path: '/api/internal/integrations/{integrationId}/tokens',
+      operationId: 'listIntegrationTokens',
+      variables,
+    }),
+    queryFn:
+      variables === reactQuery.skipToken
+        ? reactQuery.skipToken
+        : ({ signal }: QueryFnOptions) => fetchListIntegrationTokens(variables, signal),
+  };
+}
+
+/**
+ * List tokens for an integration. Requires Edit role.
+ */
+export const useSuspenseListIntegrationTokens = <TData = ListIntegrationTokensResponse>(
+  variables: ListIntegrationTokensVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<ListIntegrationTokensResponse, ListIntegrationTokensError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useInternalContext(options);
+  return reactQuery.useSuspenseQuery<ListIntegrationTokensResponse, ListIntegrationTokensError, TData>({
+    ...listIntegrationTokensQuery(deepMerge(fetcherOptions, variables)),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+/**
+ * List tokens for an integration. Requires Edit role.
+ */
+export const useListIntegrationTokens = <TData = ListIntegrationTokensResponse>(
+  variables: ListIntegrationTokensVariables | reactQuery.SkipToken,
+  options?: Omit<
+    reactQuery.UseQueryOptions<ListIntegrationTokensResponse, ListIntegrationTokensError, TData>,
+    'queryKey' | 'queryFn' | 'initialData'
+  >,
+) => {
+  const { queryOptions, fetcherOptions } = useInternalContext(options);
+  return reactQuery.useQuery<ListIntegrationTokensResponse, ListIntegrationTokensError, TData>({
+    ...listIntegrationTokensQuery(
+      variables === reactQuery.skipToken ? variables : deepMerge(fetcherOptions, variables),
+    ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type CreateIntegrationTokenPathParams = {
+  integrationId: string;
+};
+
+export type CreateIntegrationTokenError = Fetcher.ErrorWrapper<
+  | {
+      status: 403;
+      payload: Schemas.ErrorResponseSchema;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
+
+export type CreateIntegrationTokenVariables = {
+  body: Schemas.CreateIntegrationTokenSchema;
+  pathParams: CreateIntegrationTokenPathParams;
+} & InternalContext['fetcherOptions'];
+
+/**
+ * Create a new token for an integration. Requires Edit role.
+ *
+ * The token value is only returned in this response — it cannot be retrieved later.
+ */
+export const fetchCreateIntegrationToken = (variables: CreateIntegrationTokenVariables, signal?: AbortSignal) =>
+  internalFetch<
+    Schemas.CreatedIntegrationTokenSchema,
+    CreateIntegrationTokenError,
+    Schemas.CreateIntegrationTokenSchema,
+    {},
+    {},
+    CreateIntegrationTokenPathParams
+  >({
+    url: '/api/internal/integrations/{integrationId}/tokens',
+    method: 'post',
+    ...variables,
+    signal,
+  });
+
+/**
+ * Create a new token for an integration. Requires Edit role.
+ *
+ * The token value is only returned in this response — it cannot be retrieved later.
+ */
+export const useCreateIntegrationToken = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.CreatedIntegrationTokenSchema,
+      CreateIntegrationTokenError,
+      CreateIntegrationTokenVariables
+    >,
+    'mutationFn'
+  >,
+) => {
+  const { fetcherOptions } = useInternalContext();
+  return reactQuery.useMutation<
+    Schemas.CreatedIntegrationTokenSchema,
+    CreateIntegrationTokenError,
+    CreateIntegrationTokenVariables
+  >({
+    mutationFn: (variables: CreateIntegrationTokenVariables) =>
+      fetchCreateIntegrationToken(deepMerge(fetcherOptions, variables)),
+    ...options,
+  });
+};
+
+export type DeleteIntegrationTokenPathParams = {
+  integrationId: string;
+  tokenId: string;
+};
+
+export type DeleteIntegrationTokenError = Fetcher.ErrorWrapper<
+  | {
+      status: 403;
+      payload: Schemas.ErrorResponseSchema;
+    }
+  | {
+      status: 404;
+      payload: Schemas.ErrorResponseSchema;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
+
+export type DeleteIntegrationTokenVariables = {
+  pathParams: DeleteIntegrationTokenPathParams;
+} & InternalContext['fetcherOptions'];
+
+/**
+ * Delete an integration token. Requires Edit role.
+ */
+export const fetchDeleteIntegrationToken = (variables: DeleteIntegrationTokenVariables, signal?: AbortSignal) =>
+  internalFetch<void, DeleteIntegrationTokenError, undefined, {}, {}, DeleteIntegrationTokenPathParams>({
+    url: '/api/internal/integrations/{integrationId}/tokens/{tokenId}',
+    method: 'delete',
+    ...variables,
+    signal,
+  });
+
+/**
+ * Delete an integration token. Requires Edit role.
+ */
+export const useDeleteIntegrationToken = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<void, DeleteIntegrationTokenError, DeleteIntegrationTokenVariables>,
+    'mutationFn'
+  >,
+) => {
+  const { fetcherOptions } = useInternalContext();
+  return reactQuery.useMutation<void, DeleteIntegrationTokenError, DeleteIntegrationTokenVariables>({
+    mutationFn: (variables: DeleteIntegrationTokenVariables) =>
+      fetchDeleteIntegrationToken(deepMerge(fetcherOptions, variables)),
     ...options,
   });
 };
@@ -631,4 +1037,14 @@ export type QueryOperation =
       path: '/api/internal/integrations/';
       operationId: 'listIntegrations';
       variables: ListIntegrationsVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: '/api/internal/integrations/{integrationId}';
+      operationId: 'getIntegration';
+      variables: GetIntegrationVariables | reactQuery.SkipToken;
+    }
+  | {
+      path: '/api/internal/integrations/{integrationId}/tokens';
+      operationId: 'listIntegrationTokens';
+      variables: ListIntegrationTokensVariables | reactQuery.SkipToken;
     };

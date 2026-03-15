@@ -40,4 +40,6 @@ export type ValidationError = {
   loc: (string | number)[];
   msg: string;
   type: string;
+  input?: void;
+  ctx?: Record<string, any>;
 };

@@ -46,6 +46,28 @@ export type CreateIntegrationSchema = {
   url?: string | null;
 };
 
+export type CreateIntegrationTokenSchema = {
+  /**
+   * The name of the token.
+   */
+  name: string;
+};
+
+export type CreatedIntegrationTokenSchema = {
+  /**
+   * The unique identifier of the token.
+   */
+  id: string;
+  /**
+   * The name of the token.
+   */
+  name: string;
+  /**
+   * The JWT token value. Only returned at creation time.
+   */
+  token: string;
+};
+
 export type CurrencyPermissionsSchema = {
   /**
    * Whether the user can edit the currency.
@@ -89,6 +111,21 @@ export type EditCurrencySchema = {
   plural_form: string;
 };
 
+export type EditIntegrationSchema = {
+  /**
+   * The name of the integration.
+   */
+  name: string;
+  /**
+   * A description of the integration.
+   */
+  description: string;
+  /**
+   * URL to the website for the integration.
+   */
+  url: string | null;
+};
+
 /**
  * A generic error response.
  */
@@ -126,6 +163,17 @@ export type IntegrationSchema = {
   private: boolean;
 };
 
+export type IntegrationTokenSchema = {
+  /**
+   * The unique identifier of the token.
+   */
+  id: string;
+  /**
+   * The name of the token.
+   */
+  name: string;
+};
+
 /**
  * Details of the currently authenticated user.
  */
@@ -140,4 +188,6 @@ export type ValidationError = {
   loc: (string | number)[];
   msg: string;
   type: string;
+  input?: void;
+  ctx?: Record<string, any>;
 };

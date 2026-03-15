@@ -18,6 +18,16 @@ export const CreateIntegrationSchemaZod = z.object({
   url: z.string().optional().nullable(),
 });
 
+export const CreateIntegrationTokenSchemaZod = z.object({
+  name: z.string(),
+});
+
+export const CreatedIntegrationTokenSchemaZod = z.object({
+  id: z.string(),
+  name: z.string(),
+  token: z.string(),
+});
+
 export const CurrencyPermissionsSchemaZod = z.object({
   edit: z.boolean().optional().default(false),
 });
@@ -35,6 +45,12 @@ export const EditCurrencySchemaZod = z.object({
   plural_form: z.string(),
 });
 
+export const EditIntegrationSchemaZod = z.object({
+  name: z.string(),
+  description: z.string(),
+  url: z.string().nullable(),
+});
+
 export const ErrorResponseSchemaZod = z.object({
   detail: z.string(),
 });
@@ -43,6 +59,8 @@ export const ValidationErrorZod = z.object({
   loc: z.array(z.union([z.string(), z.number()])),
   msg: z.string(),
   type: z.string(),
+  input: z.void().optional(),
+  ctx: z.record(z.string(), z.any()).optional(),
 });
 
 export const IntegrationSchemaZod = z.object({
@@ -51,6 +69,11 @@ export const IntegrationSchemaZod = z.object({
   description: z.string(),
   url: z.string().optional().nullable(),
   private: z.boolean(),
+});
+
+export const IntegrationTokenSchemaZod = z.object({
+  id: z.string(),
+  name: z.string(),
 });
 
 export const SessionUserZod = z.object({
