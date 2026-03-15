@@ -202,12 +202,12 @@ function ManageTokens({ integrationId }: { integrationId: string }) {
         pathParams: { integrationId },
         body: value,
       });
+      setNewTokenValue(result.token);
       setShowCreateForm(false);
       form.reset();
       await queryClient.invalidateQueries(
         listIntegrationTokensQuery({ pathParams: { integrationId } }),
       );
-      setNewTokenValue(result.token);
     } catch (error) {
       form.setErrorMap({
         onSubmit: {
