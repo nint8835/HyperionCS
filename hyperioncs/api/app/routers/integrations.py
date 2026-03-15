@@ -1,5 +1,4 @@
 import jwt
-
 from fastapi import APIRouter, Depends, Query, status
 from fastapi.responses import JSONResponse
 from sqlalchemy import and_, not_, or_, select
