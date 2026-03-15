@@ -13,11 +13,13 @@ if TYPE_CHECKING:
 
 class IntegrationRole(enum.Enum):
     Owner = "owner"
+    View = "view"
 
 
 class IntegrationActionRoles:
     Edit = [IntegrationRole.Owner]
     Connect = [IntegrationRole.Owner]
+    View = [IntegrationRole.View, IntegrationRole.Owner]
 
 
 class IntegrationPermission(Base):
