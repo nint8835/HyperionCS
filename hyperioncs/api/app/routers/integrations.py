@@ -1,3 +1,5 @@
+import jwt
+
 from fastapi import APIRouter, Depends, Query, status
 from fastapi.responses import JSONResponse
 from sqlalchemy import and_, not_, or_, select
@@ -6,8 +8,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from hyperioncs.api.app.schemas.integrations import (
     ConnectIntegrationSchema,
     CreateIntegrationSchema,
+    CreateIntegrationTokenSchema,
     EditIntegrationSchema,
 )
+from hyperioncs.config import config
 from hyperioncs.db.models.currency import Currency
 from hyperioncs.db.models.currency_permission import (
     CurrencyActionRoles,
@@ -20,11 +24,16 @@ from hyperioncs.db.models.integration_permission import (
     IntegrationPermission,
     IntegrationRole,
 )
+from hyperioncs.db.models.integration_token import IntegrationToken
 from hyperioncs.db.models.utils import default_uuid_str
 from hyperioncs.dependencies.auth import require_session_user
 from hyperioncs.dependencies.database import get_db
 from hyperioncs.schemas import ErrorResponseSchema
-from hyperioncs.schemas.integrations import IntegrationSchema
+from hyperioncs.schemas.integrations import (
+    CreatedIntegrationTokenSchema,
+    IntegrationSchema,
+    IntegrationTokenSchema,
+)
 from hyperioncs.schemas.user import SessionUser
 
 integrations_router = APIRouter(tags=["Integrations"])
@@ -215,6 +224,190 @@ async def edit_integration(
         await db.commit()
 
         return integration
+
+
+@integrations_router.get(
+    "/{integration_id}/tokens",
+    response_model=list[IntegrationTokenSchema],
+    responses={
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Unauthorized",
+            "model": ErrorResponseSchema,
+        }
+    },
+)
+async def list_integration_tokens(
+    integration_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: SessionUser = Depends(require_session_user),
+):
+    """List tokens for an integration. Requires Edit role."""
+    integration = (
+        await db.execute(
+            select(Integration)
+            .filter_by(id=integration_id)
+            .join(
+                IntegrationPermission,
+                and_(
+                    IntegrationPermission.user_id == current_user.id,
+                    IntegrationPermission.integration_id == Integration.id,
+                    IntegrationPermission.role.in_(IntegrationActionRoles.Edit),
+                ),
+            )
+        )
+    ).scalar_one_or_none()
+
+    if not integration:
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content=ErrorResponseSchema(
+                detail="The requested integration could not be found or you do not have permission to manage its tokens."
+            ).model_dump(),
+        )
+
+    return (
+        (
+            await db.execute(
+                select(IntegrationToken).filter_by(integration_id=integration.id)
+            )
+        )
+        .scalars()
+        .all()
+    )
+
+
+@integrations_router.post(
+    "/{integration_id}/tokens",
+    status_code=status.HTTP_201_CREATED,
+    response_model=CreatedIntegrationTokenSchema,
+    responses={
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Unauthorized",
+            "model": ErrorResponseSchema,
+        }
+    },
+)
+async def create_integration_token(
+    integration_id: str,
+    body: CreateIntegrationTokenSchema,
+    db: AsyncSession = Depends(get_db),
+    current_user: SessionUser = Depends(require_session_user),
+):
+    """Create a new token for an integration. Requires Edit role.
+
+    The token value is only returned in this response — it cannot be retrieved later.
+    """
+    async with db.begin():
+        integration = (
+            await db.execute(
+                select(Integration)
+                .filter_by(id=integration_id)
+                .join(
+                    IntegrationPermission,
+                    and_(
+                        IntegrationPermission.user_id == current_user.id,
+                        IntegrationPermission.integration_id == Integration.id,
+                        IntegrationPermission.role.in_(IntegrationActionRoles.Edit),
+                    ),
+                )
+            )
+        ).scalar_one_or_none()
+
+        if not integration:
+            return JSONResponse(
+                status_code=status.HTTP_403_FORBIDDEN,
+                content=ErrorResponseSchema(
+                    detail="The requested integration could not be found or you do not have permission to manage its tokens."
+                ).model_dump(),
+            )
+
+        token_id = default_uuid_str()
+        new_token = IntegrationToken(
+            id=token_id,
+            integration_id=integration.id,
+            name=body.name,
+        )
+        db.add(new_token)
+        await db.commit()
+
+    token_value = jwt.encode(
+        {"token_id": token_id},
+        config.jwt_secret,
+        algorithm=config.jwt_algorithm,
+    )
+
+    return CreatedIntegrationTokenSchema(
+        id=token_id,
+        name=body.name,
+        token=token_value,
+    )
+
+
+@integrations_router.delete(
+    "/{integration_id}/tokens/{token_id}",
+    status_code=status.HTTP_202_ACCEPTED,
+    responses={
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Unauthorized",
+            "model": ErrorResponseSchema,
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Token Not Found",
+            "model": ErrorResponseSchema,
+        },
+    },
+)
+async def delete_integration_token(
+    integration_id: str,
+    token_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: SessionUser = Depends(require_session_user),
+):
+    """Delete an integration token. Requires Edit role."""
+    async with db.begin():
+        integration = (
+            await db.execute(
+                select(Integration)
+                .filter_by(id=integration_id)
+                .join(
+                    IntegrationPermission,
+                    and_(
+                        IntegrationPermission.user_id == current_user.id,
+                        IntegrationPermission.integration_id == Integration.id,
+                        IntegrationPermission.role.in_(IntegrationActionRoles.Edit),
+                    ),
+                )
+            )
+        ).scalar_one_or_none()
+
+        if not integration:
+            return JSONResponse(
+                status_code=status.HTTP_403_FORBIDDEN,
+                content=ErrorResponseSchema(
+                    detail="The requested integration could not be found or you do not have permission to manage its tokens."
+                ).model_dump(),
+            )
+
+        token = (
+            await db.execute(
+                select(IntegrationToken).filter_by(
+                    id=token_id, integration_id=integration.id
+                )
+            )
+        ).scalar_one_or_none()
+
+        if not token:
+            return JSONResponse(
+                status_code=status.HTTP_404_NOT_FOUND,
+                content=ErrorResponseSchema(
+                    detail="The requested token could not be found."
+                ).model_dump(),
+            )
+
+        await db.delete(token)
+        await db.commit()
+
+    return JSONResponse(status_code=status.HTTP_202_ACCEPTED, content={})
 
 
 # TODO: Should this and the disconnect endpoint be made more restful?
