@@ -12,7 +12,10 @@ Add comprehensive integration management to the HyperionCS app: a list page for 
 ### `IntegrationToken`
 Add a `name: Mapped[str]` column. Requires a new Alembic migration.
 
-**Migration strategy:** The `integration_tokens` table may have existing rows. To add a non-nullable `name` column safely, the Alembic migration should add the column with `server_default=sa.text("''")` (empty string), then remove the server default in the same migration after backfilling. In practice, since this is still in active development with no production data, an empty-string server default is acceptable and can be left in place for simplicity.
+**Migration strategy:** There is no existing data in `integration_tokens`. Amend the existing `integration_tokens` migration (rather than creating a new one) to include the `name` column from the start.
+
+### `IntegrationRole` / `IntegrationActionRoles`
+Add a new `View = "view"` value to `IntegrationRole` and a corresponding `IntegrationActionRoles.View = [IntegrationRole.View, IntegrationRole.Owner]` action role list. This represents the minimum role required to view a private integration's details.
 
 No other model changes are needed.
 
@@ -58,7 +61,7 @@ All new endpoints live in the existing integrations router (`hyperioncs/api/app/
   Note: `IntegrationActionRoles.Edit` and `IntegrationActionRoles.Connect` both equal `[IntegrationRole.Owner]` today. The `manageable` param is semantically distinct — it filters by intent (the user can manage this integration), not by the connect permission. If these role lists diverge in future, the behavior should remain tied to `IntegrationActionRoles.Edit`.
 
 ### New single-integration endpoints
-- `GET /integrations/{integration_id}` — returns a single integration the current user has Edit access to. Response model: `IntegrationSchema` (`id`, `name`, `description`, `url`, `private`). HTTP 200 on success, 403 if not found or no Edit role.
+- `GET /integrations/{integration_id}` — returns a single integration visible to the current user. Access rules mirror the existing list endpoint: public integrations are accessible to anyone (authenticated); private integrations require the user to have a View role (`IntegrationActionRoles.View`). Response model: `IntegrationSchema` (`id`, `name`, `description`, `url`, `private`). HTTP 200 on success, 403 if not found or access not permitted.
 - `PATCH /integrations/{integration_id}` — updates `name`, `description`, and `url`. All three fields are required; omitting a field is an error, not a partial update. `url` has no default and **must not be given a default value in `EditIntegrationSchema`**, even though `CreateIntegrationSchema.url` uses `default=None`. Sending `url: null` or `url: ""` both clear the URL (via `NullableString`). `private` is not editable via this endpoint. Response model: `IntegrationSchema`. HTTP 200 on success, 403 if not found or no Edit role. Consistent with the existing `PATCH /currencies/{shortcode}` pattern.
 
 ### Token endpoints
