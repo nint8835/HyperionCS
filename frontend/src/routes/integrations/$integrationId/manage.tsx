@@ -271,13 +271,13 @@ function ManageTokens({ integrationId }: { integrationId: string }) {
       >
         <ModalContent>
           <ModalHeader>Create Token</ModalHeader>
-          <ModalBody>
-            <Form
-              onSubmit={(e) => {
-                e.preventDefault();
-                form.handleSubmit();
-              }}
-            >
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault();
+              form.handleSubmit();
+            }}
+          >
+            <ModalBody>
               <form.Field
                 name="name"
                 children={(field) => (
@@ -297,9 +297,6 @@ function ManageTokens({ integrationId }: { integrationId: string }) {
                   />
                 )}
               />
-              <Button type="submit" isLoading={isPending}>
-                Create
-              </Button>
               <form.Subscribe
                 selector={(state) =>
                   state.errors.filter((e) => typeof e === 'string')
@@ -308,18 +305,21 @@ function ManageTokens({ integrationId }: { integrationId: string }) {
                   errors.length > 0 && <Alert color="danger">{errors}</Alert>
                 }
               />
-            </Form>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              onPress={() => {
-                setCreateModalOpen(false);
-                form.reset();
-              }}
-            >
-              Cancel
-            </Button>
-          </ModalFooter>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                onPress={() => {
+                  setCreateModalOpen(false);
+                  form.reset();
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" isLoading={isPending}>
+                Create
+              </Button>
+            </ModalFooter>
+          </Form>
         </ModalContent>
       </Modal>
 
