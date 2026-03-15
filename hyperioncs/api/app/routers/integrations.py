@@ -116,6 +116,56 @@ async def list_integrations(
     )
 
 
+@integrations_router.get(
+    "/{integration_id}",
+    response_model=IntegrationSchema,
+    responses={
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Unauthorized",
+            "model": ErrorResponseSchema,
+        }
+    },
+)
+async def get_integration(
+    integration_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: SessionUser = Depends(require_session_user),
+):
+    """Get a single integration visible to the current user.
+
+    Public integrations are accessible to all authenticated users.
+    Private integrations require the View role.
+    """
+    integration = (
+        await db.execute(
+            select(Integration)
+            .filter_by(id=integration_id)
+            .join(
+                IntegrationPermission,
+                and_(
+                    IntegrationPermission.user_id == current_user.id,
+                    IntegrationPermission.integration_id == Integration.id,
+                    IntegrationPermission.role.in_(IntegrationActionRoles.View),
+                ),
+                isouter=True,
+            )
+            .filter(
+                or_(not_(Integration.private), IntegrationPermission.id.isnot(None))
+            )
+        )
+    ).scalar_one_or_none()
+
+    if not integration:
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content=ErrorResponseSchema(
+                detail="The requested integration could not be found or you do not have permission to view it."
+            ).model_dump(),
+        )
+
+    return integration
+
+
 # TODO: Should this and the disconnect endpoint be made more restful?
 # TODO: Can the permission logic between the two apis be deduplicated?
 @integrations_router.post(
