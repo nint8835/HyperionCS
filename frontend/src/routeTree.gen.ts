@@ -67,9 +67,9 @@ export interface FileRoutesByFullPath {
   '/auth/logout': typeof AuthLogoutRoute
   '/currencies/create': typeof CurrenciesCreateRoute
   '/integrations/create': typeof IntegrationsCreateRoute
-  '/currencies': typeof CurrenciesIndexRoute
+  '/currencies/': typeof CurrenciesIndexRoute
   '/currencies/$shortcode/manage': typeof CurrenciesShortcodeManageRoute
-  '/currencies/$shortcode': typeof CurrenciesShortcodeIndexRoute
+  '/currencies/$shortcode/': typeof CurrenciesShortcodeIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -100,9 +100,9 @@ export interface FileRouteTypes {
     | '/auth/logout'
     | '/currencies/create'
     | '/integrations/create'
-    | '/currencies'
+    | '/currencies/'
     | '/currencies/$shortcode/manage'
-    | '/currencies/$shortcode'
+    | '/currencies/$shortcode/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -148,7 +148,7 @@ declare module '@tanstack/react-router' {
     '/currencies/': {
       id: '/currencies/'
       path: '/currencies'
-      fullPath: '/currencies'
+      fullPath: '/currencies/'
       preLoaderRoute: typeof CurrenciesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -183,7 +183,7 @@ declare module '@tanstack/react-router' {
     '/currencies/$shortcode/': {
       id: '/currencies/$shortcode/'
       path: '/currencies/$shortcode'
-      fullPath: '/currencies/$shortcode'
+      fullPath: '/currencies/$shortcode/'
       preLoaderRoute: typeof CurrenciesShortcodeIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
