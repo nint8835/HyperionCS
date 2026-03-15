@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 from fastapi.responses import JSONResponse
 from sqlalchemy import and_, not_, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -66,10 +66,33 @@ async def create_integration(
 
 @integrations_router.get("/", response_model=list[IntegrationSchema])
 async def list_integrations(
+    manageable: bool = Query(False),
     db: AsyncSession = Depends(get_db),
     current_user: SessionUser = Depends(require_session_user),
 ):
-    """List all integrations the current user has access to."""
+    """List integrations visible to the current user.
+
+    When manageable=true, returns only integrations the user can edit.
+    Otherwise returns public integrations and integrations the user can connect.
+    """
+    if manageable:
+        return (
+            (
+                await db.execute(
+                    select(Integration).join(
+                        IntegrationPermission,
+                        and_(
+                            IntegrationPermission.user_id == current_user.id,
+                            IntegrationPermission.integration_id == Integration.id,
+                            IntegrationPermission.role.in_(IntegrationActionRoles.Edit),
+                        ),
+                    )
+                )
+            )
+            .scalars()
+            .all()
+        )
+
     return (
         (
             await db.execute(
