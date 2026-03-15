@@ -17,5 +17,6 @@ class IntegrationToken(Base):
     integration_id: Mapped[str] = mapped_column(
         ForeignKey("integrations.id", ondelete="CASCADE")
     )
+    name: Mapped[str]
 
     integration: Mapped["Integration"] = relationship(lazy="raise")

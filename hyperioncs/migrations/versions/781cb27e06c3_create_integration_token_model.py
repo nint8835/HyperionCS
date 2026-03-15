@@ -23,6 +23,7 @@ def upgrade() -> None:
         "integration_tokens",
         sa.Column("id", sa.String(), nullable=False),
         sa.Column("integration_id", sa.String(), nullable=False),
+        sa.Column("name", sa.String(), nullable=False),
         sa.ForeignKeyConstraint(
             ["integration_id"],
             ["integrations.id"],

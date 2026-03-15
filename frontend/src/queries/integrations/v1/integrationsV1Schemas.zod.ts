@@ -16,6 +16,8 @@ export const ValidationErrorZod = z.object({
   loc: z.array(z.union([z.string(), z.number()])),
   msg: z.string(),
   type: z.string(),
+  input: z.void().optional(),
+  ctx: z.record(z.string(), z.any()).optional(),
 });
 
 export const HTTPValidationErrorZod = z.object({

@@ -1,10 +1,14 @@
 import { Alert, Button, Form, Input } from '@heroui/react';
 import { useForm } from '@tanstack/react-form';
-import { Link, createFileRoute } from '@tanstack/react-router';
+import { Link, createFileRoute, useNavigate } from '@tanstack/react-router';
 import z from 'zod';
 
+import { queryClient } from '@/lib/query';
 import { useStore } from '@/lib/state';
-import { useCreateIntegration } from '@/queries/internal/internalComponents';
+import {
+  listIntegrationsQuery,
+  useCreateIntegration,
+} from '@/queries/internal/internalComponents';
 import { ErrorResponseSchema } from '@/queries/internal/internalSchemas';
 import { CreateIntegrationSchemaZod } from '@/queries/internal/internalSchemas.zod';
 
@@ -13,11 +17,16 @@ export const Route = createFileRoute('/integrations/create')({
 });
 
 function CreateIntegrationForm() {
-  const { mutateAsync: createIntegration, isPending, data } = useCreateIntegration();
+  const { mutateAsync: createIntegration, isPending } = useCreateIntegration();
+  const navigate = useNavigate();
 
   async function handleSubmit(value: z.infer<typeof CreateIntegrationSchemaZod>) {
     try {
       await createIntegration({ body: value });
+      await queryClient.invalidateQueries(
+        listIntegrationsQuery({ queryParams: { manageable: true } }),
+      );
+      navigate({ to: '/integrations' });
     } catch (error) {
       // TODO: Better, re-usable error handling
       form.setErrorMap({ onSubmit: { fields: {}, form: (error as ErrorResponseSchema).detail } });
@@ -107,8 +116,6 @@ function CreateIntegrationForm() {
         selector={(state) => state.errors.filter((e) => typeof e === 'string')}
         children={(errors) => errors.length > 0 && <Alert color="danger">{errors}</Alert>}
       />
-
-      {data && <Alert color="success">Integration created!</Alert>}
     </Form>
   );
 }
