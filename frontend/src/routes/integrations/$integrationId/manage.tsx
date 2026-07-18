@@ -1,55 +1,39 @@
 import { Alert, Button, Form, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/react';
 import { useForm } from '@tanstack/react-form';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import z from 'zod';
 
 import { queryClient } from '@/lib/query';
 import {
-  getIntegrationQuery,
-  listIntegrationTokensQuery,
-  useCreateIntegrationToken,
-  useDeleteIntegrationToken,
-  useEditIntegration,
-  useSuspenseGetIntegration,
-  useSuspenseListIntegrationTokens,
-} from '@/queries/internal/internalComponents';
-import type {
-  ErrorResponseSchema,
-  IntegrationTokenSchema,
-} from '@/queries/internal/internalSchemas';
-import {
-  CreateIntegrationTokenSchemaZod,
-  EditIntegrationSchemaZod,
-} from '@/queries/internal/internalSchemas.zod';
+  type ErrorResponseSchema,
+  type IntegrationTokenSchema,
+  getIntegrationOptions,
+  listIntegrationTokensOptions,
+  useCreateIntegrationTokenMutation,
+  useDeleteIntegrationTokenMutation,
+  useEditIntegrationMutation,
+} from '@/queries/internal';
+import { zCreateIntegrationTokenSchema, zEditIntegrationSchema } from '@/queries/internal/zod.gen';
 
 export const Route = createFileRoute('/integrations/$integrationId/manage')({
   component: RouteComponent,
   loader: ({ params: { integrationId } }) =>
     Promise.all([
-      queryClient.ensureQueryData(
-        getIntegrationQuery({ pathParams: { integrationId } }),
-      ),
-      queryClient.ensureQueryData(
-        listIntegrationTokensQuery({ pathParams: { integrationId } }),
-      ),
+      queryClient.ensureQueryData(getIntegrationOptions({ path: { integration_id: integrationId } })),
+      queryClient.ensureQueryData(listIntegrationTokensOptions({ path: { integration_id: integrationId } })),
     ]),
 });
 
 function EditIntegrationDetails({ integrationId }: { integrationId: string }) {
-  const { data: integration } = useSuspenseGetIntegration({
-    pathParams: { integrationId },
-  });
-  const { mutateAsync: editIntegration, isPending, data } = useEditIntegration();
+  const { data: integration } = useSuspenseQuery(getIntegrationOptions({ path: { integration_id: integrationId } }));
+  const { mutateAsync: editIntegration, isPending, data } = useEditIntegrationMutation();
 
-  async function handleSubmit(
-    value: z.infer<typeof EditIntegrationSchemaZod>,
-  ) {
+  async function handleSubmit(value: z.infer<typeof zEditIntegrationSchema>) {
     try {
-      await editIntegration({ pathParams: { integrationId }, body: value });
-      await queryClient.invalidateQueries(
-        getIntegrationQuery({ pathParams: { integrationId } }),
-      );
+      await editIntegration({ path: { integration_id: integrationId }, body: value });
+      await queryClient.invalidateQueries(getIntegrationOptions({ path: { integration_id: integrationId } }));
     } catch (error) {
       form.setErrorMap({
         onSubmit: {
@@ -65,9 +49,9 @@ function EditIntegrationDetails({ integrationId }: { integrationId: string }) {
       name: integration.name,
       description: integration.description,
       url: integration.url ?? '',
-    } as z.infer<typeof EditIntegrationSchemaZod>,
+    } as z.infer<typeof zEditIntegrationSchema>,
     onSubmit: ({ value }) => handleSubmit(value),
-    validators: { onSubmit: EditIntegrationSchemaZod },
+    validators: { onSubmit: zEditIntegrationSchema },
   });
 
   return (
@@ -140,9 +124,7 @@ function EditIntegrationDetails({ integrationId }: { integrationId: string }) {
         </Button>
         <form.Subscribe
           selector={(state) => state.errors.filter((e) => typeof e === 'string')}
-          children={(errors) =>
-            errors.length > 0 && <Alert color="danger">{errors}</Alert>
-          }
+          children={(errors) => errors.length > 0 && <Alert color="danger">{errors}</Alert>}
         />
         {data && <Alert color="success">Integration updated!</Alert>}
       </Form>
@@ -159,16 +141,14 @@ function TokenRow({
   integrationId: string;
   onDeleteError: (message: string) => void;
 }) {
-  const { mutateAsync: deleteToken } = useDeleteIntegrationToken();
+  const { mutateAsync: deleteToken } = useDeleteIntegrationTokenMutation();
 
   async function handleDelete() {
     try {
       await deleteToken({
-        pathParams: { integrationId, tokenId: token.id },
+        path: { integration_id: integrationId, token_id: token.id },
       });
-      await queryClient.invalidateQueries(
-        listIntegrationTokensQuery({ pathParams: { integrationId } }),
-      );
+      await queryClient.invalidateQueries(listIntegrationTokensOptions({ path: { integration_id: integrationId } }));
     } catch (error) {
       onDeleteError((error as ErrorResponseSchema).detail);
     }
@@ -185,29 +165,23 @@ function TokenRow({
 }
 
 function ManageTokens({ integrationId }: { integrationId: string }) {
-  const { data: tokens } = useSuspenseListIntegrationTokens({
-    pathParams: { integrationId },
-  });
-  const { mutateAsync: createToken, isPending } = useCreateIntegrationToken();
+  const { data: tokens } = useSuspenseQuery(listIntegrationTokensOptions({ path: { integration_id: integrationId } }));
+  const { mutateAsync: createToken, isPending } = useCreateIntegrationTokenMutation();
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [newTokenValue, setNewTokenValue] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  async function handleCreateSubmit(
-    value: z.infer<typeof CreateIntegrationTokenSchemaZod>,
-  ) {
+  async function handleCreateSubmit(value: z.infer<typeof zCreateIntegrationTokenSchema>) {
     try {
       const result = await createToken({
-        pathParams: { integrationId },
+        path: { integration_id: integrationId },
         body: value,
       });
       setCreateModalOpen(false);
       form.reset();
       setNewTokenValue(result.token);
-      await queryClient.invalidateQueries(
-        listIntegrationTokensQuery({ pathParams: { integrationId } }),
-      );
+      await queryClient.invalidateQueries(listIntegrationTokensOptions({ path: { integration_id: integrationId } }));
     } catch (error) {
       form.setErrorMap({
         onSubmit: {
@@ -219,11 +193,9 @@ function ManageTokens({ integrationId }: { integrationId: string }) {
   }
 
   const form = useForm({
-    defaultValues: { name: '' } as z.infer<
-      typeof CreateIntegrationTokenSchemaZod
-    >,
+    defaultValues: { name: '' } as z.infer<typeof zCreateIntegrationTokenSchema>,
     onSubmit: ({ value }) => handleCreateSubmit(value),
-    validators: { onSubmit: CreateIntegrationTokenSchemaZod },
+    validators: { onSubmit: zCreateIntegrationTokenSchema },
   });
 
   return (
@@ -238,17 +210,10 @@ function ManageTokens({ integrationId }: { integrationId: string }) {
 
       <div className="space-y-1">
         {tokens.length === 0 ? (
-          <p className="text-default-400 w-full text-center italic">
-            No tokens yet.
-          </p>
+          <p className="text-default-400 w-full text-center italic">No tokens yet.</p>
         ) : (
           tokens.map((token) => (
-            <TokenRow
-              key={token.id}
-              token={token}
-              integrationId={integrationId}
-              onDeleteError={setDeleteError}
-            />
+            <TokenRow key={token.id} token={token} integrationId={integrationId} onDeleteError={setDeleteError} />
           ))
         )}
       </div>
@@ -272,33 +237,29 @@ function ManageTokens({ integrationId }: { integrationId: string }) {
         <ModalContent>
           <ModalHeader>Create Token</ModalHeader>
           <ModalBody>
-              <form.Field
-                name="name"
-                children={(field) => (
-                  <Input
-                    name={field.name}
-                    isRequired
-                    label="Token Name"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    validationBehavior="aria"
-                    errorMessage={field.state.meta.errors
-                      .filter((e) => e !== undefined)
-                      .map((e) => e.message)
-                      .join(', ')}
-                    isInvalid={!field.state.meta.isValid}
-                  />
-                )}
-              />
-              <form.Subscribe
-                selector={(state) =>
-                  state.errors.filter((e) => typeof e === 'string')
-                }
-                children={(errors) =>
-                  errors.length > 0 && <Alert color="danger">{errors}</Alert>
-                }
-              />
+            <form.Field
+              name="name"
+              children={(field) => (
+                <Input
+                  name={field.name}
+                  isRequired
+                  label="Token Name"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  validationBehavior="aria"
+                  errorMessage={field.state.meta.errors
+                    .filter((e) => e !== undefined)
+                    .map((e) => e.message)
+                    .join(', ')}
+                  isInvalid={!field.state.meta.isValid}
+                />
+              )}
+            />
+            <form.Subscribe
+              selector={(state) => state.errors.filter((e) => typeof e === 'string')}
+              children={(errors) => errors.length > 0 && <Alert color="danger">{errors}</Alert>}
+            />
           </ModalBody>
           <ModalFooter>
             <Button
@@ -316,16 +277,11 @@ function ManageTokens({ integrationId }: { integrationId: string }) {
         </ModalContent>
       </Modal>
 
-      <Modal
-        isOpen={newTokenValue !== null}
-        onClose={() => setNewTokenValue(null)}
-      >
+      <Modal isOpen={newTokenValue !== null} onClose={() => setNewTokenValue(null)}>
         <ModalContent>
           <ModalHeader>Token Created</ModalHeader>
           <ModalBody>
-            <Alert color="warning">
-              This token will not be shown again. Copy it now.
-            </Alert>
+            <Alert color="warning">This token will not be shown again. Copy it now.</Alert>
             <Input
               isReadOnly
               label="Token"

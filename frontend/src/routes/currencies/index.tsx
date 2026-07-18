@@ -1,18 +1,19 @@
 import { Button } from '@heroui/react';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { Link } from '@/components/link';
 import { queryClient } from '@/lib/query';
 import { useStore } from '@/lib/state';
-import { listCurrenciesQuery, useSuspenseListCurrencies } from '@/queries/integrations/v1/integrationsV1Components';
+import { listCurrenciesOptions } from '@/queries/integrations/v1';
 
 export const Route = createFileRoute('/currencies/')({
   component: RouteComponent,
-  loader: () => queryClient.ensureQueryData(listCurrenciesQuery({})),
+  loader: () => queryClient.ensureQueryData(listCurrenciesOptions()),
 });
 
 function RouteComponent() {
-  const { data: currencies } = useSuspenseListCurrencies({});
+  const { data: currencies } = useSuspenseQuery(listCurrenciesOptions());
   const user = useStore((state) => state.user);
 
   return (

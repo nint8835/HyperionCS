@@ -5,27 +5,21 @@ import z from 'zod';
 
 import { queryClient } from '@/lib/query';
 import { useStore } from '@/lib/state';
-import {
-  listIntegrationsQuery,
-  useCreateIntegration,
-} from '@/queries/internal/internalComponents';
-import { ErrorResponseSchema } from '@/queries/internal/internalSchemas';
-import { CreateIntegrationSchemaZod } from '@/queries/internal/internalSchemas.zod';
+import { type ErrorResponseSchema, listIntegrationsOptions, useCreateIntegrationMutation } from '@/queries/internal';
+import { zCreateIntegrationSchema } from '@/queries/internal/zod.gen';
 
 export const Route = createFileRoute('/integrations/create')({
   component: RouteComponent,
 });
 
 function CreateIntegrationForm() {
-  const { mutateAsync: createIntegration, isPending } = useCreateIntegration();
+  const { mutateAsync: createIntegration, isPending } = useCreateIntegrationMutation();
   const navigate = useNavigate();
 
-  async function handleSubmit(value: z.infer<typeof CreateIntegrationSchemaZod>) {
+  async function handleSubmit(value: z.infer<typeof zCreateIntegrationSchema>) {
     try {
       await createIntegration({ body: value });
-      await queryClient.invalidateQueries(
-        listIntegrationsQuery({ queryParams: { manageable: true } }),
-      );
+      await queryClient.invalidateQueries(listIntegrationsOptions({ query: { manageable: true } }));
       navigate({ to: '/integrations' });
     } catch (error) {
       // TODO: Better, re-usable error handling
@@ -37,9 +31,9 @@ function CreateIntegrationForm() {
     defaultValues: {
       name: '',
       description: '',
-    } as z.infer<typeof CreateIntegrationSchemaZod>,
+    } as z.infer<typeof zCreateIntegrationSchema>,
     onSubmit: ({ value }) => handleSubmit(value),
-    validators: { onSubmit: CreateIntegrationSchemaZod },
+    validators: { onSubmit: zCreateIntegrationSchema },
   });
 
   return (

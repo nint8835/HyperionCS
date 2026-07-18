@@ -1,25 +1,26 @@
 import { Button } from '@heroui/react';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { Link } from '@/components/link';
 import { queryClient } from '@/lib/query';
-import { getCurrencyQuery, useSuspenseGetCurrency } from '@/queries/integrations/v1/integrationsV1Components';
-import { getCurrencyPermissionsQuery, useSuspenseGetCurrencyPermissions } from '@/queries/internal/internalComponents';
+import { getCurrencyOptions } from '@/queries/integrations/v1';
+import { getCurrencyPermissionsOptions } from '@/queries/internal';
 
 export const Route = createFileRoute('/currencies/$shortcode/')({
   component: RouteComponent,
   // TODO: Error boundaries on 404s. Should raise notFound instead
   loader: ({ params: { shortcode } }) =>
     Promise.all([
-      queryClient.ensureQueryData(getCurrencyQuery({ pathParams: { shortcode } })),
-      queryClient.ensureQueryData(getCurrencyPermissionsQuery({ pathParams: { shortcode } })),
+      queryClient.ensureQueryData(getCurrencyOptions({ path: { shortcode } })),
+      queryClient.ensureQueryData(getCurrencyPermissionsOptions({ path: { shortcode } })),
     ]),
 });
 
 function RouteComponent() {
   const { shortcode } = Route.useParams();
-  const { data: currency } = useSuspenseGetCurrency({ pathParams: { shortcode } });
-  const { data: permissions } = useSuspenseGetCurrencyPermissions({ pathParams: { shortcode } });
+  const { data: currency } = useSuspenseQuery(getCurrencyOptions({ path: { shortcode } }));
+  const { data: permissions } = useSuspenseQuery(getCurrencyPermissionsOptions({ path: { shortcode } }));
 
   return (
     <>

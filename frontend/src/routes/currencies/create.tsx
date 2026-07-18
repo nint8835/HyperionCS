@@ -4,18 +4,17 @@ import { Link, createFileRoute } from '@tanstack/react-router';
 import z from 'zod';
 
 import { useStore } from '@/lib/state';
-import { useCreateCurrency } from '@/queries/internal/internalComponents';
-import { ErrorResponseSchema } from '@/queries/internal/internalSchemas';
-import { CreateCurrencySchemaZod } from '@/queries/internal/internalSchemas.zod';
+import { type ErrorResponseSchema, useCreateCurrencyMutation } from '@/queries/internal';
+import { zCreateCurrencySchema } from '@/queries/internal/zod.gen';
 
 export const Route = createFileRoute('/currencies/create')({
   component: RouteComponent,
 });
 
 function CreateCurrencyForm() {
-  const { mutateAsync: createCurrency, isPending, data } = useCreateCurrency();
+  const { mutateAsync: createCurrency, isPending, data } = useCreateCurrencyMutation();
 
-  async function handleSubmit(value: z.infer<typeof CreateCurrencySchemaZod>) {
+  async function handleSubmit(value: z.infer<typeof zCreateCurrencySchema>) {
     try {
       await createCurrency({ body: value });
     } catch (error) {
@@ -32,7 +31,7 @@ function CreateCurrencyForm() {
       plural_form: '',
     },
     onSubmit: ({ value }) => handleSubmit(value),
-    validators: { onSubmit: CreateCurrencySchemaZod },
+    validators: { onSubmit: zCreateCurrencySchema },
   });
 
   return (

@@ -7,7 +7,7 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { Link } from '@/components/link';
 import { queryClient } from '@/lib/query';
 import { useStore } from '@/lib/state';
-import { fetchGetCurrentUser } from '@/queries/internal/internalComponents';
+import { getCurrentUser } from '@/queries/internal';
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -16,7 +16,7 @@ export const Route = createRootRoute({
       return;
     }
 
-    const currentUser = await fetchGetCurrentUser({});
+    const { data: currentUser } = await getCurrentUser({ throwOnError: true });
     useStore.getState().setUser(currentUser);
   },
 });

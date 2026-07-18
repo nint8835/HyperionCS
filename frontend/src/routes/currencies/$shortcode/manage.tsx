@@ -1,29 +1,29 @@
 import { Alert, Button, Form, Input } from '@heroui/react';
 import { useForm } from '@tanstack/react-form';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import z from 'zod';
 
 import { queryClient } from '@/lib/query';
-import { getCurrencyQuery, useSuspenseGetCurrency } from '@/queries/integrations/v1/integrationsV1Components';
+import { getCurrencyOptions } from '@/queries/integrations/v1';
 import {
-  getCurrencyIntegrationsQuery,
-  listIntegrationsQuery,
-  useConnectIntegration,
-  useDisconnectIntegration,
-  useEditCurrency,
-  useSuspenseGetCurrencyIntegrations,
-  useSuspenseListIntegrations,
-} from '@/queries/internal/internalComponents';
-import type { ErrorResponseSchema, IntegrationSchema } from '@/queries/internal/internalSchemas';
-import { EditCurrencySchemaZod } from '@/queries/internal/internalSchemas.zod';
+  type ErrorResponseSchema,
+  type IntegrationSchema,
+  getCurrencyIntegrationsOptions,
+  listIntegrationsOptions,
+  useConnectIntegrationMutation,
+  useDisconnectIntegrationMutation,
+  useEditCurrencyMutation,
+} from '@/queries/internal';
+import { zEditCurrencySchema } from '@/queries/internal/zod.gen';
 
 export const Route = createFileRoute('/currencies/$shortcode/manage')({
   component: RouteComponent,
   loader: ({ params: { shortcode } }) =>
     Promise.all([
-      queryClient.ensureQueryData(getCurrencyIntegrationsQuery({ pathParams: { shortcode } })),
-      queryClient.ensureQueryData(getCurrencyQuery({ pathParams: { shortcode } })),
-      queryClient.ensureQueryData(listIntegrationsQuery({})),
+      queryClient.ensureQueryData(getCurrencyIntegrationsOptions({ path: { shortcode } })),
+      queryClient.ensureQueryData(getCurrencyOptions({ path: { shortcode } })),
+      queryClient.ensureQueryData(listIntegrationsOptions()),
     ]),
 });
 
@@ -36,14 +36,14 @@ function IntegrationDisplay({
   isConnected?: boolean;
   currencyShortcode: string;
 }) {
-  const { mutateAsync: connectIntegration } = useConnectIntegration();
-  const { mutateAsync: disconnectIntegration } = useDisconnectIntegration();
+  const { mutateAsync: connectIntegration } = useConnectIntegrationMutation();
+  const { mutateAsync: disconnectIntegration } = useDisconnectIntegrationMutation();
 
   const stateToggler = isConnected ? disconnectIntegration : connectIntegration;
 
   async function toggleState(integrationId: string) {
-    await stateToggler({ pathParams: { integrationId }, body: { currency_shortcode: currencyShortcode } });
-    await queryClient.invalidateQueries(getCurrencyIntegrationsQuery({ pathParams: { shortcode: currencyShortcode } }));
+    await stateToggler({ path: { integration_id: integrationId }, body: { currency_shortcode: currencyShortcode } });
+    await queryClient.invalidateQueries(getCurrencyIntegrationsOptions({ path: { shortcode: currencyShortcode } }));
   }
 
   return (
@@ -60,8 +60,8 @@ function IntegrationDisplay({
 }
 
 function ManageIntegrations({ shortcode }: { shortcode: string }) {
-  const { data: integrations } = useSuspenseListIntegrations({});
-  const { data: currencyIntegrations } = useSuspenseGetCurrencyIntegrations({ pathParams: { shortcode } });
+  const { data: integrations } = useSuspenseQuery(listIntegrationsOptions());
+  const { data: currencyIntegrations } = useSuspenseQuery(getCurrencyIntegrationsOptions({ path: { shortcode } }));
 
   const availablePrivateIntegrations = integrations.filter(
     (integration) => integration.private && !currencyIntegrations.some((ci) => ci.id === integration.id),
@@ -126,13 +126,13 @@ function ManageIntegrations({ shortcode }: { shortcode: string }) {
 }
 
 function ManageCurrencyDetails({ shortcode }: { shortcode: string }) {
-  const { data: currency } = useSuspenseGetCurrency({ pathParams: { shortcode } });
-  const { mutateAsync: editCurrency, isPending, data } = useEditCurrency();
+  const { data: currency } = useSuspenseQuery(getCurrencyOptions({ path: { shortcode } }));
+  const { mutateAsync: editCurrency, isPending, data } = useEditCurrencyMutation();
 
-  async function handleSubmit(value: z.infer<typeof EditCurrencySchemaZod>) {
+  async function handleSubmit(value: z.infer<typeof zEditCurrencySchema>) {
     try {
-      await editCurrency({ pathParams: { shortcode }, body: value });
-      await queryClient.invalidateQueries(getCurrencyQuery({ pathParams: { shortcode } }));
+      await editCurrency({ path: { shortcode }, body: value });
+      await queryClient.invalidateQueries(getCurrencyOptions({ path: { shortcode } }));
     } catch (error) {
       // TODO: Better, re-usable error handling
       form.setErrorMap({ onSubmit: { fields: {}, form: (error as ErrorResponseSchema).detail } });
@@ -146,7 +146,7 @@ function ManageCurrencyDetails({ shortcode }: { shortcode: string }) {
       plural_form: currency.plural_form,
     },
     onSubmit: ({ value }) => handleSubmit(value),
-    validators: { onSubmit: EditCurrencySchemaZod },
+    validators: { onSubmit: zEditCurrencySchema },
   });
 
   return (
