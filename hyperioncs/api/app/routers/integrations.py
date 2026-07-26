@@ -83,7 +83,9 @@ async def list_integrations(
     current_user: SessionUser = Depends(require_session_user),
 ):
     """List integrations visible to the current user."""
-    roles = IntegrationActionRoles.Edit if manageable else IntegrationActionRoles.Connect
+    roles = (
+        IntegrationActionRoles.Edit if manageable else IntegrationActionRoles.Connect
+    )
     query = select(Integration).join(
         IntegrationPermission,
         and_(

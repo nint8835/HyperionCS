@@ -25,4 +25,6 @@ class CreatedIntegrationTokenSchema(BaseModel):
 
     id: str = Field(description="The unique identifier of the token.")
     name: str = Field(description="The name of the token.")
-    token: str = Field(description="The JWT token value. Only returned at creation time.")
+    token: str = Field(
+        description="The JWT token value. Only returned at creation time."
+    )
