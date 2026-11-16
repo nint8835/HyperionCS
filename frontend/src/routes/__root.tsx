@@ -46,11 +46,13 @@ function RootComponent() {
               </Link>
             </NavbarBrand>
             <NavbarContent justify="end">
-              <NavbarItem>
-                <Link to="/integrations" color="foreground">
-                  Integrations
-                </Link>
-              </NavbarItem>
+              {user && (
+                <NavbarItem>
+                  <Link to="/integrations" color="foreground">
+                    Integrations
+                  </Link>
+                </NavbarItem>
+              )}
               <NavbarItem>
                 <Link to="/currencies" color="foreground">
                   Currencies

@@ -48,7 +48,7 @@ export default defineConfig({
           plugins: [
             {
               name: '@hey-api/client-fetch',
-              baseUrl: false,
+              baseUrl: '/api/v1',
             },
             '@hey-api/typescript',
             'zod',
