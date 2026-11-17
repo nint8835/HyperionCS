@@ -1,4 +1,4 @@
-import { Alert, Button, Form, Input } from '@heroui/react';
+import { Alert, Button, FieldError, Form, Input, Label, Spinner, TextField } from '@heroui/react';
 import { useForm } from '@tanstack/react-form';
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router';
 import z from 'zod';
@@ -38,6 +38,7 @@ function CreateIntegrationForm() {
 
   return (
     <Form
+      className="flex flex-col gap-4"
       onSubmit={(e) => {
         e.preventDefault();
         form.handleSubmit();
@@ -46,69 +47,97 @@ function CreateIntegrationForm() {
       <form.Field
         name="name"
         children={(field) => (
-          <Input
-            name={field.name}
+          <TextField
+            className="w-full"
             isRequired
-            label="Name"
-            value={field.state.value}
-            onBlur={field.handleBlur}
-            onChange={(e) => field.handleChange(e.target.value)}
-            validationBehavior="aria"
-            errorMessage={field.state.meta.errors
-              .filter((e) => e !== undefined)
-              .map((e) => e.message)
-              .join(', ')}
             isInvalid={!field.state.meta.isValid}
-          />
+            validationBehavior="aria"
+            name={field.name}
+          >
+            <Label>Name</Label>
+            <Input
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+            />
+            <FieldError>
+              {field.state.meta.errors
+                .filter((e) => e !== undefined)
+                .map((e) => e.message)
+                .join(', ')}
+            </FieldError>
+          </TextField>
         )}
       />
 
       <form.Field
         name="description"
         children={(field) => (
-          <Input
-            name={field.name}
+          <TextField
+            className="w-full"
             isRequired
-            label="Description"
-            value={field.state.value}
-            onBlur={field.handleBlur}
-            onChange={(e) => field.handleChange(e.target.value)}
-            validationBehavior="aria"
-            errorMessage={field.state.meta.errors
-              .filter((e) => e !== undefined)
-              .map((e) => e.message)
-              .join(', ')}
             isInvalid={!field.state.meta.isValid}
-          />
+            validationBehavior="aria"
+            name={field.name}
+          >
+            <Label>Description</Label>
+            <Input
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+            />
+            <FieldError>
+              {field.state.meta.errors
+                .filter((e) => e !== undefined)
+                .map((e) => e.message)
+                .join(', ')}
+            </FieldError>
+          </TextField>
         )}
       />
 
       <form.Field
         name="url"
         children={(field) => (
-          <Input
-            name={field.name}
-            label="URL"
-            value={field.state.value || ''}
-            onBlur={field.handleBlur}
-            onChange={(e) => field.handleChange(e.target.value)}
-            validationBehavior="aria"
-            errorMessage={field.state.meta.errors
-              .filter((e) => e !== undefined)
-              .map((e) => e.message)
-              .join(', ')}
+          <TextField
+            className="w-full"
             isInvalid={!field.state.meta.isValid}
-          />
+            validationBehavior="aria"
+            name={field.name}
+          >
+            <Label>URL</Label>
+            <Input
+              value={field.state.value || ''}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+            />
+            <FieldError>
+              {field.state.meta.errors
+                .filter((e) => e !== undefined)
+                .map((e) => e.message)
+                .join(', ')}
+            </FieldError>
+          </TextField>
         )}
       />
 
-      <Button type="submit" isLoading={isPending}>
+      <Button type="submit" isPending={isPending}>
+        {isPending && <Spinner size="sm" />}
         Create Integration
       </Button>
 
       <form.Subscribe
         selector={(state) => state.errors.filter((e) => typeof e === 'string')}
-        children={(errors) => errors.length > 0 && <Alert color="danger">{errors}</Alert>}
+        children={(errors) =>
+          errors.length > 0 && (
+            <Alert status="danger">
+              <Alert.Indicator />
+              <Alert.Content>
+                <Alert.Description>{errors}</Alert.Description>
+              </Alert.Content>
+            </Alert>
+          )
+        }
       />
     </Form>
   );
@@ -122,7 +151,7 @@ function RouteComponent() {
       <div>
         Please{' '}
         <Link
-          className="hover:text-primary underline transition-colors"
+          className="hover:text-accent underline transition-colors"
           to="/auth/login"
           search={{ next: '/integrations/create' }}
         >

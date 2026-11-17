@@ -10,39 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as IntegrationsIndexRouteImport } from './routes/integrations/index'
-import { Route as CurrenciesIndexRouteImport } from './routes/currencies/index'
-import { Route as IntegrationsCreateRouteImport } from './routes/integrations/create'
-import { Route as CurrenciesCreateRouteImport } from './routes/currencies/create'
-import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AuthLogoutRouteImport } from './routes/auth/logout'
+import { Route as CurrenciesIndexRouteImport } from './routes/currencies/index'
+import { Route as CurrenciesCreateRouteImport } from './routes/currencies/create'
+import { Route as IntegrationsIndexRouteImport } from './routes/integrations/index'
+import { Route as IntegrationsCreateRouteImport } from './routes/integrations/create'
 import { Route as CurrenciesShortcodeIndexRouteImport } from './routes/currencies/$shortcode/index'
-import { Route as IntegrationsIntegrationIdManageRouteImport } from './routes/integrations/$integrationId/manage'
 import { Route as CurrenciesShortcodeManageRouteImport } from './routes/currencies/$shortcode/manage'
+import { Route as IntegrationsIntegrationIdManageRouteImport } from './routes/integrations/$integrationId/manage'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IntegrationsIndexRoute = IntegrationsIndexRouteImport.update({
-  id: '/integrations/',
-  path: '/integrations/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CurrenciesIndexRoute = CurrenciesIndexRouteImport.update({
-  id: '/currencies/',
-  path: '/currencies/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IntegrationsCreateRoute = IntegrationsCreateRouteImport.update({
-  id: '/integrations/create',
-  path: '/integrations/create',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CurrenciesCreateRoute = CurrenciesCreateRouteImport.update({
-  id: '/currencies/create',
-  path: '/currencies/create',
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthLogoutRoute = AuthLogoutRouteImport.update({
@@ -50,9 +35,24 @@ const AuthLogoutRoute = AuthLogoutRouteImport.update({
   path: '/auth/logout',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthLoginRoute = AuthLoginRouteImport.update({
-  id: '/auth/login',
-  path: '/auth/login',
+const CurrenciesIndexRoute = CurrenciesIndexRouteImport.update({
+  id: '/currencies/',
+  path: '/currencies/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CurrenciesCreateRoute = CurrenciesCreateRouteImport.update({
+  id: '/currencies/create',
+  path: '/currencies/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegrationsIndexRoute = IntegrationsIndexRouteImport.update({
+  id: '/integrations/',
+  path: '/integrations/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegrationsCreateRoute = IntegrationsCreateRouteImport.update({
+  id: '/integrations/create',
+  path: '/integrations/create',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CurrenciesShortcodeIndexRoute =
@@ -61,16 +61,16 @@ const CurrenciesShortcodeIndexRoute =
     path: '/currencies/$shortcode/',
     getParentRoute: () => rootRouteImport,
   } as any)
-const IntegrationsIntegrationIdManageRoute =
-  IntegrationsIntegrationIdManageRouteImport.update({
-    id: '/integrations/$integrationId/manage',
-    path: '/integrations/$integrationId/manage',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const CurrenciesShortcodeManageRoute =
   CurrenciesShortcodeManageRouteImport.update({
     id: '/currencies/$shortcode/manage',
     path: '/currencies/$shortcode/manage',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const IntegrationsIntegrationIdManageRoute =
+  IntegrationsIntegrationIdManageRouteImport.update({
+    id: '/integrations/$integrationId/manage',
+    path: '/integrations/$integrationId/manage',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -172,32 +172,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/integrations/': {
-      id: '/integrations/'
-      path: '/integrations'
-      fullPath: '/integrations/'
-      preLoaderRoute: typeof IntegrationsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/currencies/': {
-      id: '/currencies/'
-      path: '/currencies'
-      fullPath: '/currencies/'
-      preLoaderRoute: typeof CurrenciesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/integrations/create': {
-      id: '/integrations/create'
-      path: '/integrations/create'
-      fullPath: '/integrations/create'
-      preLoaderRoute: typeof IntegrationsCreateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/currencies/create': {
-      id: '/currencies/create'
-      path: '/currencies/create'
-      fullPath: '/currencies/create'
-      preLoaderRoute: typeof CurrenciesCreateRouteImport
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/logout': {
@@ -207,11 +186,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLogoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/login': {
-      id: '/auth/login'
-      path: '/auth/login'
-      fullPath: '/auth/login'
-      preLoaderRoute: typeof AuthLoginRouteImport
+    '/currencies/': {
+      id: '/currencies/'
+      path: '/currencies'
+      fullPath: '/currencies/'
+      preLoaderRoute: typeof CurrenciesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/currencies/create': {
+      id: '/currencies/create'
+      path: '/currencies/create'
+      fullPath: '/currencies/create'
+      preLoaderRoute: typeof CurrenciesCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integrations/': {
+      id: '/integrations/'
+      path: '/integrations'
+      fullPath: '/integrations/'
+      preLoaderRoute: typeof IntegrationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integrations/create': {
+      id: '/integrations/create'
+      path: '/integrations/create'
+      fullPath: '/integrations/create'
+      preLoaderRoute: typeof IntegrationsCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/currencies/$shortcode/': {
@@ -221,18 +221,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CurrenciesShortcodeIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/integrations/$integrationId/manage': {
-      id: '/integrations/$integrationId/manage'
-      path: '/integrations/$integrationId/manage'
-      fullPath: '/integrations/$integrationId/manage'
-      preLoaderRoute: typeof IntegrationsIntegrationIdManageRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/currencies/$shortcode/manage': {
       id: '/currencies/$shortcode/manage'
       path: '/currencies/$shortcode/manage'
       fullPath: '/currencies/$shortcode/manage'
       preLoaderRoute: typeof CurrenciesShortcodeManageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integrations/$integrationId/manage': {
+      id: '/integrations/$integrationId/manage'
+      path: '/integrations/$integrationId/manage'
+      fullPath: '/integrations/$integrationId/manage'
+      preLoaderRoute: typeof IntegrationsIntegrationIdManageRouteImport
       parentRoute: typeof rootRouteImport
     }
   }

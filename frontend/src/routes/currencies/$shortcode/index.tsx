@@ -1,8 +1,7 @@
-import { Button } from '@heroui/react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { Link } from '@/components/link';
+import { ButtonLink } from '@/components/link';
 import { queryClient } from '@/lib/query';
 import { getCurrencyOptions } from '@/queries/integrations/v1';
 import { getCurrencyPermissionsOptions } from '@/queries/internal';
@@ -27,14 +26,9 @@ function RouteComponent() {
       <div>{JSON.stringify(currency)}</div>
       <div>{JSON.stringify(permissions)}</div>
       {permissions.edit && (
-        <Button
-          as={Link}
-          to={'/currencies/$shortcode/manage'}
-          //@ts-ignore - I can't figure out how to get a `Button` with an `as` of a `Link` to work properly
-          params={{ shortcode }}
-        >
+        <ButtonLink to={'/currencies/$shortcode/manage'} params={{ shortcode }}>
           Manage
-        </Button>
+        </ButtonLink>
       )}
     </>
   );

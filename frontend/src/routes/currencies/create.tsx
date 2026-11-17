@@ -1,4 +1,4 @@
-import { Alert, Button, Form, Input } from '@heroui/react';
+import { Alert, Button, Description, FieldError, Form, Input, Label, Spinner, TextField } from '@heroui/react';
 import { useForm } from '@tanstack/react-form';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import z from 'zod';
@@ -36,6 +36,7 @@ function CreateCurrencyForm() {
 
   return (
     <Form
+      className="flex flex-col gap-4"
       onSubmit={(e) => {
         e.preventDefault();
         form.handleSubmit();
@@ -44,97 +45,138 @@ function CreateCurrencyForm() {
       <form.Field
         name="shortcode"
         children={(field) => (
-          <Input
-            name={field.name}
+          <TextField
+            className="w-full"
             isRequired
-            label="Shortcode"
-            value={field.state.value}
-            onBlur={field.handleBlur}
-            onChange={(e) => field.handleChange(e.target.value)}
-            validationBehavior="aria"
-            errorMessage={field.state.meta.errors
-              .filter((e) => e !== undefined)
-              .map((e) => e.message)
-              .join(', ')}
             isInvalid={!field.state.meta.isValid}
-          />
+            validationBehavior="aria"
+            name={field.name}
+          >
+            <Label>Shortcode</Label>
+            <Input
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+            />
+            <FieldError>
+              {field.state.meta.errors
+                .filter((e) => e !== undefined)
+                .map((e) => e.message)
+                .join(', ')}
+            </FieldError>
+          </TextField>
         )}
       />
 
       <form.Field
         name="name"
         children={(field) => (
-          <Input
-            name={field.name}
+          <TextField
+            className="w-full"
             isRequired
-            label="Name"
-            value={field.state.value}
-            onBlur={field.handleBlur}
-            onChange={(e) => field.handleChange(e.target.value)}
-            validationBehavior="aria"
-            errorMessage={field.state.meta.errors
-              .filter((e) => e !== undefined)
-              .map((e) => e.message)
-              .join(', ')}
             isInvalid={!field.state.meta.isValid}
-          />
+            validationBehavior="aria"
+            name={field.name}
+          >
+            <Label>Name</Label>
+            <Input
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+            />
+            <FieldError>
+              {field.state.meta.errors
+                .filter((e) => e !== undefined)
+                .map((e) => e.message)
+                .join(', ')}
+            </FieldError>
+          </TextField>
         )}
       />
 
       <form.Field
         name="singular_form"
         children={(field) => (
-          <Input
-            name={field.name}
-            placeholder="Coin"
+          <TextField
+            className="w-full"
             isRequired
-            label="Singular Form"
-            description={`The singular form of the currency to use in user-facing messages. Example: "They received 1 ${field.state.value || 'Coin'}."`}
-            value={field.state.value}
-            onBlur={field.handleBlur}
-            onChange={(e) => field.handleChange(e.target.value)}
-            validationBehavior="aria"
-            errorMessage={field.state.meta.errors
-              .filter((e) => e !== undefined)
-              .map((e) => e.message)
-              .join(', ')}
             isInvalid={!field.state.meta.isValid}
-          />
+            validationBehavior="aria"
+            name={field.name}
+          >
+            <Label>Singular Form</Label>
+            <Input
+              placeholder="Coin"
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+            />
+            <Description>{`The singular form of the currency to use in user-facing messages. Example: "They received 1 ${field.state.value || 'Coin'}."`}</Description>
+            <FieldError>
+              {field.state.meta.errors
+                .filter((e) => e !== undefined)
+                .map((e) => e.message)
+                .join(', ')}
+            </FieldError>
+          </TextField>
         )}
       />
 
       <form.Field
         name="plural_form"
         children={(field) => (
-          <Input
-            name={field.name}
-            placeholder="Coins"
+          <TextField
+            className="w-full"
             isRequired
-            label="Plural Form"
-            description={`The plural form of the currency to use in user-facing messages. Example: "They received 2 ${field.state.value || 'Coins'}."`}
-            value={field.state.value}
-            onBlur={field.handleBlur}
-            onChange={(e) => field.handleChange(e.target.value)}
-            validationBehavior="aria"
-            errorMessage={field.state.meta.errors
-              .filter((e) => e !== undefined)
-              .map((e) => e.message)
-              .join(', ')}
             isInvalid={!field.state.meta.isValid}
-          />
+            validationBehavior="aria"
+            name={field.name}
+          >
+            <Label>Plural Form</Label>
+            <Input
+              placeholder="Coins"
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+            />
+            <Description>{`The plural form of the currency to use in user-facing messages. Example: "They received 2 ${field.state.value || 'Coins'}."`}</Description>
+            <FieldError>
+              {field.state.meta.errors
+                .filter((e) => e !== undefined)
+                .map((e) => e.message)
+                .join(', ')}
+            </FieldError>
+          </TextField>
         )}
       />
 
-      <Button type="submit" isLoading={isPending}>
+      <Button type="submit" isPending={isPending}>
+        {isPending && <Spinner size="sm" />}
         Create Currency
       </Button>
 
       <form.Subscribe
         selector={(state) => state.errors.filter((e) => typeof e === 'string')}
-        children={(errors) => errors.length > 0 && <Alert color="danger">{errors}</Alert>}
+        children={(errors) =>
+          errors.length > 0 && (
+            <Alert status="danger">
+              <Alert.Indicator />
+              <Alert.Content>
+                <Alert.Description>{errors}</Alert.Description>
+              </Alert.Content>
+            </Alert>
+          )
+        }
       />
 
-      {data && <Alert color="success">Currency created!</Alert>}
+      {data && (
+        <Alert status="success">
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Description>Currency created!</Alert.Description>
+          </Alert.Content>
+        </Alert>
+      )}
     </Form>
   );
 }
@@ -147,7 +189,7 @@ function RouteComponent() {
       <div>
         Please{' '}
         <Link
-          className="hover:text-primary underline transition-colors"
+          className="hover:text-accent underline transition-colors"
           to="/auth/login"
           search={{ next: '/currencies/create' }}
         >

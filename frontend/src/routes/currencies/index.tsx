@@ -1,8 +1,7 @@
-import { Button } from '@heroui/react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { Link } from '@/components/link';
+import { ButtonLink, Link } from '@/components/link';
 import { queryClient } from '@/lib/query';
 import { useStore } from '@/lib/state';
 import { listCurrenciesOptions } from '@/queries/integrations/v1';
@@ -20,16 +19,12 @@ function RouteComponent() {
     <div>
       <div className="flex flex-row justify-between">
         <h1 className="text-xl font-bold">Currencies</h1>
-        {user && (
-          <Button as={Link} to="/currencies/create">
-            Create Currency
-          </Button>
-        )}
+        {user && <ButtonLink to="/currencies/create">Create Currency</ButtonLink>}
       </div>
       <div>
         {currencies.map((currency) => (
           <div key={currency.shortcode}>
-            <Link to="/currencies/$shortcode" params={{ shortcode: currency.shortcode }} color="foreground">
+            <Link to="/currencies/$shortcode" params={{ shortcode: currency.shortcode }} className="text-foreground">
               {currency.shortcode}: {currency.name}
             </Link>
           </div>

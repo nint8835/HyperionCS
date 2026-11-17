@@ -1,4 +1,4 @@
-import { Alert, Button, Form, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/react';
+import { Alert, Button, CloseButton, FieldError, Form, Input, Label, Modal, Spinner, TextField } from '@heroui/react';
 import { useForm } from '@tanstack/react-form';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
@@ -58,6 +58,7 @@ function EditIntegrationDetails({ integrationId }: { integrationId: string }) {
     <div>
       <h2 className="text-2xl font-semibold">Edit Integration Details</h2>
       <Form
+        className="flex flex-col gap-4"
         onSubmit={(e) => {
           e.preventDefault();
           form.handleSubmit();
@@ -66,67 +67,102 @@ function EditIntegrationDetails({ integrationId }: { integrationId: string }) {
         <form.Field
           name="name"
           children={(field) => (
-            <Input
-              name={field.name}
+            <TextField
+              className="w-full"
               isRequired
-              label="Name"
-              value={field.state.value}
-              onBlur={field.handleBlur}
-              onChange={(e) => field.handleChange(e.target.value)}
-              validationBehavior="aria"
-              errorMessage={field.state.meta.errors
-                .filter((e) => e !== undefined)
-                .map((e) => e.message)
-                .join(', ')}
               isInvalid={!field.state.meta.isValid}
-            />
+              validationBehavior="aria"
+              name={field.name}
+            >
+              <Label>Name</Label>
+              <Input
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+              <FieldError>
+                {field.state.meta.errors
+                  .filter((e) => e !== undefined)
+                  .map((e) => e.message)
+                  .join(', ')}
+              </FieldError>
+            </TextField>
           )}
         />
         <form.Field
           name="description"
           children={(field) => (
-            <Input
-              name={field.name}
+            <TextField
+              className="w-full"
               isRequired
-              label="Description"
-              value={field.state.value}
-              onBlur={field.handleBlur}
-              onChange={(e) => field.handleChange(e.target.value)}
-              validationBehavior="aria"
-              errorMessage={field.state.meta.errors
-                .filter((e) => e !== undefined)
-                .map((e) => e.message)
-                .join(', ')}
               isInvalid={!field.state.meta.isValid}
-            />
+              validationBehavior="aria"
+              name={field.name}
+            >
+              <Label>Description</Label>
+              <Input
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+              <FieldError>
+                {field.state.meta.errors
+                  .filter((e) => e !== undefined)
+                  .map((e) => e.message)
+                  .join(', ')}
+              </FieldError>
+            </TextField>
           )}
         />
         <form.Field
           name="url"
           children={(field) => (
-            <Input
-              name={field.name}
-              label="URL"
-              value={field.state.value || ''}
-              onBlur={field.handleBlur}
-              onChange={(e) => field.handleChange(e.target.value)}
-              validationBehavior="aria"
-              errorMessage={field.state.meta.errors
-                .filter((e) => e !== undefined)
-                .map((e) => e.message)
-                .join(', ')}
+            <TextField
+              className="w-full"
               isInvalid={!field.state.meta.isValid}
-            />
+              validationBehavior="aria"
+              name={field.name}
+            >
+              <Label>URL</Label>
+              <Input
+                value={field.state.value || ''}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+              <FieldError>
+                {field.state.meta.errors
+                  .filter((e) => e !== undefined)
+                  .map((e) => e.message)
+                  .join(', ')}
+              </FieldError>
+            </TextField>
           )}
         />
-        <Button type="submit" isLoading={isPending}>
+        <Button type="submit" isPending={isPending}>
+          {isPending && <Spinner size="sm" />}
           Save
         </Button>
         <form.Subscribe
           selector={(state) => state.errors.filter((e) => typeof e === 'string')}
-          children={(errors) => errors.length > 0 && <Alert color="danger">{errors}</Alert>}
+          children={(errors) =>
+            errors.length > 0 && (
+              <Alert status="danger">
+                <Alert.Indicator />
+                <Alert.Content>
+                  <Alert.Description>{errors}</Alert.Description>
+                </Alert.Content>
+              </Alert>
+            )
+          }
         />
-        {data && <Alert color="success">Integration updated!</Alert>}
+        {data && (
+          <Alert status="success">
+            <Alert.Indicator />
+            <Alert.Content>
+              <Alert.Description>Integration updated!</Alert.Description>
+            </Alert.Content>
+          </Alert>
+        )}
       </Form>
     </div>
   );
@@ -157,7 +193,7 @@ function TokenRow({
   return (
     <div className="flex w-full items-center justify-between">
       <span>{token.name}</span>
-      <Button color="danger" onPress={handleDelete}>
+      <Button variant="danger" onPress={handleDelete}>
         Delete
       </Button>
     </div>
@@ -203,14 +239,18 @@ function ManageTokens({ integrationId }: { integrationId: string }) {
       <h2 className="text-2xl font-semibold">Manage Tokens</h2>
 
       {deleteError && (
-        <Alert color="danger" onClose={() => setDeleteError(null)}>
-          {deleteError}
+        <Alert status="danger">
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Description>{deleteError}</Alert.Description>
+          </Alert.Content>
+          <CloseButton onPress={() => setDeleteError(null)} />
         </Alert>
       )}
 
       <div className="space-y-1">
         {tokens.length === 0 ? (
-          <p className="text-default-400 w-full text-center italic">No tokens yet.</p>
+          <p className="text-muted w-full text-center italic">No tokens yet.</p>
         ) : (
           tokens.map((token) => (
             <TokenRow key={token.id} token={token} integrationId={integrationId} onDeleteError={setDeleteError} />
@@ -229,70 +269,108 @@ function ManageTokens({ integrationId }: { integrationId: string }) {
 
       <Modal
         isOpen={createModalOpen}
-        onClose={() => {
-          setCreateModalOpen(false);
+        onOpenChange={(open) => {
+          setCreateModalOpen(open);
           form.reset();
         }}
       >
-        <ModalContent>
-          <ModalHeader>Create Token</ModalHeader>
-          <ModalBody>
-            <form.Field
-              name="name"
-              children={(field) => (
-                <Input
-                  name={field.name}
-                  isRequired
-                  label="Token Name"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  validationBehavior="aria"
-                  errorMessage={field.state.meta.errors
-                    .filter((e) => e !== undefined)
-                    .map((e) => e.message)
-                    .join(', ')}
-                  isInvalid={!field.state.meta.isValid}
+        <Modal.Backdrop>
+          <Modal.Container>
+            <Modal.Dialog>
+              <Modal.CloseTrigger />
+              <Modal.Header>
+                <Modal.Heading>Create Token</Modal.Heading>
+              </Modal.Header>
+              <Modal.Body>
+                <form.Field
+                  name="name"
+                  children={(field) => (
+                    <TextField
+                      className="w-full"
+                      isRequired
+                      isInvalid={!field.state.meta.isValid}
+                      validationBehavior="aria"
+                      name={field.name}
+                    >
+                      <Label>Token Name</Label>
+                      <Input
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                      />
+                      <FieldError>
+                        {field.state.meta.errors
+                          .filter((e) => e !== undefined)
+                          .map((e) => e.message)
+                          .join(', ')}
+                      </FieldError>
+                    </TextField>
+                  )}
                 />
-              )}
-            />
-            <form.Subscribe
-              selector={(state) => state.errors.filter((e) => typeof e === 'string')}
-              children={(errors) => errors.length > 0 && <Alert color="danger">{errors}</Alert>}
-            />
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              onPress={() => {
-                setCreateModalOpen(false);
-                form.reset();
-              }}
-            >
-              Cancel
-            </Button>
-            <Button isLoading={isPending} onPress={() => form.handleSubmit()}>
-              Create
-            </Button>
-          </ModalFooter>
-        </ModalContent>
+                <form.Subscribe
+                  selector={(state) => state.errors.filter((e) => typeof e === 'string')}
+                  children={(errors) =>
+                    errors.length > 0 && (
+                      <Alert status="danger">
+                        <Alert.Indicator />
+                        <Alert.Content>
+                          <Alert.Description>{errors}</Alert.Description>
+                        </Alert.Content>
+                      </Alert>
+                    )
+                  }
+                />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  onPress={() => {
+                    setCreateModalOpen(false);
+                    form.reset();
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button isPending={isPending} onPress={() => form.handleSubmit()}>
+                  {isPending && <Spinner size="sm" />}
+                  Create
+                </Button>
+              </Modal.Footer>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
       </Modal>
 
-      <Modal isOpen={newTokenValue !== null} onClose={() => setNewTokenValue(null)}>
-        <ModalContent>
-          <ModalHeader>Token Created</ModalHeader>
-          <ModalBody>
-            <Alert color="warning">This token will not be shown again. Copy it now.</Alert>
-            <Input
-              isReadOnly
-              label="Token"
-              value={newTokenValue ?? ''}
-              onClick={(e) => (e.target as HTMLInputElement).select()}
-            />
-          </ModalBody>
-          <ModalFooter>
-            <Button onPress={() => setNewTokenValue(null)}>Done</Button>
-          </ModalFooter>
-        </ModalContent>
+      <Modal
+        isOpen={newTokenValue !== null}
+        onOpenChange={(open) => {
+          if (!open) setNewTokenValue(null);
+        }}
+      >
+        <Modal.Backdrop>
+          <Modal.Container>
+            <Modal.Dialog>
+              <Modal.CloseTrigger />
+              <Modal.Header>
+                <Modal.Heading>Token Created</Modal.Heading>
+              </Modal.Header>
+              <Modal.Body>
+                <Alert status="warning">
+                  <Alert.Indicator />
+                  <Alert.Content>
+                    <Alert.Description>This token will not be shown again. Copy it now.</Alert.Description>
+                  </Alert.Content>
+                </Alert>
+                <TextField className="w-full" isReadOnly>
+                  <Label>Token</Label>
+                  <Input value={newTokenValue ?? ''} onClick={(e) => (e.target as HTMLInputElement).select()} />
+                </TextField>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button onPress={() => setNewTokenValue(null)}>Done</Button>
+              </Modal.Footer>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
       </Modal>
     </div>
   );

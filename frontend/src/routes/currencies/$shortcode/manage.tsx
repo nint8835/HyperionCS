@@ -1,4 +1,4 @@
-import { Alert, Button, Form, Input } from '@heroui/react';
+import { Alert, Button, Description, FieldError, Form, Input, Label, Spinner, TextField } from '@heroui/react';
 import { useForm } from '@tanstack/react-form';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
@@ -50,9 +50,9 @@ function IntegrationDisplay({
     <div className="flex w-full items-center justify-between">
       <div>
         <h4 className="font-semibold">{integration.name}</h4>
-        <p className="text-default-500 text-sm">{integration.description}</p>
+        <p className="text-muted text-sm">{integration.description}</p>
       </div>
-      <Button onPress={() => toggleState(integration.id)} color={isConnected ? 'danger' : 'primary'}>
+      <Button onPress={() => toggleState(integration.id)} variant={isConnected ? 'danger' : 'primary'}>
         {isConnected ? 'Disconnect' : 'Connect'}
       </Button>
     </div>
@@ -77,7 +77,7 @@ function ManageIntegrations({ shortcode }: { shortcode: string }) {
       <div>
         <h3 className="text-xl font-semibold">Connected Integrations</h3>
         {currencyIntegrations.length === 0 ? (
-          <p className="text-default-400 w-full text-center italic">No integrations connected.</p>
+          <p className="text-muted w-full text-center italic">No integrations connected.</p>
         ) : (
           <div className="space-y-1">
             {currencyIntegrations.map((integration) => (
@@ -98,7 +98,7 @@ function ManageIntegrations({ shortcode }: { shortcode: string }) {
         <div>
           <h4 className="text-lg font-semibold">Private Integrations</h4>
           {availablePrivateIntegrations.length === 0 ? (
-            <p className="text-default-400 w-full text-center italic">No private integrations available.</p>
+            <p className="text-muted w-full text-center italic">No private integrations available.</p>
           ) : (
             <div className="space-y-1">
               {availablePrivateIntegrations.map((integration) => (
@@ -111,7 +111,7 @@ function ManageIntegrations({ shortcode }: { shortcode: string }) {
         <div>
           <h4 className="text-lg font-semibold">Public Integrations</h4>
           {availablePublicIntegrations.length === 0 ? (
-            <p className="text-default-400 w-full text-center italic">No public integrations available.</p>
+            <p className="text-muted w-full text-center italic">No public integrations available.</p>
           ) : (
             <div className="space-y-1">
               {availablePublicIntegrations.map((integration) => (
@@ -153,6 +153,7 @@ function ManageCurrencyDetails({ shortcode }: { shortcode: string }) {
     <div>
       <h2 className="text-2xl font-semibold">Manage Currency Details</h2>
       <Form
+        className="flex flex-col gap-4"
         onSubmit={(e) => {
           e.preventDefault();
           form.handleSubmit();
@@ -161,77 +162,112 @@ function ManageCurrencyDetails({ shortcode }: { shortcode: string }) {
         <form.Field
           name="name"
           children={(field) => (
-            <Input
-              name={field.name}
+            <TextField
+              className="w-full"
               isRequired
-              label="Name"
-              value={field.state.value}
-              onBlur={field.handleBlur}
-              onChange={(e) => field.handleChange(e.target.value)}
-              validationBehavior="aria"
-              errorMessage={field.state.meta.errors
-                .filter((e) => e !== undefined)
-                .map((e) => e.message)
-                .join(', ')}
               isInvalid={!field.state.meta.isValid}
-            />
+              validationBehavior="aria"
+              name={field.name}
+            >
+              <Label>Name</Label>
+              <Input
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+              <FieldError>
+                {field.state.meta.errors
+                  .filter((e) => e !== undefined)
+                  .map((e) => e.message)
+                  .join(', ')}
+              </FieldError>
+            </TextField>
           )}
         />
 
         <form.Field
           name="singular_form"
           children={(field) => (
-            <Input
-              name={field.name}
-              placeholder="Coin"
+            <TextField
+              className="w-full"
               isRequired
-              label="Singular Form"
-              description={`The singular form of the currency to use in user-facing messages. Example: "They received 1 ${field.state.value || 'Coin'}."`}
-              value={field.state.value}
-              onBlur={field.handleBlur}
-              onChange={(e) => field.handleChange(e.target.value)}
-              validationBehavior="aria"
-              errorMessage={field.state.meta.errors
-                .filter((e) => e !== undefined)
-                .map((e) => e.message)
-                .join(', ')}
               isInvalid={!field.state.meta.isValid}
-            />
+              validationBehavior="aria"
+              name={field.name}
+            >
+              <Label>Singular Form</Label>
+              <Input
+                placeholder="Coin"
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+              <Description>{`The singular form of the currency to use in user-facing messages. Example: "They received 1 ${field.state.value || 'Coin'}."`}</Description>
+              <FieldError>
+                {field.state.meta.errors
+                  .filter((e) => e !== undefined)
+                  .map((e) => e.message)
+                  .join(', ')}
+              </FieldError>
+            </TextField>
           )}
         />
 
         <form.Field
           name="plural_form"
           children={(field) => (
-            <Input
-              name={field.name}
-              placeholder="Coins"
+            <TextField
+              className="w-full"
               isRequired
-              label="Plural Form"
-              description={`The plural form of the currency to use in user-facing messages. Example: "They received 2 ${field.state.value || 'Coins'}."`}
-              value={field.state.value}
-              onBlur={field.handleBlur}
-              onChange={(e) => field.handleChange(e.target.value)}
-              validationBehavior="aria"
-              errorMessage={field.state.meta.errors
-                .filter((e) => e !== undefined)
-                .map((e) => e.message)
-                .join(', ')}
               isInvalid={!field.state.meta.isValid}
-            />
+              validationBehavior="aria"
+              name={field.name}
+            >
+              <Label>Plural Form</Label>
+              <Input
+                placeholder="Coins"
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+              <Description>{`The plural form of the currency to use in user-facing messages. Example: "They received 2 ${field.state.value || 'Coins'}."`}</Description>
+              <FieldError>
+                {field.state.meta.errors
+                  .filter((e) => e !== undefined)
+                  .map((e) => e.message)
+                  .join(', ')}
+              </FieldError>
+            </TextField>
           )}
         />
 
-        <Button type="submit" isLoading={isPending}>
+        <Button type="submit" isPending={isPending}>
+          {isPending && <Spinner size="sm" />}
           Save
         </Button>
 
         <form.Subscribe
           selector={(state) => state.errors.filter((e) => typeof e === 'string')}
-          children={(errors) => errors.length > 0 && <Alert color="danger">{errors}</Alert>}
+          children={(errors) =>
+            errors.length > 0 && (
+              <Alert status="danger">
+                <Alert.Indicator />
+                <Alert.Content>
+                  <Alert.Description>{errors}</Alert.Description>
+                </Alert.Content>
+              </Alert>
+            )
+          }
         />
 
-        {data && <Alert color="success">Currency updated!</Alert>}
+        {data && (
+          <Alert status="success">
+            <Alert.Indicator />
+            <Alert.Content>
+              <Alert.Description>Currency updated!</Alert.Description>
+            </Alert.Content>
+          </Alert>
+        )}
       </Form>
     </div>
   );

@@ -1,7 +1,6 @@
-import { HeroUIProvider, Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@heroui/react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { type NavigateOptions, Outlet, type ToOptions, createRootRoute, useRouter } from '@tanstack/react-router';
+import { Outlet, createRootRoute } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 
 import { Link } from '@/components/link';
@@ -21,64 +20,56 @@ export const Route = createRootRoute({
   },
 });
 
-declare module '@react-types/shared' {
-  interface RouterConfig {
-    href: ToOptions['to'];
-    routerOptions: Omit<NavigateOptions, keyof ToOptions>;
-  }
-}
-
 function RootComponent() {
-  const router = useRouter();
   const user = useStore((state) => state.user);
 
   return (
-    <HeroUIProvider
-      navigate={(to, options) => router.navigate({ to, ...options })}
-      useHref={(to) => router.buildLocation({ to }).href}
-    >
-      <QueryClientProvider client={queryClient}>
-        <div className="relative flex h-screen flex-col overflow-auto">
-          <Navbar>
-            <NavbarBrand>
-              <Link to="/" color="foreground">
+    <QueryClientProvider client={queryClient}>
+      <div className="relative flex h-screen flex-col overflow-auto">
+        <nav
+          aria-label="Main navigation"
+          className="border-border bg-background/70 sticky top-0 z-40 border-b backdrop-blur-lg"
+        >
+          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-6">
+            <div>
+              <Link to="/" className="text-foreground">
                 <h1 className="text-2xl font-bold">Hyperion</h1>
               </Link>
-            </NavbarBrand>
-            <NavbarContent justify="end">
+            </div>
+            <ul className="flex items-center gap-6">
               {user && (
-                <NavbarItem>
-                  <Link to="/integrations" color="foreground">
+                <li>
+                  <Link to="/integrations" className="text-foreground">
                     Integrations
                   </Link>
-                </NavbarItem>
+                </li>
               )}
-              <NavbarItem>
-                <Link to="/currencies" color="foreground">
+              <li>
+                <Link to="/currencies" className="text-foreground">
                   Currencies
                 </Link>
-              </NavbarItem>
-              <NavbarItem>
+              </li>
+              <li>
                 {user ? (
-                  <Link to="/auth/logout" search={{ next: window.location.href }} color="foreground">
+                  <Link to="/auth/logout" search={{ next: window.location.href }} className="text-foreground">
                     Logout
                   </Link>
                 ) : (
-                  <Link to="/auth/login" search={{ next: window.location.href }} color="foreground">
+                  <Link to="/auth/login" search={{ next: window.location.href }} className="text-foreground">
                     Login
                   </Link>
                 )}
-              </NavbarItem>
-            </NavbarContent>
-          </Navbar>
-          <main className="container mx-auto max-w-7xl grow px-6">
-            <Outlet />
-          </main>
-        </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
+        <main className="container mx-auto max-w-7xl grow px-6">
+          <Outlet />
+        </main>
+      </div>
 
-        <ReactQueryDevtools initialIsOpen={false} />
-        <TanStackRouterDevtools />
-      </QueryClientProvider>
-    </HeroUIProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+      <TanStackRouterDevtools />
+    </QueryClientProvider>
   );
 }
